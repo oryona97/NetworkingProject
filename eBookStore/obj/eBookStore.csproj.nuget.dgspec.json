@@ -1,20 +1,20 @@
 {
   "format": 1,
   "restore": {
-    "/Users/oryona/eBookStore/eBookStore/eBookStore.csproj": {}
+    "/Users/dortheking/Code/dotNetMvc/NetworkingProject/eBookStore/eBookStore.csproj": {}
   },
   "projects": {
-    "/Users/oryona/eBookStore/eBookStore/eBookStore.csproj": {
+    "/Users/dortheking/Code/dotNetMvc/NetworkingProject/eBookStore/eBookStore.csproj": {
       "version": "1.0.0",
       "restore": {
-        "projectUniqueName": "/Users/oryona/eBookStore/eBookStore/eBookStore.csproj",
+        "projectUniqueName": "/Users/dortheking/Code/dotNetMvc/NetworkingProject/eBookStore/eBookStore.csproj",
         "projectName": "eBookStore",
-        "projectPath": "/Users/oryona/eBookStore/eBookStore/eBookStore.csproj",
-        "packagesPath": "/Users/oryona/.nuget/packages/",
-        "outputPath": "/Users/oryona/eBookStore/eBookStore/obj/",
+        "projectPath": "/Users/dortheking/Code/dotNetMvc/NetworkingProject/eBookStore/eBookStore.csproj",
+        "packagesPath": "/Users/dortheking/.nuget/packages/",
+        "outputPath": "/Users/dortheking/Code/dotNetMvc/NetworkingProject/eBookStore/obj/",
         "projectStyle": "PackageReference",
         "configFilePaths": [
-          "/Users/oryona/.nuget/NuGet/NuGet.Config"
+          "/Users/dortheking/.nuget/NuGet/NuGet.Config"
         ],
         "originalTargetFrameworks": [
           "net8.0"
@@ -42,6 +42,12 @@
       "frameworks": {
         "net8.0": {
           "targetAlias": "net8.0",
+          "dependencies": {
+            "Microsoft.Data.SqlClient": {
+              "target": "Package",
+              "version": "[5.2.2, )"
+            }
+          },
           "imports": [
             "net461",
             "net462",

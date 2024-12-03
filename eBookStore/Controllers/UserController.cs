@@ -7,16 +7,17 @@ namespace eBookStore.Controllers;
 public class UserController : Controller
 {
     private readonly ILogger<UserController> _logger;
-
-    public UserController(ILogger<UserController> logger)
+    private readonly IConfiguration _configuration;
+    private string? connectionString;
+    public UserController(IConfiguration configuration ,ILogger<UserController> logger )
     {
+        _configuration = configuration;
+        connectionString = _configuration.GetConnectionString("DefaultConnection");
         _logger = logger;
     }
 
-    public IActionResult Index()
-    {
-        return View();
-    }
+
+    
 
     public IActionResult Privacy()
     {

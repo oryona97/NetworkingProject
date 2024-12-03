@@ -1,0 +1,2 @@
+SELECT *
+create TABLE Users ();

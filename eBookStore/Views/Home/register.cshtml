@@ -1,0 +1,11 @@
+@model UserModel
+
+<form action="register" method="post">
+    Username <input name="username" type="text">@Html.ValidationMessageFor(x=>x.username)<br>
+    Password <input name="password" type="text">@Html.ValidationMessageFor(x=>x.password)<br>
+    Email <input name="email" type="text">@Html.ValidationMessageFor(x=>x.email)<br>
+    First name <input name="firstName" type="text">@Html.ValidationMessageFor(x=>x.firstName)<br>
+    Last name <input name="lastName" type="text">@Html.ValidationMessageFor(x=>x.lastName)<br>
+    Phone number <input name="phoneNumber" type="text">@Html.ValidationMessageFor(x=>x.phoneNumber)<br>
+    <input type="Submit" value="Register">
+</form>
