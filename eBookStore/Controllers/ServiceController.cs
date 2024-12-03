@@ -4,11 +4,11 @@ using eBookStore.Models;
 
 namespace eBookStore.Controllers;
 
-public class UserController : Controller
+public class ServiceController : Controller
 {
-    private readonly ILogger<UserController> _logger;
+    private readonly ILogger<ServiceController> _logger;
 
-    public UserController(ILogger<UserController> logger)
+    public ServiceController(ILogger<ServiceController> logger)
     {
         _logger = logger;
     }

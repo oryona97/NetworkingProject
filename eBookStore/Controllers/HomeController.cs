@@ -13,9 +13,24 @@ public class HomeController : Controller
         _logger = logger;
     }
 
-    public IActionResult Index()
+    [HttpGet]
+    public IActionResult LogIn()
     {
+
         return View();
+    }
+
+    public IActionResult showLogin(AdminModel admin)
+    {
+
+        return View(admin);
+    }
+
+    [HttpPost]
+    public IActionResult LogIn(AdminModel admin)
+    {
+        
+        return View(admin);
     }
 
     public IActionResult Privacy()
