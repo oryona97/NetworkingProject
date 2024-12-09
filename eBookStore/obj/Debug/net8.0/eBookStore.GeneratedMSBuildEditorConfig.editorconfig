@@ -9,43 +9,43 @@ build_property.EnforceExtendedAnalyzerRules =
 build_property._SupportedPlatformList = Linux,macOS,Windows
 build_property.RootNamespace = eBookStore
 build_property.RootNamespace = eBookStore
-build_property.ProjectDir = /Users/maxwellknight/Desktop/Code/c#/NetworkingProject/eBookStore/
+build_property.ProjectDir = /Users/dortheking/Code/dotNetMvc/NetworkingProject/eBookStore/
 build_property.EnableComHosting = 
 build_property.EnableGeneratedComInterfaceComImportInterop = 
 build_property.RazorLangVersion = 8.0
 build_property.SupportLocalizedComponentNames = 
 build_property.GenerateRazorMetadataSourceChecksumAttributes = 
-build_property.MSBuildProjectDirectory = /Users/maxwellknight/Desktop/Code/c#/NetworkingProject/eBookStore
+build_property.MSBuildProjectDirectory = /Users/dortheking/Code/dotNetMvc/NetworkingProject/eBookStore
 build_property._RazorSourceGeneratorDebug = 
 
-[/Users/maxwellknight/Desktop/Code/c\#/NetworkingProject/eBookStore/Views/Home/LogIn.cshtml]
+[/Users/dortheking/Code/dotNetMvc/NetworkingProject/eBookStore/Views/Home/LogIn.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Mb2dJbi5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/maxwellknight/Desktop/Code/c\#/NetworkingProject/eBookStore/Views/Home/Privacy.cshtml]
+[/Users/dortheking/Code/dotNetMvc/NetworkingProject/eBookStore/Views/Home/Privacy.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9Qcml2YWN5LmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/maxwellknight/Desktop/Code/c\#/NetworkingProject/eBookStore/Views/Home/showLogIn.cshtml]
+[/Users/dortheking/Code/dotNetMvc/NetworkingProject/eBookStore/Views/Home/showLogIn.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvSG9tZS9zaG93TG9nSW4uY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/maxwellknight/Desktop/Code/c\#/NetworkingProject/eBookStore/Views/Shared/Error.cshtml]
+[/Users/dortheking/Code/dotNetMvc/NetworkingProject/eBookStore/Views/Shared/Error.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL0Vycm9yLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/maxwellknight/Desktop/Code/c\#/NetworkingProject/eBookStore/Views/Shared/_ValidationScriptsPartial.cshtml]
+[/Users/dortheking/Code/dotNetMvc/NetworkingProject/eBookStore/Views/Shared/_ValidationScriptsPartial.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19WYWxpZGF0aW9uU2NyaXB0c1BhcnRpYWwuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/maxwellknight/Desktop/Code/c\#/NetworkingProject/eBookStore/Views/_ViewImports.cshtml]
+[/Users/dortheking/Code/dotNetMvc/NetworkingProject/eBookStore/Views/_ViewImports.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdJbXBvcnRzLmNzaHRtbA==
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/maxwellknight/Desktop/Code/c\#/NetworkingProject/eBookStore/Views/_ViewStart.cshtml]
+[/Users/dortheking/Code/dotNetMvc/NetworkingProject/eBookStore/Views/_ViewStart.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvX1ZpZXdTdGFydC5jc2h0bWw=
 build_metadata.AdditionalFiles.CssScope = 
 
-[/Users/maxwellknight/Desktop/Code/c\#/NetworkingProject/eBookStore/Views/Shared/_Layout.cshtml]
+[/Users/dortheking/Code/dotNetMvc/NetworkingProject/eBookStore/Views/Shared/_Layout.cshtml]
 build_metadata.AdditionalFiles.TargetPath = Vmlld3MvU2hhcmVkL19MYXlvdXQuY3NodG1s
 build_metadata.AdditionalFiles.CssScope = b-zvbjbcsw4l
