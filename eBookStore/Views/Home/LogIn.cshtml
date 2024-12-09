@@ -1,8 +1,9 @@
-@model UserModel
+@model eBookStore.Models.UserModel
 
-<form action="showLogin" method="post">
-    
-    Username <input name="username" type="text">@Html.ValidationMessageFor(x=>x.username)<br>
-    Password <input name="password" type="text">@Html.ValidationMessageFor(x=>x.password)<br>
-    <input type="Submit" value="Login">
-</form>
+<div class="loginForm">
+    <form action="LogIn" method="post">
+        Username <input class="inputUserName" name="username" type="text" value="@Model.username">@Html.ValidationMessageFor(x=>x.username)<br>
+        Password <input class="inputPassword" name="password" type="password" value="@Model.password">@Html.ValidationMessageFor(x=>x.password)<br>
+        <input type="Submit" value="Login">
+    </form>
+</div>

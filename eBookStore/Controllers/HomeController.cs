@@ -4,7 +4,7 @@ using eBookStore.Models;
 using Microsoft.Data.SqlClient;
 
 namespace eBookStore.Controllers;
-
+//this calss represent user
 public class HomeController : Controller
 {
     private readonly ILogger<HomeController> _logger;
@@ -17,7 +17,7 @@ public class HomeController : Controller
         _logger = logger;
     }
     
-    
+    //register
     [HttpGet]
     public IActionResult register()
     {
@@ -26,86 +26,95 @@ public class HomeController : Controller
     [HttpPost]
     public IActionResult register(UserModel user)
     {
-        if(ModelState.IsValid)
+        try
         {
-           using(SqlConnection  connection = new SqlConnection(connectionString))
+            if(ModelState.IsValid)
             {
-                connection.Open();
-
-                string queries = "INSERT INTO Users (Username, Password, Email, FirstName, LastName, PhoneNumber)  VALUES (@Username, @Password,@Email,@FirstName,@LastName,@PhoneNumber);";
-                using(SqlCommand command = new SqlCommand(queries , connection))
+            using(SqlConnection  connection = new SqlConnection(connectionString))
                 {
-                    command.Parameters.AddWithValue("@Username",user.username);
-                    command.Parameters.AddWithValue("@Password",user.password);
-                    command.Parameters.AddWithValue("@Email",user.email);
-                    command.Parameters.AddWithValue("@FirstName",user.firstName);
-                    command.Parameters.AddWithValue("@LastName",user.lastName);
-                    command.Parameters.AddWithValue("@PhoneNumber",user.phoneNumber);
+                    connection.Open();
+                    //this query insert the detais of user
+                    string queries = "INSERT INTO Users (Username, Password, Email, FirstName, LastName, PhoneNumber)  VALUES (@Username, @Password,@Email,@FirstName,@LastName,@PhoneNumber);";
+                    using(SqlCommand command = new SqlCommand(queries , connection))
+                    {
+                        command.Parameters.AddWithValue("@Username",user.username);
+                        command.Parameters.AddWithValue("@Password",user.password);
+                        command.Parameters.AddWithValue("@Email",user.email);
+                        command.Parameters.AddWithValue("@FirstName",user.firstName);
+                        command.Parameters.AddWithValue("@LastName",user.lastName);
+                        command.Parameters.AddWithValue("@PhoneNumber",user.phoneNumber);
 
-                    int rowAffect = command.ExecuteNonQuery();
+                        int rowAffect = command.ExecuteNonQuery();
+                    }
+                    connection.Close();
                 }
+                // show the details to the user
+                return View("showRegister" , user);
             }
-
-            return View("showRegister" , user);
-        }
-        return View(user);
-    }
-
-    public IActionResult showLogin(UserModel user)
-    {
-        if(ModelState.IsValid)
+        }catch(SqlException ex)
+        {
             return View(user);
-        return View("LogIn");
+        }
+            //if not valid get the details agian 
+            return View(user);
     }
+    //**********************************************************************//
 
     [HttpGet]
-    public IActionResult LogIn(UserModel user)
+    //login
+    public IActionResult showLogIn()
     {
-        
-        if(ModelState.IsValid)
+        UserModel user =new UserModel();
+        return View("LogIn",user);        
+    }
+    
+    [HttpPost]
+    public IActionResult LogIn()
+    {
+        UserModel user =new UserModel();
+        //get the userName and password from the form
+        string? userName = Request.Form["userName"].ToString();
+        string? password = Request.Form["password"].ToString();
+
+        using (SqlConnection connection = new SqlConnection(connectionString))
         {
-            
-            using (SqlConnection connection = new SqlConnection(connectionString))
+            connection.Open();
+            //this quary 
+            string query = "SELECT * FROM Users WHERE Username = @username;";
+            using (SqlCommand command = new SqlCommand(query, connection))
             {
-                connection.Open();
-
-                string query = "SELECT username, password, email, firstName, lastName, phoneNumber  FROM Users Where username = @username ;";
-                using (SqlCommand command = new SqlCommand(query, connection))
+                
+                command.Parameters.AddWithValue("@username",userName);
+                Console.WriteLine(userName);
+                using (SqlDataReader reader = command.ExecuteReader())
                 {
-                    using (SqlDataReader reader = command.ExecuteReader())
+                    if(reader.Read())
                     {
-                        if(reader.Read())
+                        if(userName == reader["Username"].ToString() && password == reader["Password"].ToString())
                         {
-                           
-                            string? usernameTest = reader["username"].ToString();
-                            string? passwordTest = reader["password"].ToString();
-                            
-                                
-                            if(user.username == usernameTest && user.password == passwordTest)
-                            {
-                                
-                                UserModel foundUser = new UserModel
-                                {
-                                    username = reader["username"].ToString(),
-                                    password = reader["password"].ToString(),
-                                    email = reader["email"].ToString(),
-                                    firstName = reader["firstName"].ToString(),
-                                    lastName = reader["lastName"].ToString(),
-                                    phoneNumber = reader["phoneNumber"].ToString()
-                                };
-
-                                
-                                return View("showLogIn", foundUser);
-                            }
-                            
+                            //init the user details
+                            user.username = reader["Username"].ToString();
+                            user.password = reader["password"].ToString();
+                            user.email = reader["Email"].ToString();
+                            user.firstName = reader["firstName"].ToString();
+                            user.lastName = reader["lastName"].ToString();
+                            user.phoneNumber = reader["phoneNumber"].ToString();
+                            //show to user 
+                            return View("showLogIn",user);
                         }
                     }
+                        
                 }
             }
+            connection.Close();
+            
         }
-
-        return View();
+        //if not valid get again
+        return View(user);
     }
+    //**********************************************************************//
+
+
 
     public IActionResult Privacy()
     {
