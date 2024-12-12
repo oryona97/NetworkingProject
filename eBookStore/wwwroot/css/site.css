@@ -20,3 +20,22 @@ html {
 body {
   margin-bottom: 60px;
 }
+
+.loginForm
+{
+  box-sizing: border-box;
+  background-color: aqua;
+  text-align: center;
+  align-items: center;
+  padding: auto;
+  border-radius: 5px;
+  
+}
+.inputUserName
+{
+  margin-top: 5px;
+}
+.inputPassword
+{
+  margin-top: 5px;
+}

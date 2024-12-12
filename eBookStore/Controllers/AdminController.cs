@@ -7,11 +7,15 @@ namespace eBookStore.Controllers;
 public class AdminController : Controller
 {
     private readonly ILogger<AdminController> _logger;
-
-    public AdminController(ILogger<AdminController> logger)
+    private readonly IConfiguration _configuration;
+    private string? connectionString;
+    public AdminController(IConfiguration configuration ,ILogger<AdminController> logger )
     {
+        _configuration = configuration;
+        connectionString = _configuration.GetConnectionString("DefaultConnection");
         _logger = logger;
     }
+    
 
     public IActionResult Index()
     {
