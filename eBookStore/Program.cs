@@ -23,12 +23,7 @@ app.UseRouting();
 app.UseAuthorization();
 
 app.MapControllerRoute(
-<<<<<<< HEAD
 	name: "default",
-	pattern: "{controller=Home}/{action=Index}/{id?}");
-=======
-    name: "default",
-    pattern: "{controller=Home}/{action=showLogIn}/{id?}");
->>>>>>> userFunction
+	pattern: "{controller=Home}/{action=showLogIn}/{id?}");
 
 app.Run();
