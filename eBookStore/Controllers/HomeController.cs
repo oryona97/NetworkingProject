@@ -33,8 +33,9 @@ public class HomeController : Controller
             using(SqlConnection  connection = new SqlConnection(connectionString))
                 {
                     connection.Open();
+                    Console.WriteLine("Connection successful!");
                     //this query insert the detais of user
-                    string queries = "INSERT INTO Users (Username, Password, Email, FirstName, LastName, PhoneNumber)  VALUES (@Username, @Password,@Email,@FirstName,@LastName,@PhoneNumber);";
+                    string queries = "INSERT INTO [User] (Username, Password, Email, FirstName, LastName, PhoneNumber)  VALUES (@Username, @Password,@Email,@FirstName,@LastName,@PhoneNumber);";
                     using(SqlCommand command = new SqlCommand(queries , connection))
                     {
                         command.Parameters.AddWithValue("@Username",user.username);
@@ -53,6 +54,7 @@ public class HomeController : Controller
             }
         }catch(SqlException ex)
         {
+            Console.WriteLine($"Connection failed: {ex.Message}");
             return View(user);
         }
             //if not valid get the details agian 
@@ -64,6 +66,7 @@ public class HomeController : Controller
     //login
     public IActionResult showLogIn()
     {
+        Console.WriteLine("showlogin");
         UserModel user =new UserModel();
         return View("LogIn",user);        
     }
@@ -75,12 +78,13 @@ public class HomeController : Controller
         //get the userName and password from the form
         string? userName = Request.Form["userName"].ToString();
         string? password = Request.Form["password"].ToString();
-
+        Console.WriteLine("login");
         using (SqlConnection connection = new SqlConnection(connectionString))
         {
             connection.Open();
+            Console.WriteLine("Connection successful!");
             //this quary 
-            string query = "SELECT * FROM Users WHERE Username = @username;";
+            string query = "SELECT * FROM [User] WHERE Username = @username;";
             using (SqlCommand command = new SqlCommand(query, connection))
             {
                 
@@ -93,6 +97,8 @@ public class HomeController : Controller
                         if(userName == reader["Username"].ToString() && password == reader["Password"].ToString())
                         {
                             //init the user details
+                            user.createAt = DateTime.Parse(reader["createAd"].ToString());
+                            user.id =int.Parse(reader["id"].ToString());
                             user.username = reader["Username"].ToString();
                             user.password = reader["password"].ToString();
                             user.email = reader["Email"].ToString();
@@ -100,6 +106,7 @@ public class HomeController : Controller
                             user.lastName = reader["lastName"].ToString();
                             user.phoneNumber = reader["phoneNumber"].ToString();
                             //show to user 
+                            Console.WriteLine("login success");
                             return View("showLogIn",user);
                         }
                     }
@@ -109,6 +116,7 @@ public class HomeController : Controller
             connection.Close();
             
         }
+        Console.WriteLine("login failed");
         //if not valid get again
         return View(user);
     }

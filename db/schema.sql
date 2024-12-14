@@ -35,20 +35,22 @@ GO
 
 -- Recreate tables with original schema
 CREATE TABLE [User] (
-  [id] int PRIMARY KEY,
-  [userName] nvarchar(50),
+  [id] int IDENTITY(50,1) PRIMARY KEY ,
+  [userName] nvarchar(50) UNIQUE,
   [password] nvarchar(100),
   [firstName] nvarchar(50),
   [lastName] nvarchar(50),
   [email] nvarchar(100),
-  [type] nvarchar(20),
+  [type] nvarchar(20) CHECK(type IN('user','admin')),
   [phoneNumber] nvarchar(20),
   [createdAt] datetime
 )
+
+
 GO
 
 CREATE TABLE [PersonalLibrary] (
-  [id] int,
+  [id] int IDENTITY(50,1),
   [userId] int,
   [bookId] int,
   PRIMARY KEY (id, userId, bookId),
@@ -57,7 +59,7 @@ CREATE TABLE [PersonalLibrary] (
 GO
 
 CREATE TABLE [Book] (
-  [id] int PRIMARY KEY,
+  [id] int IDENTITY(50,1) PRIMARY KEY,
   [publisherId] int,
   [genreId] int,
   [amountOfCopies] int,
@@ -76,21 +78,21 @@ CREATE TABLE [Book] (
 GO
 
 CREATE TABLE [BorrowedBooks] (
-  [id] int PRIMARY KEY,
+  [id] int IDENTITY(50,1) PRIMARY KEY,
   [userId] int,
   [bookId] int
 )
 GO
 
 CREATE TABLE [Genre] (
-  [id] int PRIMARY KEY,
+  [id] int IDENTITY(50,1) PRIMARY KEY,
   [name] nvarchar(50),
   [createdAt] datetime
 )
 GO
 
 CREATE TABLE [Publisher] (
-  [id] int PRIMARY KEY ,
+  [id] int IDENTITY(50,1) PRIMARY KEY ,
   [name] nvarchar(100) UNIQUE,
   [createdAt] datetime,
   
@@ -98,7 +100,7 @@ CREATE TABLE [Publisher] (
 GO
 
 CREATE TABLE [HistoryPurchases] (
-  [id] int PRIMARY KEY,
+  [id] int IDENTITY(50,1) PRIMARY KEY,
   [bookId] int,
   [bookPrice] decimal(10,2),
   [userId] int,
@@ -126,7 +128,7 @@ CREATE TABLE [Feedback] (
 GO
 
 CREATE TABLE [GeneralRating] (
-  [id] int,
+  [id] int IDENTITY(50,1),
   [starRating] int,
   [userId] int,
   PRIMARY KEY (userId, id),
@@ -135,7 +137,7 @@ CREATE TABLE [GeneralRating] (
 GO
 
 CREATE TABLE [GeneralFeedback] (
-  [id] int PRIMARY KEY,
+  [id] int IDENTITY(50,1) PRIMARY KEY,
   [userId] int,
   [comment] nvarchar(max),
   [createdAt] datetime
@@ -143,7 +145,7 @@ CREATE TABLE [GeneralFeedback] (
 GO
 
 CREATE TABLE [BookRentQueue] (
-  [id] int,
+  [id] int IDENTITY(50,1),
   [bookId] int,
   [userId] int,
   [createdAt] datetime,
@@ -152,7 +154,7 @@ CREATE TABLE [BookRentQueue] (
 GO
 
 CREATE TABLE [Auther] (
-  [id] int PRIMARY KEY,
+  [id] int IDENTITY(50,1) PRIMARY KEY,
   [name] nvarchar(100),
   [bookId] int,
   [createdAt] datetime
@@ -160,7 +162,7 @@ CREATE TABLE [Auther] (
 GO
 
 CREATE TABLE [Cover] (
-  [id] int PRIMARY KEY,
+  [id] int IDENTITY(50,1) PRIMARY KEY,
   [imgName] nvarchar(200),
   [bookId] int,
   [createdAt] datetime
@@ -168,7 +170,7 @@ CREATE TABLE [Cover] (
 GO
 
 CREATE TABLE [HistoryBookPrice] (
-  [id] int PRIMARY KEY,
+  [id] int IDENTITY(50,1) PRIMARY KEY,
   [datePrice] date,
   [price] decimal(10,2),
   [bookId] int,
@@ -194,7 +196,7 @@ CREATE TABLE [BookShoppingCart] (
 GO
 
 CREATE TABLE [Reciept] (
-  [id] int PRIMARY KEY,
+  [id] int IDENTITY(50,1) PRIMARY KEY,
   [userId] int,
   [bookId] int,
   [total] decimal(10,2),
@@ -252,17 +254,21 @@ GO
 ALTER TABLE [Reciept] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id])
 GO
 
+SET IDENTITY_INSERT [User] ON;
 -- Insert comprehensive dummy data
 -- Users
 INSERT INTO [User] ([id], [userName], [password], [firstName], [lastName], [email], [type], [phoneNumber], [createdAt])
 VALUES 
-(1, 'johndoe', 'hashed_password_1', 'John', 'Doe', 'john.doe@example.com', 'reader', '1234567890', GETDATE()),
-(2, 'janesmith', 'hashed_password_2', 'Jane', 'Smith', 'jane.smith@example.com', 'premium', '9876543210', GETDATE()),
+(1, 'johndoe', 'hashed_password_1', 'John', 'Doe', 'john.doe@example.com', 'user', '1234567890', GETDATE()),
+(2, 'janesmith', 'hashed_password_2', 'Jane', 'Smith', 'jane.smith@example.com', 'user', '9876543210', GETDATE()),
 (3, 'mikebrown', 'hashed_password_3', 'Mike', 'Brown', 'mike.brown@example.com', 'admin', '5551234567', GETDATE()),
-(4, 'sarahlee', 'hashed_password_4', 'Sarah', 'Lee', 'sarah.lee@example.com', 'reader', '7778889999', GETDATE()),
-(5, 'davidwang', 'hashed_password_5', 'David', 'Wang', 'david.wang@example.com', 'premium', '3334445555', GETDATE());
+(4, 'sarahlee', 'hashed_password_4', 'Sarah', 'Lee', 'sarah.lee@example.com', 'user', '7778889999', GETDATE()),
+(5, 'davidwang', 'hashed_password_5', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE());
+
+SET IDENTITY_INSERT [User] OFF;
 
 -- Publishers
+SET IDENTITY_INSERT [Publisher] ON;
 INSERT INTO [Publisher] ([id], [name], [createdAt])
 VALUES 
 (1, 'Penguin Random House', GETDATE()),
@@ -270,8 +276,10 @@ VALUES
 (3, 'Simon & Schuster', GETDATE()),
 (4, 'Macmillan Publishers', GETDATE()),
 (5, 'Hachette Book Group', GETDATE());
+SET IDENTITY_INSERT [Publisher]OFF;
 
 -- Genres
+SET IDENTITY_INSERT [Genre] ON;
 INSERT INTO [Genre] ([id], [name], [createdAt])
 VALUES 
 (1, 'Fiction', GETDATE()),
@@ -279,8 +287,11 @@ VALUES
 (3, 'Science Fiction', GETDATE()),
 (4, 'Mystery', GETDATE()),
 (5, 'Romance', GETDATE());
+SET IDENTITY_INSERT [Genre] OFF;
 
 -- Books
+SET IDENTITY_INSERT [Book] ON;
+
 INSERT INTO [Book] ([id], [publisherId], [genreId], [amountOfCopies], [title], [borrowPrice], [buyingPrice], 
                     [pubDate], [ageLimit], [priceHistory], [onSale], [canBorrow], [starRate], [createdAt])
 VALUES 
@@ -290,7 +301,10 @@ VALUES
 (4, 4, 5, 40, 'Love Across Continents', 2.75, 16.50, '2023-02-28', 16, 4, 1, 1, 4.6, GETDATE()),
 (5, 5, 2, 35, 'The Rise of Technology', 3.25, 18.99, '2022-09-05', 14, 5, 0, 1, 4.4, GETDATE());
 
+SET IDENTITY_INSERT [Book] OFF;
+
 -- Authors
+SET IDENTITY_INSERT [Auther] ON;
 INSERT INTO [Auther] ([id], [name], [bookId], [createdAt])
 VALUES 
 (1, 'Emily Johnson', 1, GETDATE()),
@@ -298,8 +312,10 @@ VALUES
 (3, 'Sarah Rodriguez', 3, GETDATE()),
 (4, 'David Kim', 4, GETDATE()),
 (5, 'Rachel Green', 5, GETDATE());
+SET IDENTITY_INSERT [Auther] OFF;
 
 -- Covers
+SET IDENTITY_INSERT [Cover] ON;
 INSERT INTO [Cover] ([id], [imgName], [bookId], [createdAt])
 VALUES 
 (1, 'great_adventure_cover.jpg', 1, GETDATE()),
@@ -308,7 +324,11 @@ VALUES
 (4, 'love_continents_cover.jpg', 4, GETDATE()),
 (5, 'tech_rise_cover.jpg', 5, GETDATE());
 
+SET IDENTITY_INSERT [Cover] OFF;
+
 -- Personal Library
+
+SET IDENTITY_INSERT [PersonalLibrary] ON;
 INSERT INTO [PersonalLibrary] ([id], [userId], [bookId], [createdAt])
 VALUES 
 (1, 1, 1, GETDATE()),
@@ -316,8 +336,9 @@ VALUES
 (3, 3, 3, GETDATE()),
 (4, 4, 4, GETDATE()),
 (5, 5, 5, GETDATE());
-
+SET IDENTITY_INSERT [PersonalLibrary] OFF;
 -- Borrowed Books
+SET IDENTITY_INSERT [BorrowedBooks] ON;
 INSERT INTO [BorrowedBooks] ([id], [userId], [bookId])
 VALUES 
 (1, 1, 2),
@@ -325,8 +346,10 @@ VALUES
 (3, 3, 4),
 (4, 4, 5),
 (5, 5, 1);
+SET IDENTITY_INSERT [BorrowedBooks] OFF;
 
 -- Ratings
+
 INSERT INTO [Rating] ([starRating], [userId], [bookId], [createdAt])
 VALUES 
 (4, 1, 1, GETDATE()),
@@ -335,7 +358,9 @@ VALUES
 (5, 4, 4, GETDATE()),
 (4, 5, 5, GETDATE());
 
+
 -- Feedback
+
 INSERT INTO [Feedback] ([userId], [bookId], [comment], [createdAt])
 VALUES 
 (1, 1, 'Great book, really enjoyed the adventure!', GETDATE()),
@@ -345,14 +370,17 @@ VALUES
 (5, 5, 'Insightful look into technological innovations', GETDATE());
 
 -- Book Rent Queue
+SET IDENTITY_INSERT [BookRentQueue] ON;
 INSERT INTO [BookRentQueue] ([id], [bookId], [userId], [createdAt])
 VALUES 
 (1, 1, 2, GETDATE()),
 (2, 2, 3, GETDATE()),
 (3, 3, 4, GETDATE()),
 (5, 5, 1, GETDATE());
+SET IDENTITY_INSERT [BookRentQueue] OFF;
 
 -- History Purchases
+SET IDENTITY_INSERT [HistoryPurchases] ON;
 INSERT INTO [HistoryPurchases] ([id], [bookId], [bookPrice], [userId], [purchaseDate], [createdAt])
 VALUES 
 (1, 1, 15.99, 1, GETDATE(), GETDATE()),
@@ -360,8 +388,10 @@ VALUES
 (3, 3, 14.50, 3, GETDATE(), GETDATE()),
 (4, 4, 16.50, 4, GETDATE(), GETDATE()),
 (5, 5, 18.99, 5, GETDATE(), GETDATE());
+SET IDENTITY_INSERT [HistoryPurchases] OFF;
 
 -- History Book Price
+SET IDENTITY_INSERT [HistoryBookPrice] ON;
 INSERT INTO [HistoryBookPrice] ([id], [datePrice], [price], [bookId], [createdAt])
 VALUES 
 (1, '2023-01-01', 14.99, 1, GETDATE()),
@@ -369,6 +399,7 @@ VALUES
 (3, '2023-05-01', 13.50, 3, GETDATE()),
 (4, '2023-02-15', 15.50, 4, GETDATE()),
 (5, '2022-08-20', 17.99, 5, GETDATE());
+SET IDENTITY_INSERT [HistoryBookPrice] OFF;
 
 -- Shopping Cart
 INSERT INTO [ShoppingCart] ([userId], [bookId], [createdAt])
@@ -389,6 +420,8 @@ VALUES
 (5, 5, 'PDF');
 
 -- Receipts
+SET IDENTITY_INSERT [Reciept] ON;
+
 INSERT INTO [Reciept] ([id], [userId], [bookId], [total], [createdAt])
 VALUES 
 (1, 1, 2, 19.99, GETDATE()),
@@ -396,8 +429,10 @@ VALUES
 (3, 3, 4, 16.50, GETDATE()),
 (4, 4, 5, 18.99, GETDATE()),
 (5, 5, 1, 15.99, GETDATE());
-
+SET IDENTITY_INSERT [Reciept] OFF;
 -- General Rating
+
+SET IDENTITY_INSERT [GeneralRating] ON;
 INSERT INTO [GeneralRating] ([id], [starRating], [userId], [createdAt])
 VALUES 
 (1, 4, 1, GETDATE()),
@@ -405,8 +440,9 @@ VALUES
 (3, 4, 3, GETDATE()),
 (4, 5, 4, GETDATE()),
 (5, 4, 5, GETDATE());
-
+SET IDENTITY_INSERT [GeneralRating] OFF;
 -- General Feedback
+SET IDENTITY_INSERT [GeneralFeedback] ON;
 INSERT INTO [GeneralFeedback] ([id], [userId], [comment], [createdAt])
 VALUES 
 (1, 1, 'Enjoying the platform so far!', GETDATE()),
@@ -414,7 +450,7 @@ VALUES
 (3, 3, 'User interface is very intuitive', GETDATE()),
 (4, 4, 'Love the recommendation system', GETDATE()),
 (5, 5, 'Excellent customer support', GETDATE());
-
+SET IDENTITY_INSERT [GeneralFeedback] OFF;
 -- Print success message
 PRINT 'eBook Database created and populated successfully!';
 GO

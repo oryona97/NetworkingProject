@@ -7,6 +7,8 @@ namespace eBookStore.Models;
 public class UserModel
 {   
     [Key]
+    public int id {get; set;} 
+
     [Required(ErrorMessage = "Username is required")]
     [RegularExpression("^[a-zA-Z0-9]+([._]?[a-zA-Z0-9]+)*$")]
     public string? username { get; set; }
@@ -36,6 +38,10 @@ public class UserModel
     [RegularExpression(@"^((\+972|972|0)?)(5[0-9]|[2-4|8|9])[-\s]?[0-9]{7}$", ErrorMessage = "Invalid phone number")]
     public string? phoneNumber { get; set; }
 
+    [Required]
+    public string type {get;set;} ="user";
     
+    [Required]
+    public DateTime createAt {get; set;} = DateTime.Now;
 
 }

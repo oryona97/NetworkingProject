@@ -1,2 +1,2 @@
-SELECT *
-create TABLE Users ();
+select *
+from [User];
