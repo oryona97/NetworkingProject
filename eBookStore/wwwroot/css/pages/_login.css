@@ -200,51 +200,6 @@
     font-size: 0.875rem;
 }
 
-.input-group-text {
-    background-color: transparent;
-    border: 2px solid #e2e8f0;
-    color: #64748b;
-    padding: 0.5rem 1rem;
-}
-
-.input-group-text:first-child {
-    border-right: none;
-    border-top-left-radius: 1rem;
-    border-bottom-left-radius: 1rem;
-}
-
-.input-group > .custom-input {
-    border-left: none;
-    border-top-left-radius: 0;
-    border-bottom-left-radius: 0;
-}
-
-.password-toggle {
-    border-left: none;
-    cursor: pointer;
-    transition: color 0.3s ease;
-    border-top-right-radius: 1rem;
-    border-bottom-right-radius: 1rem;
-}
-
-.password-toggle:hover {
-    color: #4f46e5;
-}
-
-.custom-input:focus {
-    border-color: #4f46e5;
-    box-shadow: 0 0 0 4px rgba(79, 70, 229, 0.1);
-    outline: none;
-}
-
-.custom-input:focus + .password-toggle {
-    border-color: #4f46e5;
-}
-
-.input-group:focus-within .input-group-text {
-    border-color: #4f46e5;
-}
-
 @keyframes spin {
     to {
         transform: translate(-50%, -50%) rotate(360deg);
