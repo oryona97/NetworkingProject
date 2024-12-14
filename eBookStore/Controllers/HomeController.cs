@@ -53,7 +53,6 @@ public class HomeController : Controller
 
 						if (rowAffect > 0)
 						{
-							// Registration successful, convert to UserModel if needed
 							var userModel = new UserModel
 							{
 								username = model.Username,
@@ -108,7 +107,7 @@ public class HomeController : Controller
 							{
 								string storedPassword = reader["Password"]?.ToString() ?? string.Empty;
 
-								if (model.Password == storedPassword) // Note: Consider using proper password hashing
+								if (model.Password == storedPassword) //TODO: add proper password hashing
 								{
 									// Login successful
 									var userModel = new UserModel
@@ -121,7 +120,6 @@ public class HomeController : Controller
 										id = Convert.ToInt32(reader["id"])
 									};
 
-									// If you need to show user details after login
 									return View("showLogIn", userModel);
 								}
 							}
@@ -139,7 +137,6 @@ public class HomeController : Controller
 			}
 		}
 
-		// If we got this far, something failed
 		return View("LogIn", model);
 	}
 

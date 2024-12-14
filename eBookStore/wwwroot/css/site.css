@@ -14,12 +14,12 @@
     --text-primary: #ffffff;
     --text-secondary: #a0a0a0;
     --text-muted: rgba(255, 255, 255, 0.9);
-    --text-dark: #2c3e50;  /* New dark text for main content */
+    --text-dark: #2c3e50;  
     
     /* Background colors */
     --bg-primary: #1a1a1a;
     --bg-white: #ffffff;
-    --bg-content: #f8f9fa;  /* New bright background for main content */
+    --bg-content: #f8f9fa;  
     --bg-secondary: #2c2c2c;
     --bg-overlay: rgba(255, 255, 255, 0.1);
     --bg-overlay-hover: rgba(255, 255, 255, 0.2);
