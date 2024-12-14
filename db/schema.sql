@@ -80,7 +80,8 @@ GO
 CREATE TABLE [BorrowedBooks] (
   [id] int IDENTITY(50,1) PRIMARY KEY,
   [userId] int,
-  [bookId] int
+  [bookId] int,
+  [createdAt] datetime
 )
 GO
 
@@ -191,7 +192,9 @@ CREATE TABLE [BookShoppingCart] (
   [bookId] int,
   [bookShoppingCartId] int,
   Format NVARCHAR(10) CHECK (Format IN ('epub', 'f2b', 'mobi', 'PDF')),
+  [createdAt] datetime,
   PRIMARY KEY (bookId, bookShoppingCartId)
+
 )
 GO
 

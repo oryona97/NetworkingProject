@@ -4,11 +4,14 @@ namespace eBookStore.Models;
 
 
 
-public class PersonalLibrary
+public class BorrowedBooksModel
 {   
     public int id {get; set;} 
     public int userId {get; set;}
     public int bookId { get; set; }
-    public DateTime createAt { get; set; }
+    public DateTime createdAt { get; set; }
     
 }
+
+
+  
