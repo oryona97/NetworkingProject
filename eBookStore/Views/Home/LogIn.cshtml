@@ -1,9 +1,87 @@
-@model eBookStore.Models.UserModel
+@model eBookStore.Models.ViewModels.LoginViewModel
 
-<div class="loginForm">
-    <form action="Home/LogIn" method="post">
-        Username <input class="inputUserName" name="username" type="text" value="@Model.username">@Html.ValidationMessageFor(x=>x.username)<br>
-        Password <input class="inputPassword" name="password" type="password" value="@Model.password">@Html.ValidationMessageFor(x=>x.password)<br>
-        <input type="Submit" value="Login">
-    </form>
+<div class="login-container">
+    <div class="login-card">
+        <div class="login-header">
+            <h2>Welcome Back</h2>
+            <p class="text-secondary">Sign in to continue to eBookStore</p>
+        </div>
+        
+        <form asp-controller="Home" asp-action="LogIn" method="post" class="login-form">
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+            
+            <div class="form-floating mb-4">
+                <input asp-for="Username" 
+                       class="form-control custom-input" 
+                       placeholder="Username" 
+                       autocomplete="username" />
+                <label asp-for="Username">Username</label>
+                <span asp-validation-for="Username" class="validation-message"></span>
+            </div>
+
+						<div class="form-floating mb-4">
+								<input asp-for="Password" 
+											 class="form-control custom-input" 
+											 type="password" 
+											 placeholder="Password" 
+											 autocomplete="current-password" />
+								<label asp-for="Password">Password</label>
+								<button type="button" class="password-toggle" onclick="togglePassword(this)">
+										<i class="bi bi-eye"></i>
+								</button>
+								<span asp-validation-for="Password" class="validation-message"></span>
+						</div>
+
+            <div class="form-options mb-4">
+                <a href="#" class="forgot-password">Forgot Password?</a>
+            </div>
+
+            <button type="submit" class="login-button">
+                <span>Sign In</span>
+                <div class="button-loader d-none"></div>
+            </button>
+
+            <div class="login-divider">
+                <span>OR</span>
+            </div>
+
+            <div class="social-login">
+                <button type="button" class="social-button">
+                    <i class="bi bi-google me-2"></i>
+                    <span>Continue with Google</span>
+                </button>
+            </div>
+
+            <div class="register-prompt">
+                <span>Don't have an account?</span>
+                <a asp-action="Register" class="register-link">Create one now</a>
+            </div>
+        </form>
+    </div>
 </div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function togglePassword(button) {
+            const input = button.parentElement.querySelector('input');
+            const icon = button.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            }
+        }
+
+        document.querySelector('.login-form').addEventListener('submit', function() {
+            const button = this.querySelector('.login-button');
+            const span = button.querySelector('span');
+            const loader = button.querySelector('.button-loader');
+            button.disabled = true;
+            span.classList.add('d-none');
+            loader.classList.remove('d-none');
+        });
+    </script>
+}
