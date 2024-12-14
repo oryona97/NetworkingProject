@@ -23,12 +23,14 @@ IF OBJECT_ID('dbo.GeneralRating', 'U') IS NOT NULL DROP TABLE dbo.GeneralRating;
 IF OBJECT_ID('dbo.Feedback', 'U') IS NOT NULL DROP TABLE dbo.Feedback;
 IF OBJECT_ID('dbo.Rating', 'U') IS NOT NULL DROP TABLE dbo.Rating;
 IF OBJECT_ID('dbo.HistoryPurchases', 'U') IS NOT NULL DROP TABLE dbo.HistoryPurchases;
-IF OBJECT_ID('dbo.Publisher', 'U') IS NOT NULL DROP TABLE dbo.Publisher;
-IF OBJECT_ID('dbo.Genre', 'U') IS NOT NULL DROP TABLE dbo.Genre;
 IF OBJECT_ID('dbo.BorrowedBooks', 'U') IS NOT NULL DROP TABLE dbo.BorrowedBooks;
-IF OBJECT_ID('dbo.Book', 'U') IS NOT NULL DROP TABLE dbo.Book;
 IF OBJECT_ID('dbo.PersonalLibrary', 'U') IS NOT NULL DROP TABLE dbo.PersonalLibrary;
 IF OBJECT_ID('dbo.[User]', 'U') IS NOT NULL DROP TABLE dbo.[User];
+IF OBJECT_ID('dbo.Book', 'U') IS NOT NULL DROP TABLE dbo.Book;
+IF OBJECT_ID('dbo.Genre', 'U') IS NOT NULL DROP TABLE dbo.Genre;
+IF OBJECT_ID('dbo.Publisher', 'U') IS NOT NULL DROP TABLE dbo.Publisher;
+
+
 GO
 
 -- Recreate tables with original schema
@@ -69,6 +71,7 @@ CREATE TABLE [Book] (
   [canBorrow] bit,
   [starRate] decimal(3,2),
   [createdAt] datetime
+  
 )
 GO
 
@@ -87,10 +90,10 @@ CREATE TABLE [Genre] (
 GO
 
 CREATE TABLE [Publisher] (
-  [id] int,
-  [name] nvarchar(100),
-  PRIMARY KEY (id, name),
-  [createdAt] datetime
+  [id] int PRIMARY KEY ,
+  [name] nvarchar(100) UNIQUE,
+  [createdAt] datetime,
+  
 )
 GO
 
@@ -174,19 +177,18 @@ CREATE TABLE [HistoryBookPrice] (
 GO
 
 CREATE TABLE [ShoppingCart] (
-  [userId] int PRIMARY KEY,
+  [userId] int,
   [bookId] int,
-  [createdAt] datetime
+  [createdAt] datetime,
+  PRIMARY key(userId , bookId)
 )
 GO
 
-CREATE TYPE BookFormatType AS ENUM ('epub', 'f2b', 'mobi', 'PDF')
-GO
 
 CREATE TABLE [BookShoppingCart] (
   [bookId] int,
   [bookShoppingCartId] int,
-  [format] BookFormatType,
+  Format NVARCHAR(10) CHECK (Format IN ('epub', 'f2b', 'mobi', 'PDF')),
   PRIMARY KEY (bookId, bookShoppingCartId)
 )
 GO
@@ -243,7 +245,7 @@ ALTER TABLE [ShoppingCart] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id])
 GO
 ALTER TABLE [BookShoppingCart] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id])
 GO
-ALTER TABLE [BookShoppingCart] ADD FOREIGN KEY ([bookShoppingCartId]) REFERENCES [ShoppingCart] ([bookId])
+ALTER TABLE [BookShoppingCart] ADD FOREIGN KEY ([bookShoppingCartId], [bookId]) REFERENCES [ShoppingCart] ([userId], [bookId])
 GO
 ALTER TABLE [Reciept] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id])
 GO
@@ -371,11 +373,11 @@ VALUES
 -- Shopping Cart
 INSERT INTO [ShoppingCart] ([userId], [bookId], [createdAt])
 VALUES 
-(1, 2, GETDATE()),
-(2, 3, GETDATE()),
-(3, 4, GETDATE()),
-(4, 5, GETDATE()),
-(5, 1, GETDATE());
+(1, 1, GETDATE()),
+(2, 2, GETDATE()),
+(3, 3, GETDATE()),
+(4, 4, GETDATE()),
+(5, 5, GETDATE());
 
 -- Book Shopping Cart
 INSERT INTO [BookShoppingCart] ([bookId], [bookShoppingCartId], [format])
