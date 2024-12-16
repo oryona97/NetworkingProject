@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Mvc;
 using eBookStore.Models;
 using eBookStore.Models.ViewModels;
 using Microsoft.Data.SqlClient;
-
+using eBookStore.Repository;
 namespace eBookStore.Controllers;
 
 public class HomeController : Controller
@@ -11,12 +11,14 @@ public class HomeController : Controller
 	private readonly ILogger<HomeController> _logger;
 	private readonly IConfiguration _configuration;
 	private string? connectionString;
+	BookRepository _bookRepo;
 
 	public HomeController(IConfiguration configuration, ILogger<HomeController> logger)
 	{
 		_configuration = configuration;
 		connectionString = _configuration.GetConnectionString("DefaultConnection");
 		_logger = logger;
+		_bookRepo = new BookRepository(connectionString);
 	}
 
 	// Register Actions
@@ -133,12 +135,21 @@ public class HomeController : Controller
 			catch (SqlException ex)
 			{
 				_logger.LogError(ex, "Database error during login");
-				ModelState.AddModelError("", "An error occurred during login. Please try again.");
+				ModelState.AddModelError("", "An error 1occurred during login. Please try again.");
 			}
 		}
 
 		return View("LogIn", model);
 	}
+
+	public IActionResult showBook()
+	{
+		Console.WriteLine("showBook");
+		List<BookViewModel> books = _bookRepo.getAllBooks();
+		
+		return View(books);
+	}
+	
 
 	public IActionResult Privacy()
 	{
