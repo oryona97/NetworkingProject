@@ -1,0 +1,54 @@
+@model List<eBookStore.Models.ViewModels.BookViewModel>
+
+<h1>Books List</h1>
+
+@foreach (var bookViewModel in Model)
+{
+    <h2>Book Information</h2>
+    @if (bookViewModel?.book != null)
+    {
+        <p><strong>Title:</strong> @bookViewModel.book.title</p>
+        <p><strong>Genre ID:</strong> @bookViewModel.book.genreId</p>
+        <p><strong>Publisher:</strong> @(bookViewModel.publisherModel?.name ?? "Unknown Publisher")</p>
+        <p><strong>Borrow Price:</strong> @bookViewModel.book.borrowPrice</p>
+        <p><strong>Buy Price:</strong> @bookViewModel.book.buyingPrice</p>
+    }
+    else
+    {
+        <p>No book information available.</p>
+    }
+
+    <h3>Feedback</h3>
+    @if (bookViewModel?.feedbackModel != null)
+    {
+        <p><strong>User ID:</strong> @bookViewModel.feedbackModel.userId</p>
+        <p><strong>Comment:</strong> @bookViewModel.feedbackModel.comment</p>
+        <p><strong>Feedback Date:</strong> @bookViewModel.feedbackModel.createdAt.ToString("dd-MM-yyyy")</p>
+    }
+    else
+    {
+        <p>No feedback available.</p>
+    }
+
+    <h3>Rating</h3>
+    @if (bookViewModel?.rating != null)
+    {
+        
+    }
+    else
+    {
+        <p>No Rating available.</p>
+    }
+
+     <h3>PublisherModel</h3>
+    @if (bookViewModel?.publisherModel != null)
+    {
+        <p><strong>PubId ID:</strong> @bookViewModel.publisherModel.id</p>
+        <p><strong>Name:</strong> @bookViewModel.publisherModel.name</p>
+    }
+    else
+    {
+        <p>No Rating available.</p>
+    }
+}
+
