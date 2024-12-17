@@ -2,11 +2,11 @@
 USE master;
 GO
 
-IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'eBook')
-CREATE DATABASE eBook;
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'eBookStore')
+CREATE DATABASE eBookStore;
 GO
 
-USE eBook;
+USE eBookStore;
 GO
 
 -- Drop existing tables if they exist (in reverse order of creation)

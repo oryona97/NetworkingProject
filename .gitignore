@@ -2,6 +2,9 @@
 bin/
 obj/
 
+.env
+.DS_Store
+
 # Visual Studio files
 .vs/
 *.user
