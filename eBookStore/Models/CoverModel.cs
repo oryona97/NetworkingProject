@@ -8,7 +8,7 @@ public class CoverModel
 {
 	public int id { get; set; }
 	[Required(ErrorMessage = "imgName is required")]
-	public int imgName { get; set; }
+	public string imgName { get; set; }
 
 
 	[Required(ErrorMessage = "bookId is required")]

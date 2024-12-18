@@ -6,7 +6,7 @@ namespace eBookStore.Models;
 
 public class RatingModel
 {
-	public int id { get; set; }
+	public int starRating { get; set; }
 
 	public int userId { get; set; }
 

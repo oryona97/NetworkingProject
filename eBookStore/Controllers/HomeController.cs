@@ -4,7 +4,9 @@ using eBookStore.Models;
 using eBookStore.Models.ViewModels;
 using Microsoft.Data.SqlClient;
 using eBookStore.Repository;
+using System.Text;
 namespace eBookStore.Controllers;
+
 
 public class HomeController : Controller
 {
@@ -149,6 +151,17 @@ public class HomeController : Controller
 		
 		return View(books);
 	}
+	public IActionResult showBookBySearch(string? title, int? publisherId, int? genreId, float? minPrice, float? maxPrice, DateTime? fromDate, DateTime? toDate)
+	{
+		List<BookViewModel> books = _bookRepo.SearchBooks(title, publisherId, genreId, minPrice, maxPrice, fromDate, toDate);
+		return View("showBook", books);
+	}
+
+	public IActionResult SearchForm()
+	{
+		return View("SearchBooks"); 
+	}
+
 	
 
 	public IActionResult Privacy()
