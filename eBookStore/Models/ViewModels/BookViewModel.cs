@@ -6,7 +6,11 @@ public class BookViewModel
 {
     public BookModel book { get; set;}
     public RatingModel rating { get; set;}
-    public FeedbackModel feedbackModel { get; set;}
+    public List<FeedbackModel> feedbackModel { get; set;}
     public PublisherModel publisherModel { get; set;}
-     
+    public CoverModel coverModel { get; set;}
+    public UserModel userModel { get; set;}
+    public GenreModel genreModel { get; set;}
+    
+
 }

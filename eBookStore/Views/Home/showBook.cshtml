@@ -1,54 +1,81 @@
 @model List<eBookStore.Models.ViewModels.BookViewModel>
 
-<h1>Books List</h1>
+<h1 class="text-center mb-4">Books List</h1>
 
-@foreach (var bookViewModel in Model)
+@if (Model != null && Model.Any())
 {
-    <h2>Book Information</h2>
-    @if (bookViewModel?.book != null)
+    @foreach (var bookViewModel in Model)
     {
-        <p><strong>Title:</strong> @bookViewModel.book.title</p>
-        <p><strong>Genre ID:</strong> @bookViewModel.book.genreId</p>
-        <p><strong>Publisher:</strong> @(bookViewModel.publisherModel?.name ?? "Unknown Publisher")</p>
-        <p><strong>Borrow Price:</strong> @bookViewModel.book.borrowPrice</p>
-        <p><strong>Buy Price:</strong> @bookViewModel.book.buyingPrice</p>
-    }
-    else
-    {
-        <p>No book information available.</p>
-    }
+        <div class="card mb-4 shadow-sm">
+            <div class="card-header text-white gradient-header">
+                <div class="d-flex justify-content-between align-items-center">
+                    <h3 class="m-0">
+                        <i class="bi bi-book-half me-2"></i> Book Information
+                    </h3>
+                </div>
+            </div>
+            <div class="card-body">
+                @if (bookViewModel?.book != null)
+                {
+                    <p><strong>Title:</strong> @bookViewModel.book.title</p>
+                    <p><strong>Genre ID:</strong> @bookViewModel.genreModel.name</p>
+                    <p><strong>Publisher:</strong> @(bookViewModel.publisherModel?.name ?? "Unknown Publisher")</p>
+                    <p><strong>Borrow Price:</strong> @bookViewModel.book.borrowPrice</p>
+                    <p><strong>Buy Price:</strong> @bookViewModel.book.buyingPrice</p>
+                }
+                else
+                {
+                    <p class="text-danger">No book information available.</p>
+                }
 
-    <h3>Feedback</h3>
-    @if (bookViewModel?.feedbackModel != null)
-    {
-        <p><strong>User ID:</strong> @bookViewModel.feedbackModel.userId</p>
-        <p><strong>Comment:</strong> @bookViewModel.feedbackModel.comment</p>
-        <p><strong>Feedback Date:</strong> @bookViewModel.feedbackModel.createdAt.ToString("dd-MM-yyyy")</p>
-    }
-    else
-    {
-        <p>No feedback available.</p>
-    }
+                <h4>Feedback</h4>
+                    @if (bookViewModel?.feedbackModel != null && bookViewModel.feedbackModel.Any())
+                    {
+                        @foreach (var feedback in bookViewModel.feedbackModel)
+                        {
+                            <p><strong>Username:</strong> @feedback.userModel.username</p>
+                            <p><strong>Comment:</strong> @feedback.comment</p>
+                            <p><strong>Feedback Date:</strong> @feedback.createdAt.ToString("dd-MM-yyyy")</p>
+                        }
+                    }
+                    else
+                    {
+                        <p>No feedback available.</p>
+                    }
 
-    <h3>Rating</h3>
-    @if (bookViewModel?.rating != null)
-    {
-        
-    }
-    else
-    {
-        <p>No Rating available.</p>
-    }
+                <h4>Rating</h4>
+                @if (bookViewModel?.rating != null)
+                {
+                    <p><strong>Star Rating:</strong> @bookViewModel.rating.starRating</p>
+                    <p><strong>Rating Date:</strong> @bookViewModel.rating.createdAt.ToString("dd-MM-yyyy")</p>
+                }
+                else
+                {
+                    <p>No Rating available.</p>
+                }
 
-     <h3>PublisherModel</h3>
-    @if (bookViewModel?.publisherModel != null)
-    {
-        <p><strong>PubId ID:</strong> @bookViewModel.publisherModel.id</p>
-        <p><strong>Name:</strong> @bookViewModel.publisherModel.name</p>
-    }
-    else
-    {
-        <p>No Rating available.</p>
+
+            </div>
+        </div>
     }
 }
+else
+{
+    
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
+    <div class="alert alert-info text-center mt-5 animate__animated animate__bounceIn" role="alert"
+         style="border: 2px solid #0dcaf0; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); border-radius: 15px;">
+        <h4 class="alert-heading animate__animated animate__flash animate__delay-2s" style="color: #0dcaf0;">
+            <i class="bi bi-emoji-laughing" style="font-size: 30px;"></i> Oops!
+        </h4>
+        <p class="animate__animated animate__fadeIn animate__delay-1s" style="font-size: 18px; color: #495057;">
+            No results found. Try searching for something else!
+        </p>
+       <div class="text-center mt-3">
+        <a asp-action="SearchForm" asp-controller="Home" class="btn btn-outline-info animate__animated animate__pulse animate__infinite">
+            Back to Search
+        </a>
+    </div>
+    </div>
+}
