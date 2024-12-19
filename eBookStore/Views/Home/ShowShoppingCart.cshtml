@@ -1,0 +1,30 @@
+@model eBookStore.Models.ShoppingCartModel
+
+<h2>Your Shopping Cart</h2>
+
+@if (Model != null && Model.Books.Any())
+{
+    <table class="table">
+        <thead>
+            <tr>
+                <th>Book ID</th>
+                <th>Format</th>
+                <th>Date Added</th>
+            </tr>
+        </thead>
+        <tbody>
+            @foreach (var book in Model.Books)
+            {
+                <tr>
+                    <td>@book.bookId</td>
+                    <td>@book.format</td>
+                    <td>@book.createdAt.ToString("yyyy-MM-dd HH:mm")</td>
+                </tr>
+            }
+        </tbody>
+    </table>
+}
+else
+{
+    <p>Your shopping cart is empty.</p>
+}
