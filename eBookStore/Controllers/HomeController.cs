@@ -14,6 +14,7 @@ public class HomeController : Controller
 	private readonly IConfiguration _configuration;
 	private string? connectionString;
 	BookRepository _bookRepo;
+	private ShoppingCartRepository shoppingCartRepo;
 
 	public HomeController(IConfiguration configuration, ILogger<HomeController> logger)
 	{
@@ -21,6 +22,7 @@ public class HomeController : Controller
 		connectionString = _configuration.GetConnectionString("DefaultConnection");
 		_logger = logger;
 		_bookRepo = new BookRepository(connectionString);
+		shoppingCartRepo = new ShoppingCartRepository(connectionString);
 	}
 
 	// Register Actions
@@ -113,6 +115,7 @@ public class HomeController : Controller
 
 								if (model.Password == storedPassword) //TODO: add proper password hashing
 								{
+									HttpContext.Session.SetInt32("userId", Convert.ToInt32(reader["id"]));
 									// Login successful
 									var userModel = new UserModel
 									{
@@ -161,7 +164,30 @@ public class HomeController : Controller
 	{
 		return View("SearchBooks"); 
 	}
-
+	public IActionResult ShowShoppingCart()
+	{
+		try
+		{
+			int? nullableUserId = HttpContext.Session.GetInt32("userId"); 
+			Console.WriteLine("the user id is: ");
+			Console.WriteLine(nullableUserId.Value);
+			if (nullableUserId.HasValue)
+			{
+				Console.WriteLine("Ok ");
+				ShoppingCartModel cart = shoppingCartRepo.GetShoppingCart(nullableUserId.Value);
+				return View("ShowShoppingCart", cart);
+			}
+			else
+			{
+				return RedirectToAction("showLogIn");
+			}
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Failed to load shopping cart");
+			return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+		}
+	}
 	
 
 	public IActionResult Privacy()
