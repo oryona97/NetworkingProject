@@ -1,0 +1,62 @@
+@model eBookStore.Models.UserModel
+@{
+    ViewData["Title"] = "User-Profile";
+}
+
+<div class="Profile-container mt-4">
+
+    <div class="row align-items-center">
+
+        <div class="Profile-Header ">
+            <h1>Account Overview</h1>
+        </div>
+
+        
+        <div class="UserPhoto container">
+            <h3>My Photo</h3>
+            <img src="\images\defaultUserImage.jpg" class="img-fluid rounded-circle border border-dark" alt="User Photo">
+
+
+        </div>
+
+
+
+        <div class="position-relative mt-4">
+
+            <!-- User Info Table -->
+            <table class="table table-borderless w-75 mx-auto me-1">
+                <tbody>
+                    <tr>
+                        <th scope="row" class="text-end">Username:</th>
+                        <td>@Model.username</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-end">Password:</th>
+                        <td>@Model.password</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-end">Email:</th>
+                        <td>@Model.email</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-end">First Name:</th>
+                        <td>@Model.firstName</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-end">Last Name:</th>
+                        <td>@Model.lastName</td>
+                    </tr>
+                    <tr>
+                        <th scope="row" class="text-end">Phone Number:</th>
+                        <td>@Model.phoneNumber</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+    </div>
+    
+
+
+</div>
