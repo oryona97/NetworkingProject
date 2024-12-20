@@ -3,9 +3,9 @@
     ViewData["Title"] = "User-Profile";
 }
 
-<div class="Profile-container mt-4">
+<div class="Profile-container">
 
-    <div class="row align-items-center">
+    <div class="row">
 
         <div class="Profile-Header ">
             <h1>Account Overview</h1>
@@ -13,33 +13,33 @@
 
 
 
-        <div class="position-relative mt-4 col-3">
+        <div class="position-relative mt-5 col-5">
 
             <!-- User Info Table -->
-            <table class="table table-borderless w-75 mx-auto me-1">
+            <table class="table table-borderless w-100 mx-auto me-1">
                 <tbody>
                     <tr>
-                        <th scope="row" class="text-end">Username:</th>
+                        <td scope="row" class="text-start fw-bold ps-3">Username:</td>
                         <td>@Model.username</td>
                     </tr>
                     <tr>
-                        <th scope="row" class="text-end">Password:</th>
+                        <td scope="row" class="text-start fw-bold ps-3">Password:</td>
                         <td>@Model.password</td>
                     </tr>
                     <tr>
-                        <th scope="row" class="text-end">Email:</th>
+                        <td scope="row" class="text-start fw-bold ps-3">Email:</td>
                         <td>@Model.email</td>
                     </tr>
                     <tr>
-                        <th scope="row" class="text-end">First Name:</th>
+                        <td scope="row" class="text-start fw-bold ps-3">First Name:</td>
                         <td>@Model.firstName</td>
                     </tr>
                     <tr>
-                        <th scope="row" class="text-end">Last Name:</th>
+                        <td scope="row" class="text-start fw-bold ps-3">Last Name:</td>
                         <td>@Model.lastName</td>
                     </tr>
                     <tr>
-                        <th scope="row" class="text-end">Phone Number:</th>
+                        <td scope="row" class="text-start fw-bold ps-3">Phone Number:</td>
                         <td>@Model.phoneNumber</td>
                     </tr>
                 </tbody>
@@ -47,9 +47,18 @@
 
         </div>
 
-         <div class="UserPhoto container col-6 me-1">
-            <img src="\images\defaultUserImage.jpg" class="img-fluid rounded-circle border border-dark" alt="User Photo">
 
+        <div class="UserPhoto container position-relative col-7 row text-end mt-5">
+
+            <div class="col-6 ">
+                <img src="\images\defaultUserImage.jpg" class="img-fluid rounded-circle border border-dark w-50" alt="User Photo">
+            </div>
+            
+            <div class="col-6 text-start">
+                <p>Change password</p>
+                <p>Change Email</p>
+                <p>Change Phone Number</p>
+            </div>
 
         </div>
 
