@@ -188,6 +188,24 @@ public class HomeController : Controller
 			return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 		}
 	}
+
+	public IActionResult Profile()
+	{
+		var user = new UserModel
+							{
+								username = "test.username",
+								password = "test.Password",
+								email = "test.Email",
+								firstName = "test.FirstName",
+								lastName = "test.LastName",
+								phoneNumber = "test.PhoneNumber"
+							};
+		
+
+		return View(user);
+	}
+
+
 	
 
 	public IActionResult Privacy()

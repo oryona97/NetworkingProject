@@ -38,3 +38,5 @@ app.MapControllerRoute(
 	pattern: "{controller=Home}/{action=showLogIn}/{id?}");
 
 app.Run();
+
+app.UseStaticFiles();
