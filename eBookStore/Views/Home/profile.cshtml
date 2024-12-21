@@ -3,55 +3,62 @@
     ViewData["Title"] = "User-Profile";
 }
 
-<div class="Profile-container mt-4">
+<div class="Profile-container">
 
-    <div class="row align-items-center">
+    <div class="row mt-5">
 
         <div class="Profile-Header ">
             <h1>Account Overview</h1>
         </div>
 
-        
-        <div class="UserPhoto container">
-            <h3>My Photo</h3>
-            <img src="\images\defaultUserImage.jpg" class="img-fluid rounded-circle border border-dark" alt="User Photo">
 
 
-        </div>
-
-
-
-        <div class="position-relative mt-4">
+        <div class="position-relative mt-5 col-5">
 
             <!-- User Info Table -->
-            <table class="table table-borderless w-75 mx-auto me-1">
+            <table class="table table-borderless w-100 mx-auto me-1">
                 <tbody>
                     <tr>
-                        <th scope="row" class="text-end">Username:</th>
+                        <td scope="row" class="text-start fw-bold ps-3">Username:</td>
                         <td>@Model.username</td>
                     </tr>
                     <tr>
-                        <th scope="row" class="text-end">Password:</th>
+                        <td scope="row" class="text-start fw-bold ps-3">Password:</td>
                         <td>@Model.password</td>
                     </tr>
                     <tr>
-                        <th scope="row" class="text-end">Email:</th>
+                        <td scope="row" class="text-start fw-bold ps-3">Email:</td>
                         <td>@Model.email</td>
                     </tr>
                     <tr>
-                        <th scope="row" class="text-end">First Name:</th>
+                        <td scope="row" class="text-start fw-bold ps-3">First Name:</td>
                         <td>@Model.firstName</td>
                     </tr>
                     <tr>
-                        <th scope="row" class="text-end">Last Name:</th>
+                        <td scope="row" class="text-start fw-bold ps-3">Last Name:</td>
                         <td>@Model.lastName</td>
                     </tr>
                     <tr>
-                        <th scope="row" class="text-end">Phone Number:</th>
+                        <td scope="row" class="text-start fw-bold ps-3">Phone Number:</td>
                         <td>@Model.phoneNumber</td>
                     </tr>
                 </tbody>
             </table>
+
+        </div>
+
+
+        <div class="UserPhoto container position-relative col-7 row text-end mt-5">
+
+            <div class="col-6 ">
+                <img src="\images\defaultUserImage.jpg" class="img-fluid rounded-circle border border-dark w-50" alt="User Photo">
+            </div>
+            
+            <div class="col-6 text-start d-flex flex-column gap-3">
+                <button class="row  btn btn-primary w-50">Change password</button>
+                <button class="row  btn btn-primary w-50">Change Email</button>
+                <button class="row  btn btn-primary w-50">Change Phone Number</button>
+            </div>
 
         </div>
 
