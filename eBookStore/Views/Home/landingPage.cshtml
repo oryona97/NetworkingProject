@@ -39,9 +39,9 @@
                 <h4 class="header row" style="height: 20%;">Special Sales:</h4>
 
                 <!-- This contains all the books covers of the best sellers  -->
-                <div class="Books-container row" style="height: 80%;">
+                <div class="Books-container row" style="height: 80%; justify-content: center;">
                     
-                    <div class="Book1 col-5 d-flex" style="border: 2px solid;">
+                    <div class="Book1 col-4 d-flex " style="border: 2px solid; align-items: center;">
 
                         <div class="cover-container col">
                             <img class="img-fluid" src="\images\bookCovers\default_book_cover.jpg" alt="Description of the image">
@@ -63,7 +63,7 @@
 
                     </div>
 
-                    <div class="Book2 col-5 d-flex ms-1" style="border: 2px solid">
+                    <div class="Book2 col-4 d-flex ms-1" style="border: 2px solid; align-items: center;">
 
                         <div class="cover-container col">
                             <img class="img-fluid" src="\images\bookCovers\default_book_cover.jpg" alt="Description of the image">
@@ -92,6 +92,11 @@
             </div>
 
 
+            <div id="Books-Roller" class="Books-Roller row" style="height: 160px;">
+                <div class="roller-track row" style=""></div>
+
+            </div>
+
             <div class="Categorys row bg-primary mb-1 " style="height: 120px;">
 
                 <button class="Action-but col-1" style="height: 60px; font-size: calc(0.5 * 1em);">Action</button>
@@ -111,5 +116,39 @@
     <script>
         // Additional interactivity or scripts can be added here
         console.log("Home page loaded.");
+
+
+        // Array of image URLs (replace with your own or fetch from API)
+        const imageUrls = [
+            'https://via.placeholder.com/120x160?text=Book+1',
+            'https://via.placeholder.com/120x160?text=Book+2',
+            'https://via.placeholder.com/120x160?text=Book+3',
+            'https://via.placeholder.com/120x160?text=Book+3',
+            'https://via.placeholder.com/120x160?text=Book+3',
+            'https://via.placeholder.com/120x160?text=Book+3',
+            'https://via.placeholder.com/120x160?text=Book+3',
+            'https://via.placeholder.com/120x160?text=Book+3'
+        ];
+
+        // Select the roller track container
+        const rollerTrack = document.querySelector('.roller-track');
+
+        // Function to dynamically populate images
+        function populateRoller(images) {
+            images.forEach((url) => {
+                const img = document.createElement('img');
+                img.src = '\\images\\bookCovers\\default_book_cover.jpg';
+                img.alt = 'Book Image';
+                img.className = 'img-fluid';
+                rollerTrack.appendChild(img);
+            });
+
+        }
+
+        // Populate the roller dynamically
+        populateRoller(imageUrls);
+
+
+
     </script>
 }
