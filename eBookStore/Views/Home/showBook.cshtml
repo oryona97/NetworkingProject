@@ -27,6 +27,17 @@
                 {
                     <p class="text-danger">No book information available.</p>
                 }
+                @if(bookViewModel?.authorModel != null)
+                {
+                    <h4>Authors</h4>
+                    
+                    <p><strong>Author Name:</strong> @bookViewModel.authorModel.name</p>
+                    
+                }
+                else
+                {
+                    <p class="text-danger">No author information available.</p>
+                }
 
                 <h4>Feedback</h4>
                     @if (bookViewModel?.feedbackModel != null && bookViewModel.feedbackModel.Any())

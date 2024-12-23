@@ -11,6 +11,6 @@ public class BookViewModel
     public CoverModel coverModel { get; set;}
     public UserModel userModel { get; set;}
     public GenreModel genreModel { get; set;}
-    
+    public AuthorModel authorModel { get; set;}
 
 }
