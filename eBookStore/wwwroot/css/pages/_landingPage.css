@@ -71,11 +71,13 @@
 
 .Details-container{
   font-size: samller;
+  color: white;
 }
 
 .bookProp-container{
   font-size: samller;
   margin-left: 15px;
+  color: white;
 }
 
 .header-one{
@@ -88,7 +90,7 @@
 
 .category-buttom{
   height: 60px; font-size: calc(0.5 * 1em);
-  margin-left: 2px;
+  margin-left: 4px;
   margin-top: 3px;
   border-radius: 7px;
   font-size: calc(0.6 * 1em);
@@ -96,7 +98,17 @@
   border: none;
   color: white;
   font-size: 14px;
-  background-color: rgb(34, 34, 163);
+  background-color: rgb(59, 59, 208);
+}
+
+.category-buttom:hover{
+  transform: scale(1.05);
+}
+
+.Book-continer{
+  background-color: rgba(108, 108, 108, 0.2);
+  margin-inline: 5px;
+  border-radius: 10px;
 }
 
 
