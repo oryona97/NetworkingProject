@@ -2,18 +2,19 @@
     ViewData["Title"] = "Home";
 }
 
-<div class="home-container vh-100">
+<div class="home-container">
+    
     <div class="home-card h-100">
         
 
-        <div class="Header-SearchBar row position-relative">
+        <div class="Header-SearchBar row ms-1">
             
-            <div class="home-header col-8">
-                <h2 class="gradient-text">Welcome to eBookStore</h2>
-                <p class="text-muted">Your one-stop shop for the best eBooks!</p>
+            <div class="home-header col-7 mt-4">
+                <h2 class="header-one">Welcome to eBookStore</h2>
+                <p class="sub-header ms-2">Your one-stop shop for the best eBooks!</p>
             </div>
 
-            <div class="SearchBar col-4">
+            <div class="SearchBar col-4 mt-4">
                 <form class="d-flex" role="search">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
                     <button class="btn btn-outline-primary" type="submit">Search</button>
@@ -25,61 +26,93 @@
 
 
 
-        <div class="home-content  d-flex row h-100">
+        <div class="home-content ">
 
-
-            <div class="2-onSale-books row bg-success">
-                <p>Explore a wide range of books and manage your library without breaking the bank.</p>
-
-            </div>
 
             
+            
 
-            <div class="BestSellers row bg-secondary d-flex">
-                <h4 class="header row" style="height: 20%;">Special Sales:</h4>
+            <div class="specialSales row d-flex ms-3" style="padding-top: 30%;">
+
+                <h2 class="header-one row">Special Sales:</h4>
+
+
+                <div class="sub-header row ">
+                    <p>Explore a wide range of books and manage your library without breaking the bank.</p>
+                </div>
+
+
 
                 <!-- This contains all the books covers of the best sellers  -->
-                <div class="Books-container row" style="height: 80%; justify-content: center;">
+                <div class="Books-container row" style="height:190px; width: auto; justify-content: center;">
                     
-                    <div class="Book1 col-4 d-flex " style="border: 2px solid; align-items: center;">
+                    <div class="Book1 col-5 d-flex " style=" align-items: center;">
 
                         <div class="cover-container col">
                             <img class="img-fluid" src="\images\bookCovers\default_book_cover.jpg" alt="Description of the image">
 
                         </div>
 
-                        <div class="info-container col ms-2">
-                            <p>Title: Doda</p>
-                            <p>Author: Shel</p>
-                            <p>Publisher: Dor</p>
+                        <div class="info-container col ms-2 d-flex">
+                            <div class="Details-container col ">
+                                    <p>Title:</p>
+                                    <p>Author:</p>
+                                    <p>Publisher:</p>
+                                    <p>Genre:</p>
+                                    <p>Age limit:</p>
+
+                            </div>
+
+                            <div class="bookProp-container col">
+                                    <p>Doda</p>
+                                    <p>Shel</p>
+                                    <p>Dor</p>
+                                    <p>Horror</p>
+                                    <p>18</p>
+
+                            </div>
 
                         </div>
 
-                        <div class="Buttoms-container col ms-3 mt-3">
-                            <button class="buy-buttom row" style="height: 30px; width: 70px; font-size: calc(0.5 * 1em);">Buy-Now</button>
-                            <button class="borrow-buttom row" style="height: 30px; width: 70px; font-size: calc(0.5 * 1em);">Borrow</button>
+                        <div class="Buttoms-container col ms-3 text-center">
+                            <button class="buy-buttom">Buy-Now</button>
+                            <button class="borrow-buttom">Borrow</button>
 
                         </div>
 
                     </div>
 
-                    <div class="Book2 col-4 d-flex ms-1" style="border: 2px solid; align-items: center;">
+                    <div class="Book2 col-5 d-flex ms-1" style="align-items: center;">
 
                         <div class="cover-container col">
                             <img class="img-fluid" src="\images\bookCovers\default_book_cover.jpg" alt="Description of the image">
 
                         </div>
 
-                        <div class="info-container col ms-2">
-                            <p>Title: Doda</p>
-                            <p>Author: Shel</p>
-                            <p>Publisher: Maxwell</p>
+                        <div class="info-container col ms-2 d-flex">
+                            <div class="Details-container col">
+                                    <p>Title:</p>
+                                    <p>Author:</p>
+                                    <p>Publisher:</p>
+                                    <p>Genre:</p>
+                                    <p>Age limit:</p>
+
+                            </div>
+
+                            <div class="bookProp-container col">
+                                    <p>Doda</p>
+                                    <p>Shel</p>
+                                    <p>Maxwell</p>
+                                    <p>Action</p>
+                                    <p>18</p>
+
+                            </div>
 
                         </div>
 
-                        <div class="Buttoms-container col ms-3 mt-3">
-                            <button class="buy-buttom row" style="height: 30px; width: 70px; font-size: calc(0.5 * 1em);">Buy-Now</button>
-                            <button class="borrow-buttom row" style="height: 30px; width: 70px; font-size: calc(0.5 * 1em);">Borrow</button>
+                        <div class="Buttoms-container col ms-3 mt-3 text-center">
+                            <button class="buy-buttom">Buy-Now</button>
+                            <button class="borrow-buttom">Borrow</button>
 
                         </div>
 
@@ -92,16 +125,35 @@
             </div>
 
 
-            <div id="Books-Roller" class="Books-Roller row" style="height: 160px;">
-                <div class="roller-track row" style=""></div>
+            <div class="Header-one row mt-5 ms-2" style="align-items:flex-end;">
+
+                <h2 style="">Explore Our Gallery:</h2>
 
             </div>
 
-            <div class="Categorys row bg-primary mb-1 " style="height: 120px;">
+            <div id="BooksCarousel" class="carousel slide mt-4 position-relative" data-bs-ride="carousel" data-bs-interval="false">
+                <div class="carousel-inner">
+                    <!-- Dynamic content will be inserted here -->
+                </div>
+                <!-- Carousel controls -->
+                <button class="carousel-control-prev" role="button" data-bs-target="#BooksCarousel" data-bs-slide="prev">
+                    <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Previous</span>
+                </button>
 
-                <button class="Action-but col-1" style="height: 60px; font-size: calc(0.5 * 1em);">Action</button>
-                <button class="Drama-but col-1" style="height: 60px; font-size: calc(0.5 * 1em);">Drama</button>
-                <button class="Romance-but col-1" style="height: 60px; font-size: calc(0.5 * 1em);">Romance</button>
+                <button class="carousel-control-next" role="button" data-bs-target="#BooksCarousel" data-bs-slide="next">
+                    <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                    <span class="visually-hidden">Next</span>
+                </button>
+
+            </div>
+
+
+            <div class="Categorys row ms-1" style="height: 120px;">
+
+                <button class="category-buttom col-1 ">Action</button>
+                <button class="category-buttom col-1 ">Drama</button>
+                <button class="category-buttom col-1 ">Romance</button>
 
 
 
@@ -127,27 +179,71 @@
             'https://via.placeholder.com/120x160?text=Book+3',
             'https://via.placeholder.com/120x160?text=Book+3',
             'https://via.placeholder.com/120x160?text=Book+3',
+            'https://via.placeholder.com/120x160?text=Book+3',
             'https://via.placeholder.com/120x160?text=Book+3'
+            
+            
         ];
 
+       
+
         // Select the roller track container
-        const rollerTrack = document.querySelector('.roller-track');
+        const carouselInner = document.querySelector('.carousel-inner');
 
         // Function to dynamically populate images
-        function populateRoller(images) {
-            images.forEach((url) => {
-                const img = document.createElement('img');
-                img.src = '\\images\\bookCovers\\default_book_cover.jpg';
-                img.alt = 'Book Image';
-                img.className = 'img-fluid';
-                rollerTrack.appendChild(img);
-            });
+       function populateCarousel(images, imagesPerItem = 4) {
+            let chunk = []; // Temporary array to hold a chunk of images
 
+            images.forEach((url, index) => {
+                // Push the current image URL into the chunk
+                chunk.push('\\images\\bookCovers\\default_book_cover.jpg');
+
+                // When the chunk reaches the desired number of images (or it's the last image)
+                if (chunk.length === imagesPerItem || index === images.length - 1) {
+                    // Create a carousel item
+                    const carouselItem = document.createElement('div');
+                    carouselItem.className = `carousel-item ${carouselInner.children.length === 0 ? ' active' : ''}`;
+                    
+
+                    // Create a container for the row of images
+                    const row = document.createElement('div');
+                    row.className = 'row';
+
+                    // Add each image in the chunk to the row
+                    chunk.forEach((chunkUrl) => {
+                        const col = document.createElement('div');
+                        col.className = 'col-2'; // Adjust based on how many images per row 
+                        col.style = 'padding-inline: 0px;';
+
+                        const img = document.createElement('img');
+                        img.src = '\\images\\bookCovers\\default_book_cover.jpg';
+                        img.alt = 'Book Image';
+                        img.className = 'img-fluid'; // Ensure responsiveness
+                        
+
+                        col.appendChild(img);
+                        row.appendChild(col);
+                    });
+
+                    // Append the row to the carousel item
+                    carouselItem.appendChild(row);
+
+                    // Append the carousel item to the carousel inner container
+                    carouselInner.appendChild(carouselItem);
+
+                    // Clear the chunk
+                    chunk = [];
+                }
+            });
         }
 
-        // Populate the roller dynamically
-        populateRoller(imageUrls);
+    
 
+        //img.src = '\\images\\bookCovers\\default_book_cover.jpg';
+
+
+        // Populate the carousel dynamically
+        populateCarousel(imageUrls,6);
 
 
     </script>

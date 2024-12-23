@@ -1,38 +1,116 @@
-.Books-Roller {
-    height: 160px;
-    position: relative;
-    background-color: #f5f5f5; /* Optional background */
-}
 
-/* Ensure the roller track scrolls horizontally and does not wrap */
-.Books-Roller {
-    overflow-x: scroll; /* Enable horizontal scrolling */
-    overflow-y: hidden; /* Prevent vertical scrolling */
-    white-space: nowrap; /* Prevent wrapping of child elements */
-}
-
-.roller-track {
-    display: flex;
-    gap: 20px; /* Space between images */
-}
-
-.roller-track img {
-    height: 120px;
-    width: auto;
-    border-radius: 5px; /* Optional rounded corners */
-    flex-shrink: 0;
+.home-container{
+  background: var(--bg-primary);
+  border-radius: 30px;
 }
 
 
 
+.carousel-inner{
+    overflow: hidden;
+}
+
+
+.carousel-item{
+  background-color: rgba(0, 0, 0, 0.2);
+
+  
+}
+
+.carousel-control-prev{
+  background-color: black;
+  width: 30px;
+  border-radius: 110px;
+}
+
+.carousel-control-next{
+  background-color: black; 
+  width: 30px;
+  border-radius: 110px;
+}
 
 
 
-@keyframes roll {
+.buy-buttom{
+  height: 30px; width: 70px; 
+  font-size: calc(0.6 * 1em);
+  align-items: center;
+  background-color: gold;
+  border-radius: 10px;
+  font-weight: bold;
+  border: none;
+  font-size: 12px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer; /* Pointer cursor */
+}
+
+.buy-buttom:hover{
+  transform: scale(1.05); /* Slightly enlarge the button */
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+}
+
+.borrow-buttom{
+  margin-top: 7px;
+  height: 30px; 
+  width: 70px;
+  font-size: calc(0.6 * 1em);
+  background-color: gold;
+  border-radius: 10px;
+  font-weight: bold;
+  border: none;
+  font-size: 12px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer; /* Pointer cursor */
+}
+
+.borrow-buttom:hover{
+  transform: scale(1.05);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+}
+
+
+.Details-container{
+  font-size: samller;
+}
+
+.bookProp-container{
+  font-size: samller;
+  margin-left: 15px;
+}
+
+.header-one{
+  color: white;
+}
+
+.sub-header{
+  color: white;
+}
+
+.category-buttom{
+  height: 60px; font-size: calc(0.5 * 1em);
+  margin-left: 2px;
+  margin-top: 3px;
+  border-radius: 7px;
+  font-size: calc(0.6 * 1em);
+  font-weight: bold;
+  border: none;
+  color: white;
+  font-size: 14px;
+  background-color: rgb(34, 34, 163);
+}
+
+
+
+
+
+
+  
+  /* Optional: Add animations for better transitions */
+  @keyframes fadeIn {
     from {
-        transform: translateX(0);
+      opacity: 0;
     }
     to {
-        transform: translateX(-100%);
+      opacity: 1;
     }
-}
+  }
