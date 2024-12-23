@@ -15,6 +15,12 @@ public class BookRepository
 		connectionString = _connectionString;
 	}
 
+	//this func to add bookModelView to the database and update all table that related to it
+	public void AddBookViewModel()
+	{
+	}
+	
+	//this func to search for books
     public List<BookViewModel> SearchBooks(
     string? title = null,
     int? publisherId = null,
@@ -136,6 +142,8 @@ public class BookRepository
         return bookViewModelList;
     }
 
+
+	//this func to get all books
     public List<BookViewModel> getAllBooks()
     {
         var bookViewModelList = new List<BookViewModel>();
@@ -209,6 +217,78 @@ public class BookRepository
         return bookViewModelList;
     }
 
+	//this func to get book by id
+	public BookViewModel getBookById(int Id)
+	{
+		try
+		{
+			using (var connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "SELECT * FROM [Book] WHERE id = @Id";
+
+				using (var command = new SqlCommand(query, connection))
+				{
+					command.Parameters.AddWithValue("@Id", Id);
+
+					using (var reader = command.ExecuteReader())
+					{
+						if (reader.Read())
+						{
+							var book = new BookModel
+							{
+								id = Convert.ToInt32(reader["id"]),
+								publisherId = Convert.ToInt32(reader["publisherId"]),
+								genreId = Convert.ToInt32(reader["genreId"]),
+								amountOfCopies = Convert.ToInt32(reader["amountOfCopies"]),
+								title = reader["title"]?.ToString(),
+								borrowPrice = Convert.ToSingle(reader["borrowPrice"]),
+								buyingPrice = Convert.ToSingle(reader["buyingPrice"]),
+								pubDate = Convert.ToDateTime(reader["pubDate"]),
+								ageLimit = Convert.ToInt32(reader["ageLimit"]),
+								priceHistory = Convert.ToInt32(reader["priceHistory"]),
+								onSale = Convert.ToBoolean(reader["onSale"]),
+								canBorrow = Convert.ToBoolean(reader["canBorrow"]),
+								starRate = Convert.ToSingle(reader["starRate"]),
+								createdAt = Convert.ToDateTime(reader["createdAt"])
+							};
+							
+							var bookViewModel = new BookViewModel
+							{
+								book = book,
+								publisherModel = this.PubModelByBookId(book.publisherId),
+								feedbackModel = this.getfeedbackModelById(book.id),
+								rating = this.getRatingModel(book.id),
+								coverModel = this.getCoverModelById(book.id),
+								genreModel =this.getGenreModelById(book.genreId),
+							};
+							
+							if (bookViewModel.feedbackModel != null)
+							{
+								foreach (var feedback in bookViewModel.feedbackModel)
+								{
+									var user = this.getUserModelById(feedback.userId);
+									if (user != null)
+									{
+										feedback.userModel = user;
+									}
+								}
+							}
+							return bookViewModel;
+						}
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error fetching book: {ex.Message}");
+		}
+
+		return null; 
+	}
+
+	//this func to get book by title
 	public GenreModel getGenreModelById(int Id)
 	{
 		try
@@ -244,6 +324,8 @@ public class BookRepository
 
 		return null; 
 	}
+
+	//this func to get user by id
 	public UserModel getUserModelById(int Id)
 	{
 		
@@ -287,6 +369,8 @@ public class BookRepository
 
 		return null; 
 	}
+
+	//this func to get cover by id
     public CoverModel getCoverModelById(int Id)
     {
         try
@@ -326,6 +410,8 @@ public class BookRepository
 
 		return null; 
     }
+
+	//this func to get rating by id
     public RatingModel getRatingModel(int Id)
     {
         try
@@ -365,6 +451,8 @@ public class BookRepository
 
 		return null; 
     }
+
+	//this func to get feedback by id
     public List <FeedbackModel> getfeedbackModelById(int Id)
     {
 		var fList = new List<FeedbackModel>();
@@ -406,6 +494,8 @@ public class BookRepository
 
 		return null; 
     }
+
+	//this func to get publisher by id
 	public PublisherModel PubModelByBookId(int Id)
 	{
 		try
@@ -446,5 +536,46 @@ public class BookRepository
 
 		return null; 
 	}
+	
 
+	//this func to get all publishers
+	public List<PublisherModel> getAllPublishers (int pubId)
+	{
+		var pubList = new List<PublisherModel>();
+		try
+		{
+			using (SqlConnection connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "SELECT * FROM Publisher WHERE id = @pubId;";
+
+				using (SqlCommand command = new SqlCommand(query, connection))
+				{
+					command.Parameters.AddWithValue("@pubId", pubId);
+
+					using (SqlDataReader reader = command.ExecuteReader())
+					{
+						while(reader.Read())
+						{
+							var publisherModel = new PublisherModel
+							{
+								id = Convert.ToInt32(reader["id"]),
+								name = reader["name"]?.ToString(),
+								createdAt = Convert.ToDateTime(reader["createdAt"])
+							};
+							pubList.Add(publisherModel);
+						}
+							return pubList;
+					}
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+		    Console.WriteLine("Database error during fetching Publisher ${ex}");
+			throw; 
+		}
+
+		return pubList; 
+	}
 }

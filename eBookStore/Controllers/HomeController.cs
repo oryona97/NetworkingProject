@@ -164,30 +164,7 @@ public class HomeController : Controller
 	{
 		return View("SearchBooks"); 
 	}
-	public IActionResult ShowShoppingCart()
-	{
-		try
-		{
-			int? nullableUserId = HttpContext.Session.GetInt32("userId"); 
-			Console.WriteLine("the user id is: ");
-			Console.WriteLine(nullableUserId.Value);
-			if (nullableUserId.HasValue)
-			{
-				Console.WriteLine("Ok ");
-				ShoppingCartModel cart = shoppingCartRepo.GetShoppingCart(nullableUserId.Value);
-				return View("ShowShoppingCart", cart);
-			}
-			else
-			{
-				return RedirectToAction("showLogIn");
-			}
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Failed to load shopping cart");
-			return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
-		}
-	}
+	
 	
 
 	public IActionResult Privacy()

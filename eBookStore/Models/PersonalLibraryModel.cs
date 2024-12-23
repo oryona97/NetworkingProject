@@ -6,7 +6,7 @@ namespace eBookStore.Models;
 
 public class PersonalLibraryModel
 {
-	public int id { get; set; }
+	
 
 	[Required(ErrorMessage = "userId  is required")]
 	public int userId { get; set; }
