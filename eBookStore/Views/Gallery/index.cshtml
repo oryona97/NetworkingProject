@@ -51,13 +51,13 @@
     </div>
 
 
-    <div class="flex-column w-100">
+    <div class="flex-column w-100 ms-4">
 
         <hr>
             <h2>Welcome to the book gallery:</h2>
         <hr>
 
-        <div class="Book-Cards row">
+        <div class="Book-Cards row" style="row-gap: 10px;">
 
             <div class="card" style="width: 18rem;">
                 <img src="\images\bookCovers\default_book_cover.jpg" class="card-img-top" alt="...">
@@ -115,6 +115,7 @@
         const bookBTN = document.createElement('a');
         bookBTN.href = '#';
         bookBTN.className ='btn btn-primary';
+        bookBTN.textContent = 'Buy-Now';
         BookBody.appendChild(bookBTN);
 
         BookCards.appendChild(Book);
