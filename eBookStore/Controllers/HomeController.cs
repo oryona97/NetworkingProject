@@ -205,6 +205,12 @@ public class HomeController : Controller
 		return View(user);
 	}
 
+	public IActionResult landingPage()
+	{
+
+		return View();
+	}
+
 
 	
 
