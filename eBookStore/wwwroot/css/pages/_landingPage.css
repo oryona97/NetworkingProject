@@ -1,10 +1,8 @@
 
 .home-container{
   color: black;
-
+  background-color: rgba(170, 170, 170, 0.11);
 }
-
-
 
 
 
@@ -34,7 +32,8 @@
 
 
 .buy-buttom{
-  height: 30px; width: 70px; 
+  height: 30px; 
+  width: 70px; 
   font-size: calc(0.6 * 1em);
   align-items: center;
   background-color: gold;
@@ -44,6 +43,7 @@
   font-size: 12px;
   box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
   cursor: pointer; /* Pointer cursor */
+  
 }
 
 .buy-buttom:hover{
@@ -88,10 +88,6 @@
   margin-bottom: 0;
 }
 
-
-.sub-header{
-  
-}
 
 .category-buttom{
   height: 60px; font-size: calc(0.5 * 1em);
