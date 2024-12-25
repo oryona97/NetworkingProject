@@ -1,0 +1,109 @@
+@model List<eBookStore.Models.ViewModels.BookViewModel>
+@{
+    ViewData["Title"] = "My Library";
+}
+
+<div class="container mt-4">
+    <!-- Search Form -->
+    <div class="card mb-4">
+        <div class="card-header">
+            <h5 class="mb-0">Search My Library</h5>
+        </div>
+        <div class="card-body">
+            <form asp-action="Search" method="get" class="row g-3">
+                <div class="col-md-3">
+                    <label class="form-label">Title</label>
+                    <input type="text" name="title" class="form-control" placeholder="Search by title">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">Genre</label>
+                    <select name="genreId" class="form-select">
+                        <option value="">All Genres</option>
+                        <!-- Add genres dynamically -->
+                    </select>
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">From Date</label>
+                    <input type="date" name="fromDate" class="form-control">
+                </div>
+                <div class="col-md-3">
+                    <label class="form-label">To Date</label>
+                    <input type="date" name="toDate" class="form-control">
+                </div>
+                <div class="col-12">
+                    <button type="submit" class="btn btn-primary">Search</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
+    @if (TempData["Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    <!-- Books Grid -->
+    <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+        @foreach (var book in Model)
+        {
+            <div class="col">
+                <div class="card h-100">
+                    @if (book.coverModel != null)
+                    {
+                        <img src="@book.coverModel.imgName" class="card-img-top" alt="@book.book.title">
+                    }
+                    else
+                    {
+                        <img src="/images/default-book-cover.jpg" class="card-img-top" alt="Default Cover">
+                    }
+                    <div class="card-body">
+                        <h5 class="card-title">@book.book.title</h5>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                Publisher: @(book.publisherModel?.name ?? "Unknown")
+                            </small>
+                        </p>
+                        <p class="card-text">
+                            <small class="text-muted">
+                                Genre: @(book.genreModel?.name ?? "Unknown")
+                            </small>
+                        </p>
+                        <div class="d-flex justify-content-between align-items-center">
+                            <div class="btn-group">
+                                <a asp-action="Details" asp-route-id="@book.book.id" 
+                                   class="btn btn-sm btn-outline-primary">View Details</a>
+                                <form asp-action="RemoveBook" asp-route-id="@book.book.id" 
+                                      method="post" style="display: inline;">
+                                    <button type="submit" class="btn btn-sm btn-outline-danger" 
+                                            onclick="return confirm('Are you sure you want to remove this book from your library?')">
+                                        Remove
+                                    </button>
+                                </form>
+                            </div>
+                            <small class="text-muted">@book.book.pubDate.ToString("MMM yyyy")</small>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        }
+    </div>
+</div>
+
+@section Scripts {
+    <script>
+        setTimeout(function() {
+            $('.alert').alert('close');
+        }, 5000);
+    </script>
+}
