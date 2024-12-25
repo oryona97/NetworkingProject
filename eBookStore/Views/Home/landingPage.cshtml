@@ -17,7 +17,7 @@
             <div class="SearchBar col-4 mt-4">
                 <form class="d-flex" role="search">
                     <input class="form-control me-2" type="search" placeholder="Search" aria-label="Search">
-                    <button class="btn btn-outline-primary" type="submit">Search</button>
+                    <button class="search-btn btn-outline-primary" type="submit">Search</button>
                 </form>
 
             </div>
@@ -46,7 +46,7 @@
                 <!-- This contains all the books covers of the best sellers  -->
                 <div class="Books-container row" style="height:190px; width: auto; justify-content: center;">
                     
-                    <div class="Book-continer col-5 d-flex " style=" align-items: center;">
+                    <div class="Book-container col-5 d-flex " style=" align-items: center;">
 
                         <div class="cover-container col">
                             <img class="img-fluid" src="\images\bookCovers\default_book_cover.jpg" alt="Description of the image">
@@ -82,7 +82,7 @@
 
                     </div>
 
-                    <div class="Book-continer col-5 d-flex" style="align-items: center; justify-content: center;">
+                    <div class="Book-container col-5 d-flex" style="align-items: center; justify-content: center;">
 
                         <div class="cover-container col">
                             <img class="img-fluid" src="\images\bookCovers\default_book_cover.jpg" alt="Description of the image">
@@ -90,8 +90,8 @@
                         </div>
 
                         <div class="info-container col ms-2 d-flex">
-                            <div class="Details-container col">
-                                    <p>Title:</p>
+                            <div class="Details-container col gap-1">
+                                    <p >Title:</p>
                                     <p>Author:</p>
                                     <p>Publisher:</p>
                                     <p>Genre:</p>
@@ -127,7 +127,7 @@
 
             <div class="Header-one row mt-5 ms-2" style="align-items:flex-end;">
 
-                <h2 style="">Explore Our Gallery:</h2>
+                <h2>Explore Our Gallery:</h2>
 
             </div>
 
@@ -189,6 +189,7 @@
 
         // Select the roller track container
         const carouselInner = document.querySelector('.carousel-inner');
+
 
         // Function to dynamically populate images
        function populateCarousel(images, imagesPerItem = 4) {
