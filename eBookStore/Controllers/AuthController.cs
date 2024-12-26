@@ -10,17 +10,22 @@ namespace eBookStore.Controllers;
 
 public class AuthController : Controller
 {
-	private readonly ILogger<HomeController> _logger;
+	private readonly ILogger<AuthController> _logger;
 	private readonly IConfiguration _configuration;
 	private string? _connectionString;
 	private UserRepository _userRepo;
 
-	public AuthController(IConfiguration configuration, ILogger<HomeController> logger)
+	public AuthController(IConfiguration configuration, ILogger<AuthController> logger)
 	{
 		_configuration = configuration;
 		_connectionString = _configuration.GetConnectionString("DefaultConnection");
 		_logger = logger;
-		_userRepo = new UserRepository(_connectionString);
+
+		// Create a logger for UserRepository using ILoggerFactory
+		var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+		var userRepoLogger = loggerFactory.CreateLogger<UserRepository>();
+
+		_userRepo = new UserRepository(_connectionString, userRepoLogger);
 	}
 
 	// Register Actions

@@ -1,0 +1,146 @@
+@using System.Security.Claims
+@model eBookStore.Models.ViewModels.BookViewModel
+@{
+    ViewData["Title"] = "Book Details";
+    var currentUserId = int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int userId) ? userId : 0;
+    var userOwnsBook = Model.ownerUserIds.Contains(currentUserId);
+}
+
+<div class="mb-4">
+    <h5 class="text-secondary mb-3 d-flex align-items-center gap-2">
+        <i class="bi bi-chat-square-text"></i>
+        Reviews
+    </h5>
+
+    @* Check if user has bought or borrowed the book *@
+    @if (userOwnsBook)
+    {
+        <div class="card border-0 bg-white shadow-sm mb-4">
+            <div class="card-body">
+                <h6 class="mb-3 text-primary">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Add Your Review
+                </h6>
+                <form asp-action="AddReview" asp-route-bookId="@Model.book.id" method="post">
+                    <div class="form-group">
+                        <textarea 
+                            name="comment" 
+                            class="form-control"
+                            rows="4"
+                            required
+                            minlength="10"
+                            maxlength="500"
+                            placeholder="Share your thoughts about this book..."
+                        ></textarea>
+                        <div class="form-text text-muted">
+                            <small>10-500 characters</small>
+                        </div>
+                    </div>
+                    <div class="text-end mt-3">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send me-2"></i>
+                            Post Review
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    }
+
+    @if (Model.feedbackModel != null && Model.feedbackModel.Any())
+    {
+        <div class="reviews-container" style="max-height: 400px; overflow-y: auto;">
+            @foreach (var feedback in Model.feedbackModel)
+            {
+                var isReviewOwner = currentUserId == (feedback.userModel?.id ?? 0);
+                var isVerifiedOwner = Model.ownerUserIds.Contains(feedback.userModel?.id ?? 0);
+
+                <div class="card border-0 bg-light mb-3 review-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-person-circle text-secondary"></i>
+                                <h6 class="card-subtitle mb-0">@feedback.userModel?.username</h6>
+                                @if (isVerifiedOwner)
+                                {
+                                    <span class="badge bg-primary text-white">Verified Owner</span>
+                                }
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-clock me-1"></i>
+                                    @feedback.createdAt.ToString("MMM dd, yyyy")
+                                </small>
+                                @* Show delete button only if the review is by the current user *@
+                                @if (User.Identity.IsAuthenticated && isReviewOwner)
+                                {
+                                    <form asp-action="DeleteReview" 
+                                          asp-route-bookId="@Model.book.id" 
+                                          asp-route-reviewId="@feedback.id" 
+                                          method="post" 
+                                          class="delete-review-form d-inline">
+                                        <button type="submit" 
+                                                class="btn btn-link text-danger p-0 delete-review-btn"
+                                                onclick="return confirm('Are you sure you want to delete your review?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                        <p class="card-text mb-0">@feedback.comment</p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-4 bg-light rounded-3">
+            <i class="bi bi-chat-square text-muted display-4"></i>
+            <p class="text-muted mt-2">No reviews yet. @(userOwnsBook ? "Be the first to share your thoughts!" : "")</p>
+        </div>
+    }
+</div>
+
+@section Styles {
+    <style>
+        .delete-review-btn {
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .delete-review-btn:hover {
+            opacity: 1;
+        }
+
+        .review-card {
+            transition: background-color 0.2s;
+        }
+
+        .review-card:hover {
+            background-color: #f8f9fa !important;
+        }
+    </style>
+}
+
+@section Scripts {
+    <script>
+        $(document).ready(function() {
+            // Handle review submission
+            $('form[asp-action="AddReview"]').on('submit', function() {
+                const comment = $(this).find('textarea[name="comment"]').val().trim();
+                if (comment.length < 10) {
+                    alert('Please enter at least 10 characters in your review.');
+                    return false;
+                }
+                return true;
+            });
+
+            // Smooth scroll to newly added review
+            if (window.location.hash === '#latest-review') {
+                $('.reviews-container').scrollTop($('.reviews-container')[0].scrollHeight);
+            }
+        });
+    </script>
+}
