@@ -1,5 +1,6 @@
 using Microsoft.Data.SqlClient;
 using eBookStore.Models;
+using eBookStore.Models.ViewModels;
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using System.Text;
@@ -13,48 +14,122 @@ public class ShoppingCartRepository
 	{
 		connectionString = _connectionString;
 	}
-    public ShoppingCartModel GetShoppingCart(int userId)
+
+    //this func get id of user and return the shopping cart of that user 
+    public ShoppingCartViewModel GetShoppingCart(int _userId)
     {
-        var shoppingCart = new ShoppingCartModel
-        {
-            userId = userId,
-            createdAt = DateTime.Now,
-            Books = new List<BookShoppingCartModel>()
-        };
-
-        using (var connection = new SqlConnection(connectionString))
-        {
-            connection.Open();
-
-            string query = @"
-                SELECT sc.userId, sc.createdAt AS CartCreatedAt, 
-                bsc.bookId, bsc.bookShoppingCartId, bsc.Format, bsc.createdAt AS BookAddedAt
-                FROM ShoppingCart sc
-                JOIN BookShoppingCart bsc ON sc.bookId = bsc.bookId
-                WHERE sc.userId = @userId";
-
-            using (var command = new SqlCommand(query, connection))
+        var shoppingCartViewModel = new ShoppingCartViewModel();
+        shoppingCartViewModel.shoppingCart = new ShoppingCartModel();
+        try{
+            using (SqlConnection connection = new SqlConnection(connectionString))
             {
-                command.Parameters.AddWithValue("@userId", userId);
-
-                using (var reader = command.ExecuteReader())
+                connection.Open();
+                string query = "SELECT * from BookShoppingCart WHERE userId = @userId";
+                using (SqlCommand command = new SqlCommand(query, connection))
                 {
-                    while (reader.Read())
+                    command.Parameters.AddWithValue("@userId", _userId);
+                    using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        var book = new BookShoppingCartModel
+                        
+                        while (reader.Read())
                         {
-                            bookId = Convert.ToInt32(reader["bookId"]),
-                            bookShoppingCartId = Convert.ToInt32(reader["bookShoppingCartId"]),
-                            format = reader["Format"].ToString(),
-                            
-                        };
+                            shoppingCartViewModel.shoppingCart.userId = _userId;
+                            var bookShoppingCart = new BookShoppingCartModel
+                            {
+                                bookId = Convert.ToInt32(reader["BookId"]),
+                                userId = Convert.ToInt32(reader["userId"]),
+                                format = reader["format"].ToString(),
+                                createdAt = reader["createdAt"] != DBNull.Value 
+                                ? Convert.ToDateTime(reader["createdAt"]) 
+                                : DateTime.MinValue
+                                
+                            };
+                            shoppingCartViewModel.shoppingCart.Books.Add(bookShoppingCart);
+                        }
 
-                        shoppingCart.Books.Add(book);
+
                     }
                 }
             }
+        }catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching shopping cart: {ex.Message}");
         }
-
-        return shoppingCart;
+        
+        
+        return shoppingCartViewModel;
     }
+
+    //this func add book to shopping cart
+   public void AddToShoppingCart(int userId, int bookId, string format )
+    {
+        try
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+
+
+                string query = "INSERT INTO BookShoppingCart ( bookId,userId, format, createdAt) VALUES (@bookId ,@userId ,@format ,@createdAt)";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@bookId", bookId);
+                    command.Parameters.AddWithValue("@userId", userId);
+                    command.Parameters.AddWithValue("@format", format);
+                    command.Parameters.AddWithValue("@createdAt", DateTime.Now);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error adding to shopping cart: {ex.Message}");
+        }
+    }
+
+    //this func remove one book from shopping cart
+    public void RemoveOneFromShoppingCart(int userId, int bookId)
+    {
+        try
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = "DELETE FROM BookShoppingCart WHERE userId = @userId AND bookId = @bookId";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@userId", userId);
+                    command.Parameters.AddWithValue("@bookId", bookId);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error removing from shopping cart: {ex.Message}");
+        }
+    }
+
+    //this func remove all books from shopping cart
+    public void RemoveAllFromShoppingCart(int userId)
+    {
+        try
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = "DELETE FROM BookShoppingCart WHERE userId = @userId";
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+                    command.Parameters.AddWithValue("@userId", userId);
+                    command.ExecuteNonQuery();
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error removing from shopping cart: {ex.Message}");
+        }
+    }
+
 }

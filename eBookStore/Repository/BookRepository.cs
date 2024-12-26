@@ -15,16 +15,148 @@ public class BookRepository
 		connectionString = _connectionString;
 	}
 
-	public List<BookViewModel> SearchBooks(
-	string? title = null,
-	int? publisherId = null,
-	int? genreId = null,
-	float? minPrice = null,
-	float? maxPrice = null,
-	DateTime? fromDate = null,
-	DateTime? toDate = null)
+	//this funct to Add bookViewModel to the database
+	public void AddBookViewModel(BookViewModel bookViewModel)
 	{
-		var bookViewModelList = new List<BookViewModel>();
+		// Add book
+		AddBook(bookViewModel.book);
+		AddCoverModel(bookViewModel.coverModel);
+		AddPublisherModel(bookViewModel.publisherModel);
+		AddGenreModel(bookViewModel.genreModel);
+
+	}
+	
+
+	//this func to add bookModelto the database 
+	public void AddBook(BookModel book)
+	{
+		try
+		{
+			using (var connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "INSERT INTO Book (id,publisherId, genreId, amountOfCopies, title, borrowPrice, buyingPrice, pubDate, ageLimit, priceHistory, onSale, canBorrow, starRate, createdAt) VALUES (@id,@publisherId, @genreId, @amountOfCopies, @title, @borrowPrice, @buyingPrice, @pubDate, @ageLimit, @priceHistory, @onSale, @canBorrow, @starRate, @createdAt);";
+
+				using (var command = new SqlCommand(query, connection))
+				{
+					command.Parameters.AddWithValue("@publisherId", book.publisherId);
+					command.Parameters.AddWithValue("@genreId", book.genreId);
+					command.Parameters.AddWithValue("@amountOfCopies", book.amountOfCopies);
+					command.Parameters.AddWithValue("@title", book.title);
+					command.Parameters.AddWithValue("@borrowPrice", book.borrowPrice);
+					command.Parameters.AddWithValue("@buyingPrice", book.buyingPrice);
+					command.Parameters.AddWithValue("@pubDate", book.pubDate);
+					command.Parameters.AddWithValue("@ageLimit", book.ageLimit);
+					command.Parameters.AddWithValue("@priceHistory", book.priceHistory);
+					command.Parameters.AddWithValue("@onSale", book.onSale);
+					command.Parameters.AddWithValue("@canBorrow", book.canBorrow);
+					command.Parameters.AddWithValue("@starRate", book.starRate);
+					command.Parameters.AddWithValue("@createdAt", book.createdAt);
+
+					command.ExecuteNonQuery();
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+			Console.WriteLine("Database error during adding book ${ex}");
+			throw;
+		}
+	}
+	
+	//this func to add PublisherModel to the database
+	public void AddPublisherModel(PublisherModel pubModel)
+	{
+		try
+		{
+			using (var connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "INSERT INTO Publisher (id, name, createdAt) VALUES (@id, @name, @createdAt);";
+
+				using (var command = new SqlCommand(query, connection))
+				{
+					
+					command.Parameters.AddWithValue("@name", pubModel.name);
+					command.Parameters.AddWithValue("@createdAt", pubModel.createdAt);
+
+					command.ExecuteNonQuery();
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+			Console.WriteLine("Database error during adding publisher ${ex}");
+			throw;
+		}
+	}
+
+	//this AddGenreModel to the database
+	public void AddGenreModel(GenreModel genreModel)
+	{
+		try
+		{
+			using (var connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "INSERT INTO Genre (id, name, createdAt) VALUES (@id, @name, @createdAt);";
+
+				using (var command = new SqlCommand(query, connection))
+				{
+					command.Parameters.AddWithValue("@name", genreModel.name);
+					command.Parameters.AddWithValue("@createdAt", genreModel.createdAt);
+
+					command.ExecuteNonQuery();
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+			Console.WriteLine("Database error during adding genre ${ex}");
+			throw;
+		}
+	}
+	
+
+	//this func to add coverModel to the database
+	public void AddCoverModel(CoverModel coverModel)
+	{
+		try
+		{
+			using (var connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "INSERT INTO Cover (id, bookId, imgName, createdAt) VALUES (@id, @bookId, @imgName, @createdAt);";
+
+				using (var command = new SqlCommand(query, connection))
+				{
+					
+					command.Parameters.AddWithValue("@bookId", coverModel.bookId);
+					command.Parameters.AddWithValue("@imgName", coverModel.imgName);
+					command.Parameters.AddWithValue("@createdAt", coverModel.createdAt);
+
+					command.ExecuteNonQuery();
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+			Console.WriteLine("Database error during adding cover ${ex}");
+			throw;
+		}
+	}
+	
+	//this func to search for books
+    public List<BookViewModel> SearchBooks(
+    string? title = null,
+    int? publisherId = null,
+    int? genreId = null,
+    float? minPrice = null,
+    float? maxPrice = null,
+    DateTime? fromDate = null,
+    DateTime? toDate = null)    
+    {
+        var bookViewModelList = new List<BookViewModel>();
 
 		try
 		{
@@ -136,9 +268,11 @@ public class BookRepository
 		return bookViewModelList;
 	}
 
-	public List<BookViewModel> getAllBooks()
-	{
-		var bookViewModelList = new List<BookViewModel>();
+
+	//this func to get all books
+    public List<BookViewModel> getAllBooks()
+    {
+        var bookViewModelList = new List<BookViewModel>();
 
 		try
 		{
@@ -195,6 +329,16 @@ public class BookRepository
 									}
 								}
 							}
+
+							
+								
+							bookViewModel.authorModel = this.getAuthorModelById(bookViewModel.book.id);
+									
+							
+							
+
+
+
 							bookViewModelList.Add(bookViewModel);
 						}
 					}
@@ -209,6 +353,78 @@ public class BookRepository
 		return bookViewModelList;
 	}
 
+	//this func to get book by id
+	public BookViewModel getBookById(int Id)
+	{
+		try
+		{
+			using (var connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "SELECT * FROM [Book] WHERE id = @Id";
+
+				using (var command = new SqlCommand(query, connection))
+				{
+					command.Parameters.AddWithValue("@Id", Id);
+
+					using (var reader = command.ExecuteReader())
+					{
+						if (reader.Read())
+						{
+							var book = new BookModel
+							{
+								id = Convert.ToInt32(reader["id"]),
+								publisherId = Convert.ToInt32(reader["publisherId"]),
+								genreId = Convert.ToInt32(reader["genreId"]),
+								amountOfCopies = Convert.ToInt32(reader["amountOfCopies"]),
+								title = reader["title"]?.ToString(),
+								borrowPrice = Convert.ToSingle(reader["borrowPrice"]),
+								buyingPrice = Convert.ToSingle(reader["buyingPrice"]),
+								pubDate = Convert.ToDateTime(reader["pubDate"]),
+								ageLimit = Convert.ToInt32(reader["ageLimit"]),
+								priceHistory = Convert.ToInt32(reader["priceHistory"]),
+								onSale = Convert.ToBoolean(reader["onSale"]),
+								canBorrow = Convert.ToBoolean(reader["canBorrow"]),
+								starRate = Convert.ToSingle(reader["starRate"]),
+								createdAt = Convert.ToDateTime(reader["createdAt"])
+							};
+							
+							var bookViewModel = new BookViewModel
+							{
+								book = book,
+								publisherModel = this.PubModelByBookId(book.publisherId),
+								feedbackModel = this.getfeedbackModelById(book.id),
+								rating = this.getRatingModel(book.id),
+								coverModel = this.getCoverModelById(book.id),
+								genreModel =this.getGenreModelById(book.genreId),
+							};
+							
+							if (bookViewModel.feedbackModel != null)
+							{
+								foreach (var feedback in bookViewModel.feedbackModel)
+								{
+									var user = this.getUserModelById(feedback.userId);
+									if (user != null)
+									{
+										feedback.userModel = user;
+									}
+								}
+							}
+							return bookViewModel;
+						}
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error fetching book: {ex.Message}");
+		}
+
+		return null; 
+	}
+
+	//this func to get book by title
 	public GenreModel getGenreModelById(int Id)
 	{
 		try
@@ -244,6 +460,8 @@ public class BookRepository
 
 		return null;
 	}
+
+	//this func to get user by id
 	public UserModel getUserModelById(int Id)
 	{
 
@@ -287,9 +505,11 @@ public class BookRepository
 
 		return null;
 	}
-	public CoverModel getCoverModelById(int Id)
-	{
-		try
+
+	//this func to get cover by id
+    public CoverModel getCoverModelById(int Id)
+    {
+        try
 		{
 			using (SqlConnection connection = new SqlConnection(connectionString))
 			{
@@ -324,11 +544,13 @@ public class BookRepository
 			throw;
 		}
 
-		return null;
-	}
-	public RatingModel getRatingModel(int Id)
-	{
-		try
+		return null; 
+    }
+
+	//this func to get rating by id
+    public RatingModel getRatingModel(int Id)
+    {
+        try
 		{
 			using (SqlConnection connection = new SqlConnection(connectionString))
 			{
@@ -363,10 +585,12 @@ public class BookRepository
 			throw;
 		}
 
-		return null;
-	}
-	public List<FeedbackModel> getfeedbackModelById(int Id)
-	{
+		return null; 
+    }
+
+	//this func to get feedback by id
+    public List <FeedbackModel> getfeedbackModelById(int Id)
+    {
 		var fList = new List<FeedbackModel>();
 		try
 		{
@@ -404,8 +628,10 @@ public class BookRepository
 			throw;
 		}
 
-		return null;
-	}
+		return null; 
+    }
+
+	//this func to get publisher by id
 	public PublisherModel PubModelByBookId(int Id)
 	{
 		try
@@ -446,5 +672,93 @@ public class BookRepository
 
 		return null;
 	}
+	
+
+	//this func to get all publishers
+	public List<PublisherModel> getAllPublishers (int pubId)
+	{
+		var pubList = new List<PublisherModel>();
+		try
+		{
+			using (SqlConnection connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "SELECT * FROM Publisher WHERE id = @pubId;";
+
+				using (SqlCommand command = new SqlCommand(query, connection))
+				{
+					command.Parameters.AddWithValue("@pubId", pubId);
+
+					using (SqlDataReader reader = command.ExecuteReader())
+					{
+						while(reader.Read())
+						{
+							var publisherModel = new PublisherModel
+							{
+								id = Convert.ToInt32(reader["id"]),
+								name = reader["name"]?.ToString(),
+								createdAt = Convert.ToDateTime(reader["createdAt"])
+							};
+							pubList.Add(publisherModel);
+						}
+							return pubList;
+					}
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+		    Console.WriteLine("Database error during fetching Publisher ${ex}");
+			throw; 
+		}
+
+		return pubList; 
+	}
+
+	//this func to get Aothers by id
+
+	public AuthorModel getAuthorModelById(int bookId)
+	{
+		try
+		{
+			using (SqlConnection connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "SELECT * FROM Auther WHERE bookId = @Id;";
+
+				using (SqlCommand command = new SqlCommand(query, connection))
+				{
+					
+					command.Parameters.AddWithValue("@Id", bookId);
+
+					using (SqlDataReader reader = command.ExecuteReader())
+					{
+						if (reader.Read())
+						{
+							
+							var authorModel = new AuthorModel
+							{
+								id = Convert.ToInt32(reader["id"]),
+								bookId = Convert.ToInt32(reader["bookId"]),
+								name = reader["name"]?.ToString(),
+								createdAt = Convert.ToDateTime(reader["createdAt"])
+							};
+
+							return authorModel;
+						}
+					}
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+		    Console.WriteLine("Database error during fetching Author ${ex}");
+			throw; 
+		}
+
+		return null; 
+	}
+
+
 
 }

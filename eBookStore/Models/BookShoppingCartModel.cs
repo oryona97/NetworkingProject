@@ -10,8 +10,8 @@ public class BookShoppingCartModel
 	[Required(ErrorMessage = "bookId is required")]
 	public int bookId { get; set; }
 
-	[Required(ErrorMessage = "bookId is required")]
-	public int bookShoppingCartId { get; set; }
+	[Required(ErrorMessage = "userId is required")]
+	public int userId { get; set; }
 
 	[Required(ErrorMessage = "format is required")]
 	public string? format { get; set; }

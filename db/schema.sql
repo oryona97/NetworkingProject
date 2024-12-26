@@ -2,12 +2,13 @@
 USE master;
 GO
 
-IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'eBookStore')
-CREATE DATABASE eBookStore;
+IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'eBook')
+CREATE DATABASE eBook;
 GO
 
-USE eBookStore;
+USE eBook;
 GO
+
 
 -- Drop existing tables if they exist (in reverse order of creation)
 IF OBJECT_ID('dbo.Reciept', 'U') IS NOT NULL DROP TABLE dbo.Reciept;
@@ -50,10 +51,9 @@ CREATE TABLE [User] (
 GO
 
 CREATE TABLE [PersonalLibrary] (
-  [id] int IDENTITY(50,1),
   [userId] int,
   [bookId] int,
-  PRIMARY KEY (id, userId, bookId),
+  PRIMARY KEY (userId),
   [createdAt] datetime
 )
 GO
@@ -181,19 +181,18 @@ GO
 
 CREATE TABLE [ShoppingCart] (
   [userId] int,
-  [bookId] int,
   [createdAt] datetime,
-  PRIMARY key(userId , bookId)
+  PRIMARY key(userId )
 )
 GO
 
 
 CREATE TABLE [BookShoppingCart] (
   [bookId] int,
-  [bookShoppingCartId] int,
+  [userId] int,
   Format NVARCHAR(10) CHECK (Format IN ('epub', 'f2b', 'mobi', 'PDF')),
   [createdAt] datetime,
-  PRIMARY KEY (bookId, bookShoppingCartId)
+  PRIMARY KEY (bookId, userId)
 
 )
 GO
@@ -250,7 +249,7 @@ ALTER TABLE [ShoppingCart] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id])
 GO
 ALTER TABLE [BookShoppingCart] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id])
 GO
-ALTER TABLE [BookShoppingCart] ADD FOREIGN KEY ([bookShoppingCartId], [bookId]) REFERENCES [ShoppingCart] ([userId], [bookId])
+ALTER TABLE [BookShoppingCart] ADD FOREIGN KEY ([userId]) REFERENCES [ShoppingCart] ([userId])
 GO
 ALTER TABLE [Reciept] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id])
 GO
@@ -331,15 +330,16 @@ SET IDENTITY_INSERT [Cover] OFF;
 
 -- Personal Library
 
-SET IDENTITY_INSERT [PersonalLibrary] ON;
-INSERT INTO [PersonalLibrary] ([id], [userId], [bookId], [createdAt])
+
+INSERT INTO [PersonalLibrary] ([userId], [bookId], [createdAt])
 VALUES 
-(1, 1, 1, GETDATE()),
-(2, 2, 2, GETDATE()),
-(3, 3, 3, GETDATE()),
-(4, 4, 4, GETDATE()),
-(5, 5, 5, GETDATE());
-SET IDENTITY_INSERT [PersonalLibrary] OFF;
+( 1, 1, GETDATE()),
+( 2, 2, GETDATE()),
+( 3, 3, GETDATE()),
+( 4, 4, GETDATE()),
+( 5, 5, GETDATE());
+
+
 -- Borrowed Books
 SET IDENTITY_INSERT [BorrowedBooks] ON;
 INSERT INTO [BorrowedBooks] ([id], [userId], [bookId])
@@ -405,16 +405,16 @@ VALUES
 SET IDENTITY_INSERT [HistoryBookPrice] OFF;
 
 -- Shopping Cart
-INSERT INTO [ShoppingCart] ([userId], [bookId], [createdAt])
+INSERT INTO [ShoppingCart] ([userId],  [createdAt])
 VALUES 
-(1, 1, GETDATE()),
-(2, 2, GETDATE()),
-(3, 3, GETDATE()),
-(4, 4, GETDATE()),
-(5, 5, GETDATE());
+(1,  GETDATE()),
+(2,  GETDATE()),
+(3,  GETDATE()),
+(4,  GETDATE()),
+(5,  GETDATE());
 
 -- Book Shopping Cart
-INSERT INTO [BookShoppingCart] ([bookId], [bookShoppingCartId], [format])
+INSERT INTO [BookShoppingCart] ([bookId], [userId], [format])
 VALUES 
 (1, 1, 'epub'),
 (2, 2, 'PDF'),
