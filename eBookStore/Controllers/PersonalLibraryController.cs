@@ -5,6 +5,9 @@ using eBookStore.Models.ViewModels;
 using eBookStore.Repository;
 using Microsoft.Extensions.Logging;
 using Microsoft.Extensions.Logging.Abstractions;
+using System.Security.Claims;
+using eBookStore.Models;
+using Microsoft.Data.SqlClient;
 
 namespace eBookStore.Controllers;
 
@@ -12,6 +15,7 @@ public class PersonalLibraryController : Controller
 {
 	private readonly ILogger<PersonalLibraryController> _logger;
 	private readonly PersonalLibraryRepository _libraryRepo;
+	private string? _connectionString;
 
 	public PersonalLibraryController(
 		IConfiguration configuration,
@@ -19,9 +23,9 @@ public class PersonalLibraryController : Controller
 		ILoggerFactory loggerFactory)
 	{
 		_logger = logger ?? throw new ArgumentNullException(nameof(logger));
-		var connectionString = configuration.GetConnectionString("DefaultConnection");
+		_connectionString = configuration.GetConnectionString("DefaultConnection");
 		var repoLogger = loggerFactory.CreateLogger<PersonalLibraryRepository>();
-		_libraryRepo = new PersonalLibraryRepository(connectionString, repoLogger);
+		_libraryRepo = new PersonalLibraryRepository(_connectionString, repoLogger);
 	}
 
 	// GET: PersonalLibrary
@@ -188,5 +192,78 @@ public class PersonalLibraryController : Controller
 	public IActionResult Error()
 	{
 		return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+	}
+
+	[HttpPost]
+	public async Task<IActionResult> AddReview(int bookId, string comment)
+	{
+		try
+		{
+			int? userId = HttpContext.Session.GetInt32("userId");
+			if (!userId.HasValue)
+			{
+				TempData["Error"] = "You need to be logged in to add a review. Please log in to continue.";
+				TempData["ReturnUrl"] = $"/PersonalLibrary/Details/{bookId}";
+				return RedirectToAction("Login", "Auth");
+			}
+
+			// Validate comment length
+			if (string.IsNullOrWhiteSpace(comment) || comment.Length < 10 || comment.Length > 500)
+			{
+				TempData["Error"] = "Review must be between 10 and 500 characters.";
+				return RedirectToAction("Details", new { id = bookId });
+			}
+
+			// Verify user owns the book
+			var userBooks = _libraryRepo.GetUserBooks(userId.Value);
+			if (!userBooks.Any(ub => ub.book.id == bookId))
+			{
+				TempData["Error"] = "You can only review books in your library.";
+				return RedirectToAction("Details", new { id = bookId });
+			}
+
+			await _libraryRepo.AddReviewAsync(bookId, userId.Value, comment);
+			TempData["Success"] = "Your review has been added successfully.";
+
+			return RedirectToAction("Details", new { id = bookId, anchor = "latest-review" });
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error adding review for book ID: {BookId}", bookId);
+			TempData["Error"] = "We couldn't add your review at this time. Please try again later.";
+			return RedirectToAction("Details", new { id = bookId });
+		}
+	}
+
+	[HttpPost]
+	public async Task<IActionResult> DeleteReview(int bookId, int reviewId)
+	{
+		try
+		{
+			int? userId = HttpContext.Session.GetInt32("userId");
+			if (!userId.HasValue)
+			{
+				TempData["Error"] = "You need to be logged in to delete a review.";
+				return RedirectToAction("Login", "Auth");
+			}
+
+			var success = await _libraryRepo.DeleteReviewAsync(reviewId, userId.Value);
+			if (success)
+			{
+				TempData["Success"] = "Your review has been deleted successfully.";
+			}
+			else
+			{
+				TempData["Error"] = "You don't have permission to delete this review.";
+			}
+
+			return RedirectToAction("Details", new { id = bookId });
+		}
+		catch (Exception ex)
+		{
+			_logger.LogError(ex, "Error deleting review ID: {ReviewId} for book ID: {BookId}", reviewId, bookId);
+			TempData["Error"] = "We couldn't delete your review at this time. Please try again later.";
+			return RedirectToAction("Details", new { id = bookId });
+		}
 	}
 }

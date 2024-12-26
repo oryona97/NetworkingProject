@@ -1,129 +1,132 @@
+using eBookStore.Models;
 using eBookStore.Models.ViewModels;
 using Microsoft.Data.SqlClient;
-using eBookStore.Models;
-using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Logging;
+using System.Data;
 
-namespace eBookStore.Repository;
-
-public class UserRepository
+namespace eBookStore.Repository
 {
-	string? _connectionString;
-
-	public UserRepository(string? connectionString)
+	public class UserRepository
 	{
-		_connectionString = connectionString;
-	}
+		private readonly string _connectionString;
+		private readonly ILogger<UserRepository> _logger;
 
-	public List<UserModel>? GetAll()
-	{
-		List<UserModel> users = new List<UserModel>();
-		try
+		public UserRepository(string connectionString, ILogger<UserRepository> logger)
 		{
-			using (SqlConnection connection = new SqlConnection(_connectionString))
+			_connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
+			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
+		}
+
+		public async Task<List<UserModel>> GetAllAsync()
+		{
+			var users = new List<UserModel>();
+			try
 			{
-				connection.Open();
-				string query = "SELECT * FROM [User];";
+				using var connection = new SqlConnection(_connectionString);
+				await connection.OpenAsync();
 
-				using (SqlCommand command = new SqlCommand(query, connection))
+				const string query = @"
+                    SELECT id, Username, Email, FirstName, LastName, PhoneNumber 
+                    FROM [User];";
+
+				using var command = new SqlCommand(query, connection);
+				using var reader = await command.ExecuteReaderAsync();
+
+				while (await reader.ReadAsync())
 				{
-
-					using (SqlDataReader reader = command.ExecuteReader())
-					{
-						if (reader.Read())
-						{
-							var userModel = new UserModel
-							{
-								username = reader["Username"]?.ToString(),
-								email = reader["Email"]?.ToString(),
-								firstName = reader["FirstName"]?.ToString(),
-								lastName = reader["LastName"]?.ToString(),
-								phoneNumber = reader["PhoneNumber"]?.ToString(),
-								id = Convert.ToInt32(reader["id"])
-							};
-							users.Add(userModel);
-						}
-					}
+					users.Add(MapUserFromReader(reader));
 				}
 			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error retrieving all users");
+				throw;
+			}
+			return users;
 		}
-		catch (SqlException ex)
+
+		public async Task<UserModel?> GetByUsernameAsync(string username)
 		{
-			Console.WriteLine("Database error during login ", ex);
+			try
+			{
+				using var connection = new SqlConnection(_connectionString);
+				await connection.OpenAsync();
+
+				const string query = @"
+                    SELECT id, Username, Email, FirstName, LastName, PhoneNumber 
+                    FROM [User] 
+                    WHERE Username = @username;";
+
+				using var command = new SqlCommand(query, connection);
+				command.Parameters.AddWithValue("@username", username);
+
+				using var reader = await command.ExecuteReaderAsync();
+
+				if (await reader.ReadAsync())
+				{
+					return MapUserFromReader(reader);
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error retrieving user by username: {Username}", username);
+				throw;
+			}
 			return null;
 		}
 
-		return users;
-	}
-
-	public UserModel? GetByUsername(string username)
-	{
-		try
+		public async Task<int> SaveAsync(UserModel user)
 		{
-			using (SqlConnection connection = new SqlConnection(_connectionString))
+			ArgumentNullException.ThrowIfNull(user);
+
+			try
 			{
-				connection.Open();
-				string query = "SELECT * FROM [User] WHERE Username = @username;";
+				using var connection = new SqlConnection(_connectionString);
+				await connection.OpenAsync();
 
-				using (SqlCommand command = new SqlCommand(query, connection))
-				{
-					command.Parameters.AddWithValue("@username", username);
+				const string query = @"
+                    INSERT INTO [User] (
+                        Username, Password, Email, FirstName, LastName, PhoneNumber
+                    )  
+                    VALUES (
+                        @Username, @Password, @Email, @FirstName, @LastName, @PhoneNumber
+                    );
+                    SELECT SCOPE_IDENTITY();";
 
-					using (SqlDataReader reader = command.ExecuteReader())
-					{
-						if (reader.Read())
-						{
-							var userModel = new UserModel
-							{
-								username = reader["Username"]?.ToString(),
-								email = reader["Email"]?.ToString(),
-								firstName = reader["FirstName"]?.ToString(),
-								lastName = reader["LastName"]?.ToString(),
-								phoneNumber = reader["PhoneNumber"]?.ToString(),
-								id = Convert.ToInt32(reader["id"])
-							};
+				using var command = new SqlCommand(query, connection);
+				AddUserParameters(command, user);
 
-						}
-					}
-				}
+				var result = await command.ExecuteScalarAsync();
+				return Convert.ToInt32(result);
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error saving user: {@User}", new { user.username, user.email });
+				throw;
 			}
 		}
-		catch (SqlException ex)
-		{
-			Console.WriteLine("Database error during login ", ex);
-		}
-		return null;
-	}
 
-	public int? Save(UserModel user)
-	{
-		try
+		private static UserModel MapUserFromReader(SqlDataReader reader)
 		{
-			using (SqlConnection connection = new SqlConnection(_connectionString))
+			return new UserModel
 			{
-				connection.Open();
-				string queries = @"INSERT INTO [User] 
-                    (Username, Password, Email, FirstName, LastName, PhoneNumber)  
-                    VALUES (@Username, @Password, @Email, @FirstName, @LastName, @PhoneNumber);";
-
-				using (SqlCommand command = new SqlCommand(queries, connection))
-				{
-					command.Parameters.AddWithValue("@Username", user.username);
-					command.Parameters.AddWithValue("@Password", user.password);
-					command.Parameters.AddWithValue("@Email", user.email);
-					command.Parameters.AddWithValue("@FirstName", user.firstName);
-					command.Parameters.AddWithValue("@LastName", user.lastName);
-					command.Parameters.AddWithValue("@PhoneNumber", user.phoneNumber);
-
-					int rowAffect = command.ExecuteNonQuery();
-					return rowAffect;
-				}
-			}
+				id = reader.GetInt32(reader.GetOrdinal("id")),
+				username = reader.GetString(reader.GetOrdinal("Username")),
+				email = reader.GetString(reader.GetOrdinal("Email")),
+				firstName = reader.IsDBNull(reader.GetOrdinal("FirstName")) ? null : reader.GetString(reader.GetOrdinal("FirstName")),
+				lastName = reader.IsDBNull(reader.GetOrdinal("LastName")) ? null : reader.GetString(reader.GetOrdinal("LastName")),
+				phoneNumber = reader.IsDBNull(reader.GetOrdinal("PhoneNumber")) ? null : reader.GetString(reader.GetOrdinal("PhoneNumber"))
+			};
 		}
-		catch (SqlException ex)
+
+		private static void AddUserParameters(SqlCommand command, UserModel user)
 		{
-			Console.WriteLine("Registration failed. Please try again.", ex);
+			command.Parameters.Add("@Username", SqlDbType.NVarChar).Value = user.username ?? throw new ArgumentException("Username is required");
+			command.Parameters.Add("@Password", SqlDbType.NVarChar).Value = user.password ?? throw new ArgumentException("Password is required");
+			command.Parameters.Add("@Email", SqlDbType.NVarChar).Value = user.email ?? throw new ArgumentException("Email is required");
+			command.Parameters.Add("@FirstName", SqlDbType.NVarChar).Value = (object?)user.firstName ?? DBNull.Value;
+			command.Parameters.Add("@LastName", SqlDbType.NVarChar).Value = (object?)user.lastName ?? DBNull.Value;
+			command.Parameters.Add("@PhoneNumber", SqlDbType.NVarChar).Value = (object?)user.phoneNumber ?? DBNull.Value;
 		}
-		return null;
 	}
 }

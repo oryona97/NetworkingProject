@@ -1,7 +1,23 @@
+using eBookStore.Repository;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
+
+builder.Services.AddScoped<UserRepository>((serviceProvider) =>
+{
+	var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+	var logger = serviceProvider.GetRequiredService<ILogger<UserRepository>>();
+	return new UserRepository(configuration.GetConnectionString("DefaultConnection"), logger);
+});
+
+builder.Services.AddScoped<UserRepository>((serviceProvider) =>
+{
+	var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+	var logger = serviceProvider.GetRequiredService<ILogger<UserRepository>>();
+	return new UserRepository(configuration.GetConnectionString("DefaultConnection"), logger);
+});
 
 //sessoin 
 builder.Services.AddDistributedMemoryCache();

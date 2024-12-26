@@ -1,113 +1,146 @@
+@using System.Security.Claims
 @model eBookStore.Models.ViewModels.BookViewModel
 @{
     ViewData["Title"] = "Book Details";
+    var currentUserId = int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int userId) ? userId : 0;
+    var userOwnsBook = Model.ownerUserIds.Contains(currentUserId);
 }
 
-<div class="container mt-4">
-    <div class="card">
-        <div class="row g-0">
-            <div class="col-md-4">
-                @if (Model.coverModel != null)
-                {
-                    <img src="@Model.coverModel.imgName" class="img-fluid rounded-start" alt="@Model.book.title">
-                }
-                else
-                {
-                    <img src="/images/default-book-cover.jpg" class="img-fluid rounded-start" alt="Default Cover">
-                }
-            </div>
-            <div class="col-md-8">
-                <div class="card-body">
-                    <h2 class="card-title">@Model.book.title</h2>
-                    <div class="mb-3">
-                        <div class="d-flex align-items-center">
-                            <div class="star-rating me-2">
-                                @for (int i = 1; i <= 5; i++)
-                                {
-                                    if (i <= Model.book.starRate)
-                                    {
-                                        <i class="bi bi-star-fill text-warning"></i>
-                                    }
-                                    else
-                                    {
-                                        <i class="bi bi-star text-warning"></i>
-                                    }
-                                }
-                            </div>
-                            <span class="text-muted">(@Model.book.starRate.ToString("0.0"))</span>
+<div class="mb-4">
+    <h5 class="text-secondary mb-3 d-flex align-items-center gap-2">
+        <i class="bi bi-chat-square-text"></i>
+        Reviews
+    </h5>
+
+    @* Check if user has bought or borrowed the book *@
+    @if (userOwnsBook)
+    {
+        <div class="card border-0 bg-white shadow-sm mb-4">
+            <div class="card-body">
+                <h6 class="mb-3 text-primary">
+                    <i class="bi bi-plus-circle me-2"></i>
+                    Add Your Review
+                </h6>
+                <form asp-action="AddReview" asp-route-bookId="@Model.book.id" method="post">
+                    <div class="form-group">
+                        <textarea 
+                            name="comment" 
+                            class="form-control"
+                            rows="4"
+                            required
+                            minlength="10"
+                            maxlength="500"
+                            placeholder="Share your thoughts about this book..."
+                        ></textarea>
+                        <div class="form-text text-muted">
+                            <small>10-500 characters</small>
                         </div>
                     </div>
-
-                    <div class="mb-3">
-                        <h5>Book Information</h5>
-                        <p class="card-text">
-                            <strong>Publisher:</strong> @(Model.publisherModel?.name ?? "Unknown")<br>
-                            <strong>Genre:</strong> @(Model.genreModel?.name ?? "Unknown")<br>
-                            <strong>Publication Date:</strong> @Model.book.pubDate.ToString("MMMM dd, yyyy")<br>
-                            <strong>Age Limit:</strong> @Model.book.ageLimit+<br>
-                            @if (Model.book.onSale)
-                            {
-                                <span class="badge bg-success">On Sale</span>
-                            }
-                            @if (Model.book.canBorrow)
-                            {
-                                <span class="badge bg-info">Available for Borrowing</span>
-                            }
-                        </p>
+                    <div class="text-end mt-3">
+                        <button type="submit" class="btn btn-primary">
+                            <i class="bi bi-send me-2"></i>
+                            Post Review
+                        </button>
                     </div>
-
-                    @if (Model.feedbackModel != null && Model.feedbackModel.Any())
-                    {
-                        <div class="mb-3">
-                            <h5>Reviews</h5>
-                            @foreach (var feedback in Model.feedbackModel)
-                            {
-                                <div class="card mb-2">
-                                    <div class="card-body">
-                                        <div class="d-flex justify-content-between">
-                                            <h6 class="card-subtitle mb-2 text-muted">
-                                                @feedback.userModel?.username
-                                            </h6>
-                                            <small class="text-muted">
-                                                @feedback.createdAt.ToString("MMM dd, yyyy")
-                                            </small>
-                                        </div>
-                                        <p class="card-text">@feedback.comment</p>
-                                    </div>
-                                </div>
-                            }
-                        </div>
-                    }
-
-                    <div class="mt-4">
-                        <a href="javascript:history.back()" class="btn btn-secondary">Back</a>
-                        <form asp-action="RemoveBook" asp-route-id="@Model.book.id" 
-                              method="post" class="d-inline">
-                            <button type="submit" class="btn btn-danger ms-2"
-                                    onclick="return confirm('Are you sure you want to remove this book from your library?')">
-                                Remove from Library
-                            </button>
-                        </form>
-                    </div>
-                </div>
+                </form>
             </div>
         </div>
-    </div>
+    }
+
+    @if (Model.feedbackModel != null && Model.feedbackModel.Any())
+    {
+        <div class="reviews-container" style="max-height: 400px; overflow-y: auto;">
+            @foreach (var feedback in Model.feedbackModel)
+            {
+                var isReviewOwner = currentUserId == (feedback.userModel?.id ?? 0);
+                var isVerifiedOwner = Model.ownerUserIds.Contains(feedback.userModel?.id ?? 0);
+
+                <div class="card border-0 bg-light mb-3 review-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-person-circle text-secondary"></i>
+                                <h6 class="card-subtitle mb-0">@feedback.userModel?.username</h6>
+                                @if (isVerifiedOwner)
+                                {
+                                    <span class="badge bg-primary text-white">Verified Owner</span>
+                                }
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-clock me-1"></i>
+                                    @feedback.createdAt.ToString("MMM dd, yyyy")
+                                </small>
+                                @* Show delete button only if the review is by the current user *@
+                                @if (User.Identity.IsAuthenticated && isReviewOwner)
+                                {
+                                    <form asp-action="DeleteReview" 
+                                          asp-route-bookId="@Model.book.id" 
+                                          asp-route-reviewId="@feedback.id" 
+                                          method="post" 
+                                          class="delete-review-form d-inline">
+                                        <button type="submit" 
+                                                class="btn btn-link text-danger p-0 delete-review-btn"
+                                                onclick="return confirm('Are you sure you want to delete your review?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                        <p class="card-text mb-0">@feedback.comment</p>
+                    </div>
+                </div>
+            }
+        </div>
+    }
+    else
+    {
+        <div class="text-center py-4 bg-light rounded-3">
+            <i class="bi bi-chat-square text-muted display-4"></i>
+            <p class="text-muted mt-2">No reviews yet. @(userOwnsBook ? "Be the first to share your thoughts!" : "")</p>
+        </div>
+    }
 </div>
 
-@if (TempData["Error"] != null)
-{
-    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-        @TempData["Error"]
-        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-    </div>
+@section Styles {
+    <style>
+        .delete-review-btn {
+            opacity: 0.7;
+            transition: opacity 0.2s;
+        }
+
+        .delete-review-btn:hover {
+            opacity: 1;
+        }
+
+        .review-card {
+            transition: background-color 0.2s;
+        }
+
+        .review-card:hover {
+            background-color: #f8f9fa !important;
+        }
+    </style>
 }
 
 @section Scripts {
     <script>
-        // Auto-hide alerts after 5 seconds
-        setTimeout(function() {
-            $('.alert').alert('close');
-        }, 5000);
+        $(document).ready(function() {
+            // Handle review submission
+            $('form[asp-action="AddReview"]').on('submit', function() {
+                const comment = $(this).find('textarea[name="comment"]').val().trim();
+                if (comment.length < 10) {
+                    alert('Please enter at least 10 characters in your review.');
+                    return false;
+                }
+                return true;
+            });
+
+            // Smooth scroll to newly added review
+            if (window.location.hash === '#latest-review') {
+                $('.reviews-container').scrollTop($('.reviews-container')[0].scrollHeight);
+            }
+        });
     </script>
 }
