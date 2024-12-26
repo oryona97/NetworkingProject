@@ -1,6 +1,9 @@
 @import 'pages/_login.css';
 @import 'pages/_register.css';
 @import 'pages/_personal-library.css';
+@import 'pages/_landingPage.css';
+@import 'pages/_index.css';
+
 
 :root {
 /* Primary colors */

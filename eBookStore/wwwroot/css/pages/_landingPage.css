@@ -1,0 +1,134 @@
+
+.home-container{
+  color: black;
+  background-color: rgba(170, 170, 170, 0.11);
+}
+
+
+
+.carousel-inner{
+    overflow: hidden;
+}
+
+
+.carousel-item{
+  background-color: rgba(0, 0, 0, 0.2);
+
+  
+}
+
+.carousel-control-prev{
+  background-color: black;
+  width: 30px;
+  border-radius: 110px;
+}
+
+.carousel-control-next{
+  background-color: black; 
+  width: 30px;
+  border-radius: 110px;
+}
+
+
+
+.buy-buttom{
+  height: 30px; 
+  width: 70px; 
+  font-size: calc(0.6 * 1em);
+  align-items: center;
+  background-color: gold;
+  border-radius: 10px;
+  font-weight: bold;
+  border: none;
+  font-size: 12px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer; /* Pointer cursor */
+  
+}
+
+.buy-buttom:hover{
+  transform: scale(1.05); /* Slightly enlarge the button */
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+}
+
+.borrow-buttom{
+  margin-top: 7px;
+  height: 30px; 
+  width: 70px;
+  font-size: calc(0.6 * 1em);
+  background-color: gold;
+  border-radius: 10px;
+  font-weight: bold;
+  border: none;
+  font-size: 12px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  cursor: pointer; /* Pointer cursor */
+}
+
+.borrow-buttom:hover{
+  transform: scale(1.05);
+  box-shadow: 0 8px 15px rgba(0, 0, 0, 0.3);
+}
+
+
+.Details-container{
+  font-size: samller;
+}
+
+.Details-container > p {
+  margin-bottom: 0;
+}
+
+.bookProp-container{
+  font-size: samller;
+  margin-left: 15px;
+}
+
+.bookProp-container > p{
+  margin-bottom: 0;
+}
+
+
+.category-buttom{
+  height: 60px; font-size: calc(0.5 * 1em);
+  margin-left: 4px;
+  margin-top: 3px;
+  border-radius: 7px;
+  font-size: calc(0.6 * 1em);
+  font-weight: bold;
+  border: none;
+  color: white;
+  font-size: 14px;
+  background-color: rgb(59, 59, 208);
+}
+
+.category-buttom:hover{
+  transform: scale(1.05);
+}
+
+.Book-container{
+  background-color: rgba(191, 191, 191, 0.2);
+  margin-inline: 10px;
+  border-radius: 10px;
+}
+
+
+.search-btn{
+  border-radius: 7px;
+}
+
+
+
+
+
+
+  
+  /* Optional: Add animations for better transitions */
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+    }
+    to {
+      opacity: 1;
+    }
+  }
