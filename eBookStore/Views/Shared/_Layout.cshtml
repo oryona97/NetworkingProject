@@ -8,6 +8,7 @@
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
     <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.7.2/font/bootstrap-icons.css">
+ @await RenderSectionAsync("Styles", required: false)
 </head>
 <body>
     <header>
@@ -22,16 +23,21 @@
                 <div class="navbar-collapse collapse">
                     <ul class="navbar-nav ms-auto">
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="HomePage">Home</a>
+                            <a class="nav-link" asp-controller="Home" asp-action="landingPage">Home</a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" asp-controller="Home" asp-action="PersonalLibrary">My Library</a>
+                            <a class="nav-link" asp-controller="PersonalLibrary" asp-action="Index">My Library</a>
+                        </li>
+                        </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Gallery" asp-action="index">Gallery</a>
                         </li>
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-action="ShowShoppingCart">
                                 Cart <span class="badge bg-accent cart-count">0</span>
                             </a>
                         </li>
+                        
                         <li class="nav-item user-menu">
                             <a class="nav-link" href="#">
                                 <i class="bi bi-person-circle"></i> Account
@@ -40,6 +46,7 @@
                                 <a class="dropdown-item" asp-controller="Home" asp-action="showLogin">Login</a>
                                 <a class="dropdown-item" asp-controller="Home" asp-action="register">Register</a>
                                 <a class="dropdown-item" asp-controller="Home" asp-action="SearchForm">Search</a>
+                                <a class="dropdown-item" asp-controller="Home" asp-action="profile">Account Overview</a>
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" asp-controller="Home" asp-action="Privacy">Privacy</a>
                             </div>

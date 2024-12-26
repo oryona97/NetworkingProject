@@ -1,0 +1,69 @@
+@model eBookStore.Models.UserModel
+@{
+    ViewData["Title"] = "User-Profile";
+}
+
+<div class="Profile-container">
+
+    <div class="row mt-5">
+
+        <div class="Profile-Header ">
+            <h1>Account Overview</h1>
+        </div>
+
+
+
+        <div class="position-relative mt-5 col-5">
+
+            <!-- User Info Table -->
+            <table class="table table-borderless w-100 mx-auto me-1">
+                <tbody>
+                    <tr>
+                        <td scope="row" class="text-start fw-bold ps-3">Username:</td>
+                        <td>@Model.username</td>
+                    </tr>
+                    <tr>
+                        <td scope="row" class="text-start fw-bold ps-3">Password:</td>
+                        <td>@Model.password</td>
+                    </tr>
+                    <tr>
+                        <td scope="row" class="text-start fw-bold ps-3">Email:</td>
+                        <td>@Model.email</td>
+                    </tr>
+                    <tr>
+                        <td scope="row" class="text-start fw-bold ps-3">First Name:</td>
+                        <td>@Model.firstName</td>
+                    </tr>
+                    <tr>
+                        <td scope="row" class="text-start fw-bold ps-3">Last Name:</td>
+                        <td>@Model.lastName</td>
+                    </tr>
+                    <tr>
+                        <td scope="row" class="text-start fw-bold ps-3">Phone Number:</td>
+                        <td>@Model.phoneNumber</td>
+                    </tr>
+                </tbody>
+            </table>
+
+        </div>
+
+
+        <div class="UserPhoto container position-relative col-7 row text-end mt-5">
+
+            <div class="col-6 ">
+                <img src="\images\users\defaultUserImage.jpg" class="img-fluid rounded-circle border border-dark w-50" alt="User Photo">
+            </div>
+            
+            <div class="col-6 text-start d-flex flex-column gap-3">
+                <button class="row  btn btn-primary w-50">Change password</button>
+                <button class="row  btn btn-primary w-50">Change Email</button>
+                <button class="row  btn btn-primary w-50">Change Phone Number</button>
+            </div>
+
+        </div>
+
+    </div>
+    
+
+
+</div>

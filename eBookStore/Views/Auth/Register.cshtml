@@ -1,0 +1,127 @@
+@model eBookStore.Models.ViewModels.RegisterViewModel
+
+@{
+    ViewData["Title"] = "Register";
+}
+
+<div class="register-container">
+    <div class="register-card">
+        <div class="register-header">
+            <h2>Create Account</h2>
+            <p class="text-secondary">Join eBookStore today</p>
+        </div>
+        
+        <form asp-action="Register" method="post" class="register-form">
+            <div asp-validation-summary="ModelOnly" class="validation-summary"></div>
+            
+            <div class="row g-4">
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input asp-for="FirstName" 
+                               class="form-control custom-input" 
+                               placeholder="First Name" />
+                        <label asp-for="FirstName">First Name</label>
+                        <span asp-validation-for="FirstName" class="validation-message"></span>
+                    </div>
+                </div>
+                
+                <div class="col-md-6">
+                    <div class="form-floating">
+                        <input asp-for="LastName" 
+                               class="form-control custom-input" 
+                               placeholder="Last Name" />
+                        <label asp-for="LastName">Last Name</label>
+                        <span asp-validation-for="LastName" class="validation-message"></span>
+                    </div>
+                </div>
+            </div>
+
+            <div class="form-floating mt-4">
+                <input asp-for="Username" 
+                       class="form-control custom-input" 
+                       placeholder="Username" 
+                       autocomplete="username" />
+                <label asp-for="Username">Username</label>
+                <span asp-validation-for="Username" class="validation-message"></span>
+            </div>
+
+            <div class="form-floating mt-4">
+                <input asp-for="Email" 
+                       class="form-control custom-input" 
+                       placeholder="Email" 
+                       autocomplete="email" />
+                <label asp-for="Email">Email</label>
+                <span asp-validation-for="Email" class="validation-message"></span>
+            </div>
+
+            <div class="form-floating mt-4">
+                <input asp-for="PhoneNumber" 
+                       class="form-control custom-input" 
+                       placeholder="Phone Number" 
+                       autocomplete="tel" />
+                <label asp-for="PhoneNumber">Phone Number</label>
+                <span asp-validation-for="PhoneNumber" class="validation-message"></span>
+            </div>
+
+            <div class="form-floating mt-4">
+                <input asp-for="Password" 
+                       class="form-control custom-input" 
+                       type="password" 
+                       placeholder="Password" />
+                <label asp-for="Password">Password</label>
+                <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                    <i class="bi bi-eye"></i>
+                </button>
+                <span asp-validation-for="Password" class="validation-message"></span>
+            </div>
+
+            <div class="form-floating mt-4">
+                <input asp-for="ConfirmPassword" 
+                       class="form-control custom-input" 
+                       type="password" 
+                       placeholder="Confirm Password" />
+                <label asp-for="ConfirmPassword">Confirm Password</label>
+                <button type="button" class="password-toggle" onclick="togglePassword(this)">
+                    <i class="bi bi-eye"></i>
+                </button>
+                <span asp-validation-for="ConfirmPassword" class="validation-message"></span>
+            </div>
+
+            <button type="submit" class="register-button mt-4">
+                <span>Create Account</span>
+                <div class="button-loader d-none"></div>
+            </button>
+
+            <div class="login-prompt mt-4">
+                <span>Already have an account?</span>
+                <a asp-action="ShowLogin" class="login-link">Sign in</a>
+            </div>
+        </form>
+    </div>
+</div>
+
+@section Scripts {
+    <partial name="_ValidationScriptsPartial" />
+    <script>
+        function togglePassword(button) {
+            const input = button.parentElement.querySelector('input');
+            const icon = button.querySelector('i');
+            if (input.type === 'password') {
+                input.type = 'text';
+                icon.classList.replace('bi-eye', 'bi-eye-slash');
+            } else {
+                input.type = 'password';
+                icon.classList.replace('bi-eye-slash', 'bi-eye');
+            }
+        }
+
+        document.querySelector('.register-form').addEventListener('submit', function() {
+            const button = this.querySelector('.register-button');
+            const span = button.querySelector('span');
+            const loader = button.querySelector('.button-loader');
+            button.disabled = true;
+            span.classList.add('d-none');
+            loader.classList.remove('d-none');
+        });
+    </script>
+}

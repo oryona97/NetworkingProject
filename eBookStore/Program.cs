@@ -1,15 +1,31 @@
+using eBookStore.Repository;
+
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 builder.Services.AddControllersWithViews();
 
+builder.Services.AddScoped<UserRepository>((serviceProvider) =>
+{
+	var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+	var logger = serviceProvider.GetRequiredService<ILogger<UserRepository>>();
+	return new UserRepository(configuration.GetConnectionString("DefaultConnection"), logger);
+});
+
+builder.Services.AddScoped<UserRepository>((serviceProvider) =>
+{
+	var configuration = serviceProvider.GetRequiredService<IConfiguration>();
+	var logger = serviceProvider.GetRequiredService<ILogger<UserRepository>>();
+	return new UserRepository(configuration.GetConnectionString("DefaultConnection"), logger);
+});
+
 //sessoin 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
-    options.IdleTimeout = TimeSpan.FromMinutes(30); 
-    options.Cookie.HttpOnly = true;
-    options.Cookie.IsEssential = true;
+	options.IdleTimeout = TimeSpan.FromMinutes(30);
+	options.Cookie.HttpOnly = true;
+	options.Cookie.IsEssential = true;
 });
 
 var app = builder.Build();
@@ -34,7 +50,15 @@ app.UseSession();
 app.UseAuthorization();
 
 app.MapControllerRoute(
+	name: "auth",
+	pattern: "auth/{action}",
+	defaults: new { controller = "Auth", action = "Login" }
+);
+
+app.MapControllerRoute(
 	name: "default",
 	pattern: "{controller=Home}/{action=showLogIn}/{id?}");
 
 app.Run();
+
+app.UseStaticFiles();

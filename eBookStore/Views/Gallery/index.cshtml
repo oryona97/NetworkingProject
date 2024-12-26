@@ -1,0 +1,133 @@
+@{
+    ViewData["Title"] = "Gallery";
+}
+
+<div class="Gallery-container d-flex">
+
+
+    <div class="d-flex flex-column flex-shrink-0 p-3 bg-secondary" style="width: 280px;">
+        
+        <hr>
+            <ul class="nav nav-pills flex-column mb-auto">
+                <li class="nav-item">
+                    <a href="#" class="nav-link active" aria-current="page">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                        Home
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#" class="nav-link link-dark">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
+                        Dashboard
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#" class="nav-link link-dark">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#table"/></svg>
+                        Orders
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#" class="nav-link link-dark">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#grid"/></svg>
+                        Products
+                    </a>
+                </li>
+
+                <li>
+                    <a href="#" class="nav-link link-dark">
+                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#people-circle"/></svg>
+                        Customers
+                    </a>
+                </li>
+
+            </ul>
+        <hr>
+
+
+    </div>
+
+
+    <div class="flex-column w-100 ms-4">
+
+        <hr>
+            <h2>Welcome to the book gallery:</h2>
+        <hr>
+
+        <div class="Book-Cards row" style="row-gap: 10px;">
+
+            <div class="card" style="width: 18rem;">
+                <img src="\images\bookCovers\default_book_cover.jpg" class="card-img-top" alt="...">
+
+                <div class="card-body">
+                    <h5 class="card-title">Card title</h5>
+                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
+                    <a href="#" class="btn btn-primary">Go somewhere</a>
+                </div>
+            </div>  
+
+        </div>
+
+
+
+
+
+    </div>
+
+
+</div>
+
+
+
+@section Scripts {
+
+<script>
+
+    const BookCards = document.querySelector('.Book-Cards');
+
+    function populateBookCards(bookName)
+    {
+        const Book = document.createElement('div');
+        Book.className = 'card';
+        Book.style = 'width: 18rem';
+
+        const img = document.createElement('img');
+        img.src = '\\images\\bookCovers\\default_book_cover.jpg';
+        img.style = 'card-img-top';
+        img.alt = bookName;
+        Book.appendChild(img);
+
+        const BookBody = document.createElement('div');
+        Book.appendChild(BookBody);
+
+        const bookTitle = document.createElement('h5');
+        bookTitle.className = "card-title";
+        BookBody.appendChild(bookTitle);
+
+        const bookText = document.createElement('p');
+        bookText.className ='card-text';
+        BookBody.appendChild(bookText);
+
+
+        const bookBTN = document.createElement('a');
+        bookBTN.href = '#';
+        bookBTN.className ='btn btn-primary';
+        bookBTN.textContent = 'Buy-Now';
+        BookBody.appendChild(bookBTN);
+
+        BookCards.appendChild(Book);
+    }
+
+
+    for(i=0;i<30;i++)
+        populateBookCards('doda');
+
+
+
+
+</script>
+
+}
