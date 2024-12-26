@@ -37,7 +37,8 @@ services:
       - app-network
 
   db-init:
-    image: ubuntu:22.04
+    build:
+      context: ./db-init
     platform: linux/arm64
     volumes:
       - ./db:/db
@@ -45,12 +46,6 @@ services:
       - db
     command: >
       bash -c '
-      apt-get update &&
-      apt-get install -y curl gnupg2 &&
-      curl https://packages.microsoft.com/keys/microsoft.asc | apt-key add - &&
-      curl https://packages.microsoft.com/config/ubuntu/22.04/prod.list > /etc/apt/sources.list.d/mssql-release.list &&
-      apt-get update &&
-      ACCEPT_EULA=Y apt-get install -y mssql-tools18 unixodbc-dev &&
       echo "Waiting for database to be ready..." &&
       sleep 30s &&
       /opt/mssql-tools18/bin/sqlcmd -S db -U SA -P ${DB_PASSWORD} -i /db/schema.sql -b -C -N'
