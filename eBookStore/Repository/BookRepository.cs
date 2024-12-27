@@ -852,6 +852,37 @@ public class BookRepository
 		return null; 
 	}
 
+	//this func return all Genres name that exsist in db
+	public List<string> getAllGenres()
+	{
+		var genreList = new List<string>();
+		try
+		{
+			using (SqlConnection connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "SELECT name FROM Genre;";
 
+				using (SqlCommand command = new SqlCommand(query, connection))
+				{
+					using (SqlDataReader reader = command.ExecuteReader())
+					{
+						while(reader.Read())
+						{
+							genreList.Add(reader["name"].ToString());
+						}
+						return genreList;
+					}
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+		    Console.WriteLine("Database error during fetching Genre ${ex}");
+			throw; 
+		}
+
+		return genreList; 
+	}
 
 }

@@ -149,6 +149,15 @@ public class BookController : Controller
         Console.WriteLine("Book Added");
     }
 
+    
+    //this func return all Genres name that exsist in db
+    public List<string> GetAllGenres()
+    {
+        Console.WriteLine("Genres Returned");
+        return bookRepo.getAllGenres();
+    }
+    
+    
     public IActionResult Privacy()
     {
         return View();
