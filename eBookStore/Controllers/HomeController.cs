@@ -208,7 +208,10 @@ public class HomeController : Controller
 	public IActionResult landingPage()
 	{
 
-		return View();
+		LandingPageViewModel info = new LandingPageViewModel();
+		info.allBooks = _bookRepo.getAllBooks();
+
+		return View(info);
 	}
 
 
