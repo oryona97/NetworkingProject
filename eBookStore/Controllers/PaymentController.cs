@@ -15,7 +15,7 @@ public class PaymentController : Controller
 
     public IActionResult Index()
     {
-        return View();
+        return View("checkout");
     }
 
     public IActionResult Privacy()
