@@ -21,14 +21,17 @@ public class BookController : Controller
         this.connectionString = connectionString = _configuration.GetConnectionString("DefaultConnection");
         bookRepo = new BookRepository(connectionString);
     }
+
+
+    //texting model
     private BookViewModel bookViewModel = new BookViewModel
     {
         book = new BookModel
         {
-            publisherId = 1,
+            publisherId = 2,
             genreId = 1,
             amountOfCopies = 3,
-            title = "The Alchemist",
+            title = "Dor the gibor",
             borrowPrice = 2.5f,
             buyingPrice = 10.5f,
             pubDate = DateTime.Now,
@@ -43,49 +46,107 @@ public class BookController : Controller
         rating = new RatingModel
         {
             starRating = 4,
-            userId = 1,
-            bookId = 9,
+            userId = 3,
+            bookId = 2,
             createdAt = DateTime.Now
         },
         feedbackModel = new List<FeedbackModel>
         {
             new FeedbackModel
             {
-                userId = 1,
-                bookId = 9,
-                comment = "This is a great book",
+                userId = 5,
+                bookId = 1,
+                comment = "Dor is the best",
                 createdAt = DateTime.Now
             },
             new FeedbackModel
             {
-                id = 2,
+                userId = 2,
                 bookId = 9,
-                comment = "I love this book",
+                comment = "Dor is the man",
                 createdAt = DateTime.Now
             }
         },
         publisherModel = new PublisherModel
         {
-            id = 6,
-            name = "HarperCollins",
+            
+            name = "HarperCollinsasd",
             createdAt = DateTime.Now
         },
         coverModel = new CoverModel
         {
-            id = 1,
+            
             bookId = 1,
-            imgName = "TheAlchemist.jpg",
+            imgName = "Dorthegiboer.jpg",
+            createdAt = DateTime.Now
+        },
+        genreModel = new GenreModel
+        {
+          
+            name = "Adventure",
             createdAt = DateTime.Now
         },
         
+        authorModel = new AuthorModel
+        {
+            bookId = 50,
+            name = "Dor",
+            createdAt = DateTime.Now
+        },
         
     };
 
+    
 
 
-    public IActionResult AddBook()
+    //this func adds feedback of the book
+    public void AddFeedback(FeedbackModel feedbackModel)
     {
-        return View(bookViewModel);
+        Console.WriteLine("Feedback Added");
+        bookRepo.AddFeedback(feedbackModel);
+        Console.WriteLine("Feedback Added");
+    }
+
+
+
+    //this func adds Rating of the book
+    public void AddRating(RatingModel ratingModel)
+    {
+        Console.WriteLine("Rating Added");
+        bookRepo.AddRating(ratingModel);
+        Console.WriteLine("Rating Added");
+    }
+    public void AddBookModel(BookModel bookModel)
+    {
+        Console.WriteLine("Book Added");
+        bookRepo.AddBook(bookModel);
+        Console.WriteLine("Book Added");
+    }
+
+    //this func adds the cover of the book
+    public void AddCoverModel(CoverModel coverModel)
+    {
+        Console.WriteLine("Cover Added");
+        bookRepo.AddCoverModel(coverModel);
+        Console.WriteLine("Cover Added");
+    }
+
+    //this func adds the genre of the book
+    public void AddGenreModel(GenreModel genreModel)
+    {
+        Console.WriteLine("Genre Added");
+        bookRepo.AddGenreModel(genreModel);
+        Console.WriteLine("Genre Added");
+    }
+
+
+    
+    [Route("Book/AddBook")]
+    public void AddBook(BookViewModel bookViewModel)
+    {
+        Console.WriteLine("Book Added");
+        bookRepo.AddBookViewModel(bookViewModel);
+        Console.WriteLine("Book Added");
     }
 
     public IActionResult Privacy()
