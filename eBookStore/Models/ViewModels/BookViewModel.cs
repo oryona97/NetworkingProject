@@ -12,5 +12,5 @@ public class BookViewModel
     public UserModel userModel { get; set;}
     public GenreModel genreModel { get; set;}
     public AuthorModel authorModel { get; set;}
-
+    public List<int> ownerUserIds { get; set;} =new List<int>();
 }

@@ -1,15 +1,26 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
-using eBookStore.Repositories;
+using eBookStore.Repository;
 using eBookStore.Models;
+using eBookStore.Models.ViewModels;
 
 namespace eBookStore.Controllers;
 
 public class BookController : Controller
 {
-
-    BookRepository bookRepo = new BookRepository();
+    private readonly ILogger<BookController> _logger;
+	private readonly IConfiguration _configuration;
+	private string? connectionString;
+    BookRepository bookRepo  ;
     //create instance of bookViewModel and initialize all the models in it with values with the func in the model
+
+    public  BookController(ILogger<BookController> logger, IConfiguration configuration )
+    {
+        _logger = logger;
+        _configuration = configuration;
+        this.connectionString = connectionString = _configuration.GetConnectionString("DefaultConnection");
+        bookRepo = new BookRepository(connectionString);
+    }
     private BookViewModel bookViewModel = new BookViewModel
     {
         book = new BookModel
@@ -42,14 +53,14 @@ public class BookController : Controller
             {
                 userId = 1,
                 bookId = 9,
-                feedback = "This is a great book",
+                comment = "This is a great book",
                 createdAt = DateTime.Now
             },
             new FeedbackModel
             {
                 id = 2,
                 bookId = 9,
-                feedback = "I love this book",
+                comment = "I love this book",
                 createdAt = DateTime.Now
             }
         },
@@ -66,22 +77,15 @@ public class BookController : Controller
             imgName = "TheAlchemist.jpg",
             createdAt = DateTime.Now
         },
-        userModel = bookRepo.getUserById(1),
-        genreModel = bookRepo.getGenreById(1),
-        ,
-        authorModel = bookRepo.getAuthorById(1)
+        
+        
     };
 
-    private readonly ILogger<BookController> _logger;
 
-    public BookController(ILogger<BookController> logger)
-    {
-        _logger = logger;
-    }
 
     public IActionResult AddBook()
     {
-        
+        return View(bookViewModel);
     }
 
     public IActionResult Privacy()

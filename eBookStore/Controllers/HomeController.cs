@@ -174,8 +174,8 @@ public class HomeController : Controller
 			if (nullableUserId.HasValue)
 			{
 				Console.WriteLine("Ok ");
-				ShoppingCartModel cart = shoppingCartRepo.GetShoppingCart(nullableUserId.Value);
-				return View("ShowShoppingCart", cart);
+				ShoppingCartViewModel cart = shoppingCartRepo.GetShoppingCart(nullableUserId.Value);
+				return View("ShoppingCart/ShowShoppingCart", cart);
 			}
 			else
 			{
