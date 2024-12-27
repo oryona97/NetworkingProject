@@ -103,14 +103,14 @@ public class PersonalLibraryRepository
             f.userid as feedback_userid, u.username as feedback_username,
             pl.userid as owner_id,
             c.id as cover_id, c.imgname as cover_image
-        FROM [book] b
-        LEFT JOIN [publisher] p ON b.publisherid = p.id
-        LEFT JOIN [genre] g ON b.genreid = g.id
-        LEFT JOIN [feedback] f ON b.id = f.bookid
-        LEFT JOIN [user] u ON f.userid = u.id
-        LEFT JOIN [personallibrary] pl ON b.id = pl.bookid
-        LEFT JOIN [cover] c ON b.id = c.bookid
-        WHERE b.id = @BookId";
+			FROM [book] b
+			LEFT JOIN [publisher] p ON b.publisherid = p.id
+			LEFT JOIN [genre] g ON b.genreid = g.id
+			LEFT JOIN [feedback] f ON b.id = f.bookid
+			LEFT JOIN [user] u ON f.userid = u.id
+			LEFT JOIN [personallibrary] pl ON b.id = pl.bookid
+			LEFT JOIN [cover] c ON b.id = c.bookid
+			WHERE b.id = @BookId";
 
 			using var command = new SqlCommand(sql, connection);
 			command.Parameters.AddWithValue("@BookId", bookId);
@@ -130,7 +130,7 @@ public class PersonalLibraryRepository
 						publisherId = reader.GetInt32(reader.GetOrdinal("publisherid")),
 						genreId = reader.GetInt32(reader.GetOrdinal("genreid")),
 						amountOfCopies = reader.GetInt32(reader.GetOrdinal("amountofcopies")),
-						title = reader.GetString("title"),
+						title = reader["title"].ToString(),
 						borrowPrice = reader.GetFloat(reader.GetOrdinal("borrowprice")),
 						buyingPrice = reader.GetFloat(reader.GetOrdinal("buyingprice")),
 						pubDate = reader.GetDateTime(reader.GetOrdinal("pubdate")),
@@ -145,28 +145,28 @@ public class PersonalLibraryRepository
 					var publisherModel = new PublisherModel
 					{
 						id = reader.GetInt32(reader.GetOrdinal("publisher_id")),
-						name = reader.GetString("publisher_name"),
+						name = reader["publisher_name"].ToString(),
 						createdAt = DateTime.Now
 					};
 
 					var genreModel = new GenreModel
 					{
 						id = reader.GetInt32(reader.GetOrdinal("genre_id")),
-						name = reader.GetString("genre_name"),
+						name = reader["genre_name"].ToString(),
 						createdAt = DateTime.Now
 					};
 
 					var coverModel = new CoverModel
 					{
 						id = reader.GetInt32(reader.GetOrdinal("cover_id")),
-						imgName = reader.GetString("cover_image"),
+						imgName = reader["cover_image"].ToString(),
 						bookId = bookId,
 						createdAt = DateTime.Now
 					};
 
 					bookViewModel = new BookViewModel
 					{
-						id = book.id,
+						
 						book = book,
 						publisherModel = publisherModel,
 						genreModel = genreModel,
@@ -185,7 +185,7 @@ public class PersonalLibraryRepository
 				}
 
 				var feedbackUserId = reader.GetInt32(reader.GetOrdinal("feedback_userid"));
-				var comment = reader.GetString("comment");
+				var comment = reader["comment"];
 				var createdAt = reader.GetDateTime(reader.GetOrdinal("feedback_createdat"));
 
 				// Create a unique key for this feedback to prevent duplicates
@@ -198,12 +198,12 @@ public class PersonalLibraryRepository
 					{
 						bookId = bookId,
 						userId = feedbackUserId,
-						comment = comment,
+						comment = comment?.ToString(),
 						createdAt = createdAt,
 						userModel = new UserModel
 						{
 							id = feedbackUserId,
-							username = reader.GetString("feedback_username")
+							username = reader["feedback_username"].ToString()
 						}
 					};
 

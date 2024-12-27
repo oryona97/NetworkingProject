@@ -174,8 +174,8 @@ public class HomeController : Controller
 			if (nullableUserId.HasValue)
 			{
 				Console.WriteLine("Ok ");
-				ShoppingCartModel cart = shoppingCartRepo.GetShoppingCart(nullableUserId.Value);
-				return View("ShowShoppingCart", cart);
+				ShoppingCartViewModel cart = shoppingCartRepo.GetShoppingCart(nullableUserId.Value);
+				return View("ShoppingCart/ShowShoppingCart", cart);
 			}
 			else
 			{
@@ -208,7 +208,10 @@ public class HomeController : Controller
 	public IActionResult landingPage()
 	{
 
-		return View();
+		LandingPageViewModel info = new LandingPageViewModel();
+		info.allBooks = _bookRepo.getAllBooks();
+
+		return View(info);
 	}
 
 
