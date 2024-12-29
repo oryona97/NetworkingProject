@@ -962,8 +962,11 @@ public class BookRepository
 	}
 
 	//this func update amount of copies of a book if someome borrows it amountOfCopies--
+	
 	public void updateAmountOfCopies(int bookId)
 	{
+		
+
 		try
 		{
 			using (var connection = new SqlConnection(connectionString))
@@ -985,6 +988,66 @@ public class BookRepository
 			throw;
 		}
 	}
+
+
+	//this query to check if amountOfCopies >0
+	//if amountOfCopies == 0 canBorrow = false
+	public bool checkAmountOfCopies(int bookId)
+	{
+		try
+		{
+			using (var connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "select amountOfCopies from Book where id = @bookId and amountOfCopies>0;";
+
+				using (var command = new SqlCommand(query, connection))
+				{
+					command.Parameters.AddWithValue("@bookId", bookId);
+					command.ExecuteNonQuery();
+					if (command.ExecuteNonQuery() == 0)
+					{
+						return false;
+					}
+				}
+			}
+				
+		}
+		catch (SqlException ex)
+		{
+			Console.WriteLine($"Database error during checking amount of copies {ex}");
+			throw;
+		}
+		this.updateAmountOfCopies(bookId);
+		return true;
+	}
+
+
+	//this func to return rentedBook and update amountOfCopies++
+	public void returnRentedBook(int bookId)
+	{
+		try
+		{
+			using (var connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "UPDATE Book SET amountOfCopies = amountOfCopies + 1 WHERE id = @bookId;";
+
+				using (var command = new SqlCommand(query, connection))
+				{
+					command.Parameters.AddWithValue("@bookId", bookId);
+
+					command.ExecuteNonQuery();
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+			Console.WriteLine($"Database error during returning book {ex}");
+			throw;
+		}
+	}
+
 
 }
 

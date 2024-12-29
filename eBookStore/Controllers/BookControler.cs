@@ -18,7 +18,7 @@ public class BookController : Controller
     {
         _logger = logger;
         _configuration = configuration;
-        this.connectionString = connectionString = _configuration.GetConnectionString("DefaultConnection");
+        connectionString = _configuration.GetConnectionString("DefaultConnection");
         bookRepo = new BookRepository(connectionString);
     }
 
@@ -165,15 +165,22 @@ public class BookController : Controller
         return bookRepo.getBorrowableBooks();
     }
 
-    //this func update amount of copies of the book after borrowing
+    //this func update amount of copies of the book before borrowing
     public void UpdateAmountOfCopies(int bookId)
     {
         Console.WriteLine("Amount of Copies Updated");
-        bookRepo.updateAmountOfCopies(bookId);
+        bookRepo.checkAmountOfCopies(bookId);
         Console.WriteLine("Amount of Copies Updated");
     }
 
 
+    //this func update amount of copies of the book after returning
+    public void UpdateAmountOfCopiesAfterReturn(int bookId)
+    {
+        Console.WriteLine("Amount of Copies Updated");
+        bookRepo.returnRentedBook(bookId);
+        Console.WriteLine("Amount of Copies Updated");
+    }
     
     public IActionResult Privacy()
     {
