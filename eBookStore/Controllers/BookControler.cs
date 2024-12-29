@@ -158,6 +158,23 @@ public class BookController : Controller
     }
     
     
+    //this func return all book can be borrowed
+    public List<BookViewModel> GetAllBorrowableBooks()
+    {
+        Console.WriteLine("Borrowable Books");
+        return bookRepo.getBorrowableBooks();
+    }
+
+    //this func update amount of copies of the book after borrowing
+    public void UpdateAmountOfCopies(int bookId)
+    {
+        Console.WriteLine("Amount of Copies Updated");
+        bookRepo.updateAmountOfCopies(bookId);
+        Console.WriteLine("Amount of Copies Updated");
+    }
+
+
+    
     public IActionResult Privacy()
     {
         return View();
