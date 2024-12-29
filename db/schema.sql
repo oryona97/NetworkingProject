@@ -62,7 +62,7 @@ CREATE TABLE [Book] (
   [id] int IDENTITY(50,1) PRIMARY KEY,
   [publisherId] int,
   [genreId] int,
-  [amountOfCopies] int,
+  [amountOfCopies] int CHECK(amountOfCopies >= 0 and amountOfCopies <= 3),
   [title] nvarchar(200),
   [borrowPrice] decimal(10,2),
   [buyingPrice] decimal(10,2),
@@ -297,11 +297,11 @@ SET IDENTITY_INSERT [Book] ON;
 INSERT INTO [Book] ([id], [publisherId], [genreId], [amountOfCopies], [title], [borrowPrice], [buyingPrice], 
                     [pubDate], [ageLimit], [priceHistory], [onSale], [canBorrow], [starRate], [createdAt])
 VALUES 
-(1, 1, 1, 50, 'The Great Adventure', 2.99, 15.99, '2023-01-15', 12, 1, 1, 1, 4.5, GETDATE()),
-(2, 2, 3, 30, 'Starship Chronicles', 3.50, 19.99, '2022-11-20', 16, 2, 0, 1, 4.7, GETDATE()),
-(3, 3, 4, 25, 'Murder in the Library', 2.50, 14.50, '2023-05-10', 18, 3, 1, 1, 4.2, GETDATE()),
-(4, 4, 5, 40, 'Love Across Continents', 2.75, 16.50, '2023-02-28', 16, 4, 1, 1, 4.6, GETDATE()),
-(5, 5, 2, 35, 'The Rise of Technology', 3.25, 18.99, '2022-09-05', 14, 5, 0, 1, 4.4, GETDATE());
+(1, 1, 1, 3, 'The Great Adventure', 2.99, 15.99, '2023-01-15', 12, 1, 1, 1, 4.5, GETDATE()),
+(2, 2, 3, 3, 'Starship Chronicles', 3.50, 19.99, '2022-11-20', 16, 2, 0, 1, 4.7, GETDATE()),
+(3, 3, 4, 3, 'Murder in the Library', 2.50, 14.50, '2023-05-10', 18, 3, 1, 1, 4.2, GETDATE()),
+(4, 4, 5, 3, 'Love Across Continents', 2.75, 16.50, '2023-02-28', 16, 4, 1, 1, 4.6, GETDATE()),
+(5, 5, 2, 3, 'The Rise of Technology', 3.25, 18.99, '2022-09-05', 14, 5, 0, 1, 4.4, GETDATE());
 
 SET IDENTITY_INSERT [Book] OFF;
 
