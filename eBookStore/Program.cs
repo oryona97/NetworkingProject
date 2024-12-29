@@ -2,7 +2,6 @@ using eBookStore.Repository;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
 builder.Services.AddControllersWithViews();
 
 builder.Services.AddScoped<UserRepository>((serviceProvider) =>
@@ -12,14 +11,6 @@ builder.Services.AddScoped<UserRepository>((serviceProvider) =>
 	return new UserRepository(configuration.GetConnectionString("DefaultConnection"), logger);
 });
 
-builder.Services.AddScoped<UserRepository>((serviceProvider) =>
-{
-	var configuration = serviceProvider.GetRequiredService<IConfiguration>();
-	var logger = serviceProvider.GetRequiredService<ILogger<UserRepository>>();
-	return new UserRepository(configuration.GetConnectionString("DefaultConnection"), logger);
-});
-
-//sessoin 
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {
@@ -29,8 +20,6 @@ builder.Services.AddSession(options =>
 });
 
 var app = builder.Build();
-
-// Or Yona, Maxwell Knight, Dor Israeli
 
 // Configure the HTTP request pipeline.
 if (!app.Environment.IsDevelopment())
@@ -42,23 +31,16 @@ if (!app.Environment.IsDevelopment())
 
 app.UseHttpsRedirection();
 app.UseStaticFiles();
-
 app.UseRouting();
-
 app.UseSession();
-
 app.UseAuthorization();
-
 app.MapControllerRoute(
 	name: "auth",
 	pattern: "auth/{action}",
 	defaults: new { controller = "Auth", action = "Login" }
 );
-
 app.MapControllerRoute(
 	name: "default",
 	pattern: "{controller=Home}/{action=showLogIn}/{id?}");
 
 app.Run();
-
-app.UseStaticFiles();

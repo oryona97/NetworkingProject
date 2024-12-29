@@ -116,34 +116,30 @@ public class AuthController : Controller
 							{
 								string storedPassword = reader["Password"]?.ToString() ?? string.Empty;
 
-								if (model.Password == storedPassword) //TODO: add proper password hashing
+								if (model.Password == storedPassword)
 								{
 									HttpContext.Session.SetInt32("userId", Convert.ToInt32(reader["id"]));
-									// Login successful
-									var userModel = new UserModel
-									{
-										username = reader["Username"]?.ToString(),
-										email = reader["Email"]?.ToString(),
-										firstName = reader["FirstName"]?.ToString(),
-										lastName = reader["LastName"]?.ToString(),
-										phoneNumber = reader["PhoneNumber"]?.ToString(),
-										id = Convert.ToInt32(reader["id"])
-									};
+									_logger.LogInformation("Setting userId in session: {UserId}", Convert.ToInt32(reader["id"]));
 
-									return View("Login", userModel);
+									var returnUrl = TempData["ReturnUrl"]?.ToString();
+									if (!string.IsNullOrEmpty(returnUrl))
+									{
+										return Redirect(returnUrl);
+									}
+
+									return RedirectToAction("Index", "PersonalLibrary");
 								}
 							}
 						}
 					}
 
-					// Invalid login
 					ModelState.AddModelError("", "Invalid username or password");
 				}
 			}
 			catch (SqlException ex)
 			{
 				_logger.LogError(ex, "Database error during login");
-				ModelState.AddModelError("", "An error 1occurred during login. Please try again.");
+				ModelState.AddModelError("", "An error occurred during login. Please try again.");
 			}
 		}
 		return View("Login", model);
