@@ -852,6 +852,140 @@ public class BookRepository
 		return null; 
 	}
 
+	//this func return all Genres name that exsist in db
+	public List<string> getAllGenres()
+	{
+		var genreList = new List<string>();
+		try
+		{
+			using (SqlConnection connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "SELECT name FROM Genre;";
 
+				using (SqlCommand command = new SqlCommand(query, connection))
+				{
+					using (SqlDataReader reader = command.ExecuteReader())
+					{
+						while(reader.Read())
+						{
+							genreList.Add(reader["name"].ToString());
+						}
+						return genreList;
+					}
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+		    Console.WriteLine($"Database error during fetching Genre {ex}");
+			throw; 
+		}
+
+		return genreList; 
+	}
+
+
+	//func to get all books can be borrowed
+	public List<BookViewModel> getBorrowableBooks()
+	{
+		var bookViewModelList = new List<BookViewModel>();
+
+		try
+		{
+			using (SqlConnection connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "SELECT * FROM [Book] WHERE canBorrow = 1";
+
+				using (SqlCommand command = new SqlCommand(query, connection))
+				{
+					using (SqlDataReader reader = command.ExecuteReader())
+					{
+						while (reader.Read())
+						{
+							var book = new BookModel
+							{
+								id = Convert.ToInt32(reader["id"]),
+								publisherId = Convert.ToInt32(reader["publisherId"]),
+								genreId = Convert.ToInt32(reader["genreId"]),
+								amountOfCopies = Convert.ToInt32(reader["amountOfCopies"]),
+								title = reader["title"]?.ToString(),
+								borrowPrice = Convert.ToSingle(reader["borrowPrice"]),
+								buyingPrice = Convert.ToSingle(reader["buyingPrice"]),
+								pubDate = Convert.ToDateTime(reader["pubDate"]),
+								ageLimit = Convert.ToInt32(reader["ageLimit"]),
+								priceHistory = Convert.ToInt32(reader["priceHistory"]),
+								onSale = Convert.ToBoolean(reader["onSale"]),
+								canBorrow = Convert.ToBoolean(reader["canBorrow"]),
+								starRate = Convert.ToSingle(reader["starRate"]),
+								createdAt = Convert.ToDateTime(reader["createdAt"])
+							};
+
+							var bookViewModel = new BookViewModel
+							{
+								book = book,
+								publisherModel = this.PubModelByBookId(book.publisherId),
+								feedbackModel = this.getfeedbackModelById(book.id),
+								rating = this.getRatingModel(book.id),
+								coverModel = this.getCoverModelById(book.id),
+								genreModel = this.getGenreModelById(book.genreId),
+								authorModel = this.getAuthorModelById(book.id),
+							};
+
+							if (bookViewModel.feedbackModel != null)
+							{
+								foreach (var feedback in bookViewModel.feedbackModel)
+								{
+									var user = this.getUserModelById(feedback.userId);
+									if (user != null)
+									{
+										feedback.userModel = user;
+									}
+								}
+							}
+
+							bookViewModel.authorModel = this.getAuthorModelById(book.id);
+							bookViewModelList.Add(bookViewModel);
+							
+						}
+					}
+				}
+			}
+			
+		}catch (SqlException ex)
+		{
+			Console.WriteLine($"Database error during fetching books {ex}");
+			throw;
+		}
+		return bookViewModelList;
+	}
+
+	//this func update amount of copies of a book if someome borrows it amountOfCopies--
+	public void updateAmountOfCopies(int bookId)
+	{
+		try
+		{
+			using (var connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "UPDATE Book SET amountOfCopies = amountOfCopies - 1 WHERE id = @bookId;";
+
+				using (var command = new SqlCommand(query, connection))
+				{
+					command.Parameters.AddWithValue("@bookId", bookId);
+
+					command.ExecuteNonQuery();
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+			Console.WriteLine($"Database error during borrowing book {ex}");
+			throw;
+		}
+	}
 
 }
+
+
