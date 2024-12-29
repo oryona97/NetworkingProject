@@ -51,8 +51,8 @@ public class PersonalLibraryRepository
 					genreId = reader.GetInt32(reader.GetOrdinal("genreid")),
 					amountOfCopies = reader.GetInt32(reader.GetOrdinal("amountofcopies")),
 					title = reader["title"].ToString(),
-					borrowPrice = Convert.ToSingle(reader["borrowprice"]),
-					buyingPrice = Convert.ToSingle(reader["buyingprice"]),
+					borrowPrice = Convert.ToSingle(reader.GetDecimal(reader.GetOrdinal("borrowprice"))),
+					buyingPrice = Convert.ToSingle(reader.GetDecimal(reader.GetOrdinal("buyingprice"))),
 					pubDate = Convert.ToDateTime(reader["pubdate"]),
 					ageLimit = reader.GetInt32(reader.GetOrdinal("agelimit")),
 					priceHistory = reader.GetInt32(reader.GetOrdinal("pricehistory")),
@@ -103,14 +103,14 @@ public class PersonalLibraryRepository
             f.userid as feedback_userid, u.username as feedback_username,
             pl.userid as owner_id,
             c.id as cover_id, c.imgname as cover_image
-			FROM [book] b
-			LEFT JOIN [publisher] p ON b.publisherid = p.id
-			LEFT JOIN [genre] g ON b.genreid = g.id
-			LEFT JOIN [feedback] f ON b.id = f.bookid
-			LEFT JOIN [user] u ON f.userid = u.id
-			LEFT JOIN [personallibrary] pl ON b.id = pl.bookid
-			LEFT JOIN [cover] c ON b.id = c.bookid
-			WHERE b.id = @BookId";
+        FROM [book] b
+        LEFT JOIN [publisher] p ON b.publisherid = p.id
+        LEFT JOIN [genre] g ON b.genreid = g.id
+        LEFT JOIN [feedback] f ON b.id = f.bookid
+        LEFT JOIN [user] u ON f.userid = u.id
+        LEFT JOIN [personallibrary] pl ON b.id = pl.bookid
+        LEFT JOIN [cover] c ON b.id = c.bookid
+        WHERE b.id = @BookId";
 
 			using var command = new SqlCommand(sql, connection);
 			command.Parameters.AddWithValue("@BookId", bookId);
@@ -130,43 +130,48 @@ public class PersonalLibraryRepository
 						publisherId = reader.GetInt32(reader.GetOrdinal("publisherid")),
 						genreId = reader.GetInt32(reader.GetOrdinal("genreid")),
 						amountOfCopies = reader.GetInt32(reader.GetOrdinal("amountofcopies")),
-						title = reader["title"].ToString(),
-						borrowPrice = reader.GetFloat(reader.GetOrdinal("borrowprice")),
-						buyingPrice = reader.GetFloat(reader.GetOrdinal("buyingprice")),
+						title = reader["title"]?.ToString(),
+						borrowPrice = reader["borrowprice"] != DBNull.Value
+							? Convert.ToSingle(reader.GetDecimal(reader.GetOrdinal("borrowprice")))
+							: 0.0f,
+						buyingPrice = reader["buyingprice"] != DBNull.Value
+							? Convert.ToSingle(reader.GetDecimal(reader.GetOrdinal("buyingprice")))
+							: 0.0f,
 						pubDate = reader.GetDateTime(reader.GetOrdinal("pubdate")),
 						ageLimit = reader.GetInt32(reader.GetOrdinal("agelimit")),
 						priceHistory = reader.GetInt32(reader.GetOrdinal("pricehistory")),
 						onSale = reader.GetBoolean(reader.GetOrdinal("onsale")),
 						canBorrow = reader.GetBoolean(reader.GetOrdinal("canborrow")),
-						starRate = reader.GetFloat(reader.GetOrdinal("starrate")),
+						starRate = reader["starrate"] != DBNull.Value
+							? Convert.ToSingle(reader.GetDecimal(reader.GetOrdinal("starrate")))
+							: 0.0f,
 						createdAt = reader.GetDateTime(reader.GetOrdinal("createdat"))
 					};
 
 					var publisherModel = new PublisherModel
 					{
 						id = reader.GetInt32(reader.GetOrdinal("publisher_id")),
-						name = reader["publisher_name"].ToString(),
+						name = reader["publisher_name"]?.ToString(),
 						createdAt = DateTime.Now
 					};
 
 					var genreModel = new GenreModel
 					{
 						id = reader.GetInt32(reader.GetOrdinal("genre_id")),
-						name = reader["genre_name"].ToString(),
+						name = reader["genre_name"]?.ToString(),
 						createdAt = DateTime.Now
 					};
 
 					var coverModel = new CoverModel
 					{
-						id = reader.GetInt32(reader.GetOrdinal("cover_id")),
-						imgName = reader["cover_image"].ToString(),
+						id = reader["cover_id"] != DBNull.Value ? reader.GetInt32(reader.GetOrdinal("cover_id")) : 0,
+						imgName = reader["cover_image"]?.ToString(),
 						bookId = bookId,
 						createdAt = DateTime.Now
 					};
 
 					bookViewModel = new BookViewModel
 					{
-						
 						book = book,
 						publisherModel = publisherModel,
 						genreModel = genreModel,
@@ -176,38 +181,46 @@ public class PersonalLibraryRepository
 					};
 				}
 
-				// Populate owner IDs
-				var ownerId = reader.GetInt32(reader.GetOrdinal("owner_id"));
-				if (ownerId != 0 && !ownerIds.Contains(ownerId))
+				// Handle nullable owner_id
+				if (reader["owner_id"] != DBNull.Value)
 				{
-					ownerIds.Add(ownerId);
-					bookViewModel.ownerUserIds.Add(ownerId);
+					var ownerId = reader.GetInt32(reader.GetOrdinal("owner_id"));
+					if (!ownerIds.Contains(ownerId))
+					{
+						ownerIds.Add(ownerId);
+						bookViewModel.ownerUserIds.Add(ownerId);
+					}
 				}
 
-				var feedbackUserId = reader.GetInt32(reader.GetOrdinal("feedback_userid"));
-				var comment = reader["comment"];
-				var createdAt = reader.GetDateTime(reader.GetOrdinal("feedback_createdat"));
-
-				// Create a unique key for this feedback to prevent duplicates
-				var feedbackKey = $"{feedbackUserId}|{comment}|{createdAt}";
-				if (!processedFeedbacks.Contains(feedbackKey) && feedbackUserId != 0)
+				// Handle nullable feedback fields
+				if (reader["feedback_userid"] != DBNull.Value)
 				{
-					processedFeedbacks.Add(feedbackKey);
+					var feedbackUserId = reader.GetInt32(reader.GetOrdinal("feedback_userid"));
+					var comment = reader["comment"];
+					var createdAt = reader["feedback_createdat"] != DBNull.Value
+						? reader.GetDateTime(reader.GetOrdinal("feedback_createdat"))
+						: DateTime.Now;
 
-					var feedback = new FeedbackModel
+					var feedbackKey = $"{feedbackUserId}|{comment}|{createdAt}";
+					if (!processedFeedbacks.Contains(feedbackKey))
 					{
-						bookId = bookId,
-						userId = feedbackUserId,
-						comment = comment?.ToString(),
-						createdAt = createdAt,
-						userModel = new UserModel
-						{
-							id = feedbackUserId,
-							username = reader["feedback_username"].ToString()
-						}
-					};
+						processedFeedbacks.Add(feedbackKey);
 
-					bookViewModel.feedbackModel.Add(feedback);
+						var feedback = new FeedbackModel
+						{
+							bookId = bookId,
+							userId = feedbackUserId,
+							comment = comment?.ToString(),
+							createdAt = createdAt,
+							userModel = new UserModel
+							{
+								id = feedbackUserId,
+								username = reader["feedback_username"]?.ToString()
+							}
+						};
+
+						bookViewModel.feedbackModel.Add(feedback);
+					}
 				}
 			}
 
@@ -366,17 +379,15 @@ public class PersonalLibraryRepository
 		{
 			using var connection = new SqlConnection(_connectionString);
 			await connection.OpenAsync();
-
 			const string sql = @"
             DELETE FROM [feedback] 
-            WHERE bookid = @BookId AND userid = @UserId;
-            SELECT @@ROWCOUNT;";
+            WHERE bookid = @BookId AND userid = @UserId;";
 
 			using var command = new SqlCommand(sql, connection);
 			command.Parameters.AddWithValue("@BookId", bookId);
 			command.Parameters.AddWithValue("@UserId", userId);
 
-			var rowsAffected = (int)await command.ExecuteScalarAsync();
+			var rowsAffected = await command.ExecuteNonQueryAsync();
 			return rowsAffected > 0;
 		}
 		catch (Exception ex)

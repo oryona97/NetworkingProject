@@ -151,7 +151,7 @@ public class HomeController : Controller
 	{
 		Console.WriteLine("showBook");
 		List<BookViewModel> books = _bookRepo.getAllBooks();
-		
+
 		return View(books);
 	}
 	public IActionResult showBookBySearch(string? title, int? publisherId, int? genreId, float? minPrice, float? maxPrice, DateTime? fromDate, DateTime? toDate)
@@ -162,13 +162,13 @@ public class HomeController : Controller
 
 	public IActionResult SearchForm()
 	{
-		return View("SearchBooks"); 
+		return View("SearchBooks");
 	}
 	public IActionResult ShowShoppingCart()
 	{
 		try
 		{
-			int? nullableUserId = HttpContext.Session.GetInt32("userId"); 
+			int? nullableUserId = HttpContext.Session.GetInt32("userId");
 			Console.WriteLine("the user id is: ");
 			Console.WriteLine(nullableUserId.Value);
 			if (nullableUserId.HasValue)
@@ -192,15 +192,15 @@ public class HomeController : Controller
 	public IActionResult Profile()
 	{
 		var user = new UserModel
-							{
-								username = "test.username",
-								password = "test.Password",
-								email = "test.Email",
-								firstName = "test.FirstName",
-								lastName = "test.LastName",
-								phoneNumber = "test.PhoneNumber"
-							};
-		
+		{
+			username = "test.username",
+			password = "test.Password",
+			email = "test.Email",
+			firstName = "test.FirstName",
+			lastName = "test.LastName",
+			phoneNumber = "test.PhoneNumber"
+		};
+
 
 		return View(user);
 	}
@@ -215,7 +215,7 @@ public class HomeController : Controller
 	}
 
 
-	
+
 
 	public IActionResult Privacy()
 	{

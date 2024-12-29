@@ -2,7 +2,7 @@
 @model eBookStore.Models.ViewModels.BookViewModel
 @{
     ViewData["Title"] = "Book Details";
-    var currentUserId = int.TryParse(User.FindFirst(ClaimTypes.NameIdentifier)?.Value, out int userId) ? userId : 0;
+    var currentUserId = Context.Session.GetInt32("userId") ?? 0;
     var userOwnsBook = Model.ownerUserIds.Contains(currentUserId);
 }
 
@@ -11,6 +11,30 @@
         <i class="bi bi-chat-square-text"></i>
         Reviews
     </h5>
+
+    @if (TempData["Review_Success"] != null)
+    {
+        <div class="alert alert-success alert-dismissible fade show" role="alert">
+            @TempData["Review_Success"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Review_Error"] != null)
+    {
+        <div class="alert alert-danger alert-dismissible fade show" role="alert">
+            @TempData["Review_Error"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
+
+    @if (TempData["Review_Info"] != null)
+    {
+        <div class="alert alert-info alert-dismissible fade show" role="alert">
+            @TempData["Review_Info"]
+            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+        </div>
+    }
 
     @* Check if user has bought or borrowed the book *@
     @if (userOwnsBook)
@@ -53,7 +77,6 @@
             @foreach (var feedback in Model.feedbackModel)
             {
                 var isReviewOwner = currentUserId == (feedback.userModel?.id ?? 0);
-                var isVerifiedOwner = Model.ownerUserIds.Contains(feedback.userModel?.id ?? 0);
 
                 <div class="card border-0 bg-light mb-3 review-card">
                     <div class="card-body">
@@ -61,10 +84,7 @@
                             <div class="d-flex align-items-center gap-2">
                                 <i class="bi bi-person-circle text-secondary"></i>
                                 <h6 class="card-subtitle mb-0">@feedback.userModel?.username</h6>
-                                @if (isVerifiedOwner)
-                                {
-                                    <span class="badge bg-primary text-white">Verified Owner</span>
-                                }
+                                <span class="badge bg-primary text-white">Verified Owner</span>
                             </div>
                             <div class="d-flex align-items-center gap-3">
                                 <small class="text-muted">
@@ -72,7 +92,7 @@
                                     @feedback.createdAt.ToString("MMM dd, yyyy")
                                 </small>
                                 @* Show delete button only if the review is by the current user *@
-                                @if (User.Identity.IsAuthenticated && isReviewOwner)
+                                @if (isReviewOwner)
                                 {
                                     <form asp-action="DeleteReview" 
                                           asp-route-bookId="@Model.book.id" 
@@ -142,5 +162,8 @@
                 $('.reviews-container').scrollTop($('.reviews-container')[0].scrollHeight);
             }
         });
+				console.log('Current User ID:', '@currentUserId');
+        console.log('Feedback Model:', @Json.Serialize(Model.feedbackModel));
+        console.log('Owner IDs:', @Json.Serialize(Model.ownerUserIds));
     </script>
 }

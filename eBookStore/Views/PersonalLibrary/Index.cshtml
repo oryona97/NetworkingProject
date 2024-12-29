@@ -1,6 +1,12 @@
 @model List<eBookStore.Models.ViewModels.BookViewModel>
 @{
     ViewData["Title"] = "My Library";
+    var userId = Context.Session.GetInt32("userId"); // Add this
+    if (userId == null)
+    {
+        Context.Response.Redirect("/Auth/Login");
+        return;
+    }
 }
 
 <div class="container mt-4">
@@ -11,7 +17,7 @@
                 <input type="text" 
                        id="searchInput"
                        class="form-control search-input" 
-                       placeholder="Search your library..."
+                       placeholder="Search my library..."
                        aria-label="Search">
                 <i class="bi bi-search search-icon"></i>
             </div>
@@ -112,20 +118,21 @@
 @section Scripts {
     <script>
         $(document).ready(function() {
-				searchInput.on('keydown', function(event) {
-						if (event.key === 'Enter') {
-								event.preventDefault();
-								return false;
-						}
-				});
+
+						const searchInput = $('#searchInput');
+						searchInput.on('keydown', function(event) {
+								if (event.key === 'Enter') {
+										event.preventDefault();
+										return false;
+								}
+						});
             let searchTimer;
-            const searchInput = $('#searchInput');
 
             // Handle search input with debounce
             searchInput.on('input', function() {
                 clearTimeout(searchTimer);
                 const query = $(this).val();
-                
+
                 searchTimer = setTimeout(function() {
                     filterBooks(query);
                 }, 300);
@@ -136,7 +143,7 @@
                     const title = $(this).find('.card-title').text().toLowerCase();
                     const publisher = $(this).find('.publisher').text().toLowerCase();
                     const genre = $(this).find('.genre').text().toLowerCase();
-                    
+
                     if (query === '' || 
                         title.includes(query.toLowerCase()) ||
                         publisher.includes(query.toLowerCase()) ||
