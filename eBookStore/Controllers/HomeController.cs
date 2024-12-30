@@ -16,6 +16,8 @@ public class HomeController : Controller
 	BookRepository _bookRepo;
 	private ShoppingCartRepository shoppingCartRepo;
 
+	private UserRepository _userRepo;
+
 	public HomeController(IConfiguration configuration, ILogger<HomeController> logger)
 	{
 		_configuration = configuration;
@@ -191,18 +193,31 @@ public class HomeController : Controller
 
 	public IActionResult Profile()
 	{
-		var user = new UserModel
+		try
 		{
-			username = "test.username",
-			password = "test.Password",
-			email = "test.Email",
-			firstName = "test.FirstName",
-			lastName = "test.LastName",
-			phoneNumber = "test.PhoneNumber"
-		};
+			int? userId = HttpContext.Session.GetInt32("userId");
+			if (!userId.HasValue)
+			{
+				TempData["Error"] = "You need to be logged in to access your Account Overview. Please log in to continue.";
+				TempData["ReturnUrl"] = "/accountOverview";
+				return RedirectToAction("Login", "Auth");
+			}
+			TempData["Error"] = null;
 
 
-		return View(user);
+			UserModel userInfo = _bookRepo.getUserModelById(userId.Value);
+
+			return View(userInfo);
+
+		}
+		catch(Exception ex)
+		{
+				_logger.LogError(ex, "Error showing user: {@userid}");
+				throw;
+		}
+		
+
+		return View("landingpage");
 	}
 
 	public IActionResult landingPage()
@@ -226,5 +241,11 @@ public class HomeController : Controller
 	public IActionResult Error()
 	{
 		return View(new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+	}
+
+	public IActionResult Logout()
+	{
+		HttpContext.Session.Clear(); // Clear the session
+		return RedirectToAction("landingPage");
 	}
 }
