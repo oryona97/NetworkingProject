@@ -57,7 +57,7 @@
             <div class="col-6 text-start d-flex flex-column gap-3">
                 <button class="row  btn btn-primary w-50">Change password</button>
                 <button class="row  btn btn-primary w-50">Change Email</button>
-                <button class="row  btn btn-primary w-50">Change Phone Number</button>
+                <button id="logoutButt" class="row  btn btn-primary w-50" onclick="window.location.href='@Url.Action("logout", "home")' " >Log-Out</button>
             </div>
 
         </div>
@@ -67,3 +67,14 @@
 
 
 </div>
+
+
+
+
+<script>
+  document.getElementById("logoutButt").addEventListener("click", function() 
+  {
+    alert("You have been logged out!");
+    
+  });
+</script>
