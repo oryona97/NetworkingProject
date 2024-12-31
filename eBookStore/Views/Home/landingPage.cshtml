@@ -1,7 +1,8 @@
 
-
+@model eBookStore.Models.ViewModels.LandingPageViewModel
 @{
     ViewData["Title"] = "Home";
+    Console.WriteLine(Model.SpecialSales[0].coverModel.imgName);
 }
 
 <div class="home-container">
@@ -38,93 +39,67 @@
             
 
             <div class="specialSales row d-flex ms-3" style="padding-top: 10%;">
-
-                <h2 class="header-one row">Special Sales:</h4>
-
-
                 <div class="sub-header row ">
+                    <h2 class="header-one row">Special Sales:</h4>
+
                     <p>Explore a wide range of books and manage your library without breaking the bank.</p>
                 </div>
 
+                <div class="BooksContainer row">
+                    <!-- This contains 2 books on sale  -->
+                    <div class="Book1 col">
+                        <div class="card" style="width: 21rem;">
+                                <a href="@Url.Action("Index", "Book")/1">
+                                    <img src="\images\bookCovers\@Model.SpecialSales[0].coverModel.imgName" class="card-img-top" alt="@Model.SpecialSales[0].coverModel.imgName">
+                                </a>
 
+                                <div class="card-body d-grid">
+                                    <h5 class="card-title">@Model.SpecialSales[0].book.title</h5>
+                                    <p class="card-text">
+                                        <a>Author: Need Fix </a><br> 
+                                        <a>Published by: @Model.SpecialSales[0].publisherModel.name</a><br>
+                                        <a>Genre: @Model.SpecialSales[0].genreModel.name</a><br>
+                                        <a>Age limit: @Model.SpecialSales[0].book.ageLimit</a><br>
+                                        <a>Publish date: @Model.SpecialSales[0].book.pubDate</a><br>
+                                        <a>Rating: @Model.SpecialSales[0].book.starRate</a><br>
+                                        <a>Original Price: @Model.SpecialSales[0].book.priceHistory$</a><br>
+                                        <a>OnSale: @Model.SpecialSales[0].book.buyingPrice$</a>
 
-                <!-- This contains 2 books on sale  -->
-                <div class="Books-container row" style="height:190px; width: auto; justify-content: center;">
-                    
-                    <div class="Book-container col-5 d-flex " style=" align-items: center;">
-
-                        <div class="cover-container col">
-                            <img class="img-fluid" src="\images\bookCovers\default_book_cover.jpg" alt="Description of the image">
-
-                        </div>
-
-                        <div class="info-container col ms-2 d-flex">
-                            <div class="Details-container col ">
-                                    <p>Title:</p>
-                                    <p>Author:</p>
-                                    <p>Publisher:</p>
-                                    <p>Genre:</p>
-                                    <p>Age limit:</p>
-
-                            </div>
-
-                            <div class="bookProp-container col">
-                                    <p>Doda</p>
-                                    <p>Shel</p>
-                                    <p>Dor</p>
-                                    <p>Horror</p>
-                                    <p>18</p>
-
-                            </div>
-
-                        </div>
-
-                        <div class="Buttoms-container col ms-3 text-center">
-                            <button class="buy-buttom">Buy-Now</button>
-                            <button class="borrow-buttom">Borrow</button>
-
-                        </div>
+                                    </p>
+                                    <a href="#" class="buy-buttom text-center";">Buy-Now</a>
+                                </div>
+                        </div> 
 
                     </div>
 
-                    <div class="Book-container col-5 d-flex" style="align-items: center; justify-content: center;">
+                    <div class="Book2 col">
+                        <div class="card" style="width: 21rem;">
+                                <a href="@Url.Action("Index", "Book")/4">
+                                    <img src="\images\bookCovers\@Model.SpecialSales[3].coverModel.imgName" class="card-img-top" alt="@Model.SpecialSales[3].coverModel.imgName">
+                                </a>
 
-                        <div class="cover-container col">
-                            <img class="img-fluid" src="\images\bookCovers\default_book_cover.jpg" alt="Description of the image">
+                                <div class="card-body d-grid">
+                                    <h5 class="card-title">@Model.SpecialSales[3].book.title</h5>
+                                    <p class="card-text">
+                                        <a>Author: Need Fix </a><br> 
+                                        <a>Published by: @Model.SpecialSales[3].publisherModel.name</a><br>
+                                        <a>Genre: @Model.SpecialSales[3].genreModel.name</a><br>
+                                        <a>Age limit: @Model.SpecialSales[3].book.ageLimit</a><br>
+                                        <a>Publish date: @Model.SpecialSales[3].book.pubDate</a><br>
+                                        <a>Rating: @Model.SpecialSales[3].book.starRate</a><br>
+                                        <a>Original Price: @Model.SpecialSales[3].book.priceHistory$</a><br>
+                                        <a>OnSale: @Model.SpecialSales[3].book.buyingPrice$</a>
 
-                        </div>
-
-                        <div class="info-container col ms-2 d-flex">
-
-                            <div class="Details-container col gap-1">
-                                    <p >Title:</p>
-                                    <p>Author:</p>
-                                    <p>Publisher:</p>
-                                    <p>Genre:</p>
-                                    <p>Age limit:</p>
-
-                            </div>
-
-                            <div class="bookProp-container col">
-                                    <p>Doda</p>
-                                    <p>Shel</p>
-                                    <p>Maxwell</p>
-                                    <p>Action</p>
-                                    <p>18</p>
-
-                            </div>
-
-                        </div>
-
-                        <div class="Buttoms-container col ms-3 text-center">
-                            <button class="buy-buttom row">Buy-Now</button>
-                            <button class="borrow-buttom row">Borrow</button>
-
-                        </div>
+                                    </p>
+                                    <a href="#" class="buy-buttom text-center";">Buy-Now</a>
+                                </div>
+                        </div> 
 
                     </div>
+
 
                 </div>
+
 
                 
 
@@ -178,17 +153,11 @@
 
         // Array of image URLs (replace with your own or fetch from API)
         const imageUrls = [
-            'https://via.placeholder.com/120x160?text=Book+1',
-            'https://via.placeholder.com/120x160?text=Book+2',
-            'https://via.placeholder.com/120x160?text=Book+3',
-            'https://via.placeholder.com/120x160?text=Book+3',
-            'https://via.placeholder.com/120x160?text=Book+3',
-            'https://via.placeholder.com/120x160?text=Book+3',
-            'https://via.placeholder.com/120x160?text=Book+3',
-            'https://via.placeholder.com/120x160?text=Book+3',
-            'https://via.placeholder.com/120x160?text=Book+3'
-            
-
+            '@Model.allBooks[0].coverModel.imgName',
+            '@Model.allBooks[1].coverModel.imgName',
+            '@Model.allBooks[2].coverModel.imgName',
+            '@Model.allBooks[3].coverModel.imgName',
+            '@Model.allBooks[4].coverModel.imgName',
         ];
 
        
@@ -203,7 +172,7 @@
 
             images.forEach((url, index) => {
                 // Push the current image URL into the chunk
-                chunk.push('\\images\\bookCovers\\default_book_cover.jpg');
+                chunk.push(url);
 
                 // When the chunk reaches the desired number of images (or it's the last image)
                 if (chunk.length === imagesPerItem || index === images.length - 1) {
@@ -223,8 +192,8 @@
                         col.style = 'padding-inline: 0px;';
 
                         const img = document.createElement('img');
-                        img.src = '\\images\\bookCovers\\default_book_cover.jpg';
-                        img.alt = 'Book Image';
+                        img.src = `\\images\\bookCovers\\${chunkUrl || 'default_book_cover.jpg'}`; // Dynamically set the image URL or fallback
+                        img.alt = chunkUrl;
                         img.className = 'img-fluid'; // Ensure responsiveness
                         
 

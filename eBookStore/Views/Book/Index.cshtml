@@ -68,46 +68,56 @@
     <div class="Feedback-Container row">
         <hr>
         <h2>Reviews:</h2>
-        <div class="reviews-container" style="max-height: 400px; overflow-y: auto;">
-            @foreach (var feedback in Model.feedbackModel)
-            {
-                var isReviewOwner = currentUserId == (feedback.userModel?.id ?? 0);
+        @if (Model.feedbackModel != null && Model.feedbackModel.Any())
+        {
+            <div class="reviews-container" style="max-height: 400px; overflow-y: auto;">
+                @foreach (var feedback in Model.feedbackModel)
+                {
+                    var isReviewOwner = currentUserId == (feedback.userModel?.id ?? 0);
 
-                <div class="card border-0 bg-light mb-3 review-card">
-                    <div class="card-body">
-                        <div class="d-flex justify-content-between align-items-center mb-2">
-                            <div class="d-flex align-items-center gap-2">
-                                <i class="bi bi-person-circle text-secondary"></i>
-                                <h6 class="card-subtitle mb-0">@feedback.userModel?.username</h6>
-                                <span class="badge bg-primary text-white">Verified Owner</span>
+                    <div class="card border-0 bg-light mb-3 review-card">
+                        <div class="card-body">
+                            <div class="d-flex justify-content-between align-items-center mb-2">
+                                <div class="d-flex align-items-center gap-2">
+                                    <i class="bi bi-person-circle text-secondary"></i>
+                                    <h6 class="card-subtitle mb-0">@feedback.userModel?.username</h6>
+                                    <span class="badge bg-primary text-white">Verified Owner</span>
+                                </div>
+                                <div class="d-flex align-items-center gap-3">
+                                    <small class="text-muted">
+                                        <i class="bi bi-clock me-1"></i>
+                                        @feedback.createdAt.ToString("MMM dd, yyyy")
+                                    </small>
+                                    @* Show delete button only if the review is by the current user *@
+                                    @if (isReviewOwner)
+                                    {
+                                        <form asp-action="DeleteReview" 
+                                            asp-route-bookId="@Model.book.id" 
+                                            asp-route-reviewId="@feedback.id" 
+                                            method="post" 
+                                            class="delete-review-form d-inline">
+                                            <button type="submit" 
+                                                    class="btn btn-link text-danger p-0 delete-review-btn"
+                                                    onclick="return confirm('Are you sure you want to delete your review?')">
+                                                <i class="bi bi-trash"></i>
+                                            </button>
+                                        </form>
+                                    }
+                                </div>
                             </div>
-                            <div class="d-flex align-items-center gap-3">
-                                <small class="text-muted">
-                                    <i class="bi bi-clock me-1"></i>
-                                    @feedback.createdAt.ToString("MMM dd, yyyy")
-                                </small>
-                                @* Show delete button only if the review is by the current user *@
-                                @if (isReviewOwner)
-                                {
-                                    <form asp-action="DeleteReview" 
-                                          asp-route-bookId="@Model.book.id" 
-                                          asp-route-reviewId="@feedback.id" 
-                                          method="post" 
-                                          class="delete-review-form d-inline">
-                                        <button type="submit" 
-                                                class="btn btn-link text-danger p-0 delete-review-btn"
-                                                onclick="return confirm('Are you sure you want to delete your review?')">
-                                            <i class="bi bi-trash"></i>
-                                        </button>
-                                    </form>
-                                }
-                            </div>
+                            <p class="card-text mb-0">@feedback.comment</p>
                         </div>
-                        <p class="card-text mb-0">@feedback.comment</p>
                     </div>
-                </div>
-            }
-        </div>
+                }
+            </div>
+        }
+        else
+        {
+            <div class="text-center py-4 bg-light rounded-3">
+                <i class="bi bi-chat-square text-muted display-4"></i>
+                <p class="text-muted mt-2">No reviews yet.</p>
+            </div>
+        }
 
 
 

@@ -193,7 +193,7 @@ public class HomeController : Controller
 		}
 		
 
-		return View("landingpage");
+		return RedirectToAction("landingpage","Home");
 	}
 
 	public IActionResult landingPage()
@@ -201,6 +201,7 @@ public class HomeController : Controller
 
 		LandingPageViewModel info = new LandingPageViewModel();
 		info.allBooks = _bookRepo.getAllBooks();
+		info.SpecialSales = _bookRepo.getAllBooks();
 
 		return View(info);
 	}
