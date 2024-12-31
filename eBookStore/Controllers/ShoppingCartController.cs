@@ -23,8 +23,10 @@ public class ShoppingCartController : Controller
 		shoppingCartRepo = new ShoppingCartRepository(connectionString);
 	}
 
+	[Route("/")]
+	[Route("ShoppingCart")]
 	//this method is used to show the shopping cart
-    public IActionResult ShowShoppingCart()
+	public IActionResult Index()
 	{
 		try
 		{
@@ -40,7 +42,7 @@ public class ShoppingCartController : Controller
 			}
 			else
 			{
-				return RedirectToAction("Showlogin","Home");
+				return RedirectToAction("Showlogin", "Home");
 			}
 		}
 		catch (Exception ex)
@@ -51,7 +53,7 @@ public class ShoppingCartController : Controller
 	}
 
 	//this method is used to add a book to the shopping cart
-	public IActionResult AddToShoppingCart(int? userId , int? bookId, string? format)
+	public IActionResult AddToShoppingCart(int? userId, int? bookId, string? format)
 	{
 		try
 		{
@@ -112,7 +114,8 @@ public class ShoppingCartController : Controller
 			{
 				shoppingCartRepo.RemoveAllFromShoppingCart(nullableUserId.Value);
 				return View("ShowShoppingCart", shoppingCartRepo.GetShoppingCart(nullableUserId.Value));
-			}else
+			}
+			else
 			{
 				return RedirectToAction("Home/showLogIn");
 			}
