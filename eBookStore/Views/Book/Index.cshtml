@@ -1,0 +1,26 @@
+@model eBookStore.Models.ViewModels.BookViewModel
+@{
+    ViewData["Title"] = "Book Page";
+    var currentUserId = Context.Session.GetInt32("userId") ?? 0;
+
+    Console.WriteLine(Model.coverModel.imgName);
+}
+
+<div class="d-flex">
+
+    <div class="info-container w-50 background-color:blue p-1">
+
+    </div>
+
+
+    <div class="cover-container w-50 background-color:black p-1">
+
+        <img src="@Model.coverModel.imgName" class="img-fluid" alt="Cover_Photo">
+
+    </div>
+
+</div>
+<script>
+</script>
+
+
