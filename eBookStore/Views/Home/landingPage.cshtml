@@ -47,7 +47,7 @@
 
                 <div class="BooksContainer row">
                     <!-- This contains 2 books on sale  -->
-                    <div class="Book1 col">
+                    <div class="Book-container col" style="justify-items: center;">
                         <div class="card" style="width: 21rem;">
                                 <a href="@Url.Action("Index", "Book")/1">
                                     <img src="\images\bookCovers\@Model.SpecialSales[0].coverModel.imgName" class="card-img-top" alt="@Model.SpecialSales[0].coverModel.imgName">
@@ -72,7 +72,7 @@
 
                     </div>
 
-                    <div class="Book2 col">
+                    <div class="Book-container col" style="justify-items: center;">
                         <div class="card" style="width: 21rem;">
                                 <a href="@Url.Action("Index", "Book")/4">
                                     <img src="\images\bookCovers\@Model.SpecialSales[3].coverModel.imgName" class="card-img-top" alt="@Model.SpecialSales[3].coverModel.imgName">
@@ -189,11 +189,12 @@
                     chunk.forEach((chunkUrl) => {
                         const col = document.createElement('div');
                         col.className = 'col-2'; // Adjust based on how many images per row 
-                        col.style = 'padding-inline: 0px;';
+                        col.style = 'padding-inline: 10px;';
 
                         const img = document.createElement('img');
                         img.src = `\\images\\bookCovers\\${chunkUrl || 'default_book_cover.jpg'}`; // Dynamically set the image URL or fallback
                         img.alt = chunkUrl;
+                        img.style = "border-radius: 30px;"
                         img.className = 'img-fluid'; // Ensure responsiveness
                         
 
@@ -212,10 +213,6 @@
                 }
             });
         }
-
-    
-
-        //img.src = '\\images\\bookCovers\\default_book_cover.jpg';
 
 
         // Populate the carousel dynamically
