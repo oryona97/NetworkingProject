@@ -187,8 +187,9 @@ public class BookController : Controller
     public IActionResult Index(int id)
     {
        
-        BookViewModel doda = bookRepo.getBookById(id);
-        return View(doda);
+        BookViewModel bookViewModel = bookRepo.getBookById(id);
+        Console.WriteLine(bookViewModel.authorModel+" No author found");
+        return View(bookViewModel);
     }
 
 

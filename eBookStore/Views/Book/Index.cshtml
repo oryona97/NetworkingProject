@@ -1,23 +1,121 @@
+
 @model eBookStore.Models.ViewModels.BookViewModel
 @{
     ViewData["Title"] = "Book Page";
     var currentUserId = Context.Session.GetInt32("userId") ?? 0;
 
-    Console.WriteLine(Model.coverModel.imgName);
 }
 
-<div class="d-flex">
 
-    <div class="info-container w-50 background-color:blue p-1">
+<div class="grid h-100 mt-5">
+    <div class="row">
+        @if (Model.book != null)
+            {
+
+            
+                <div class="info-container w-50 p-1">
+                    <h2 class="Title-container">@Model.book.title</h2>
+
+                    <a>Author: Need Fix @Model.authorModel</a><br> 
+                    <a>Published by: @Model.publisherModel.name</a><br>
+                    <a>Genre: @Model.genreModel.name</a><br>
+                    <a>Age limit: @Model.book.ageLimit</a><br>
+                    <a>Publish date: @Model.book.pubDate</a><br>
+                    <a>Rating: @Model.book.starRate</a>
+
+                    <div class="buyBorrowButtons">
+                        @if(Model.book.onSale)
+                        {
+                            <a>Old price: @Model.book.priceHistory$</a><br>
+                            <button>New price: @Model.book.buyingPrice$</button>
+                        }
+                        else
+                        {
+                            <button>Buy-Now for @Model.book.buyingPrice$</button>
+                        }
+                        
+                        @if(Model.book.canBorrow)
+                        {
+                        <button>Borrow-Now for @Model.book.borrowPrice$</button>
+                        }
+
+                        
+
+                    </div>
+                    
+
+
+
+                </div>
+
+            }
+            else{
+                <p>No Book details aviable</p>
+            }
+
+            @if(@Model.coverModel != null)
+            {
+                <div class="cover-container w-50 p-1 d-flex">
+
+                    <img src="\images\bookCovers\@Model.coverModel.imgName" class="bookCoverImg img-thumbnail" style="max-width: 280px;" alt="Cover_Photo">
+
+                </div>
+
+            }
+    </div>
+    
+
+    <div class="Feedback-Container row">
+        <hr>
+        <h2>Reviews:</h2>
+        <div class="reviews-container" style="max-height: 400px; overflow-y: auto;">
+            @foreach (var feedback in Model.feedbackModel)
+            {
+                var isReviewOwner = currentUserId == (feedback.userModel?.id ?? 0);
+
+                <div class="card border-0 bg-light mb-3 review-card">
+                    <div class="card-body">
+                        <div class="d-flex justify-content-between align-items-center mb-2">
+                            <div class="d-flex align-items-center gap-2">
+                                <i class="bi bi-person-circle text-secondary"></i>
+                                <h6 class="card-subtitle mb-0">@feedback.userModel?.username</h6>
+                                <span class="badge bg-primary text-white">Verified Owner</span>
+                            </div>
+                            <div class="d-flex align-items-center gap-3">
+                                <small class="text-muted">
+                                    <i class="bi bi-clock me-1"></i>
+                                    @feedback.createdAt.ToString("MMM dd, yyyy")
+                                </small>
+                                @* Show delete button only if the review is by the current user *@
+                                @if (isReviewOwner)
+                                {
+                                    <form asp-action="DeleteReview" 
+                                          asp-route-bookId="@Model.book.id" 
+                                          asp-route-reviewId="@feedback.id" 
+                                          method="post" 
+                                          class="delete-review-form d-inline">
+                                        <button type="submit" 
+                                                class="btn btn-link text-danger p-0 delete-review-btn"
+                                                onclick="return confirm('Are you sure you want to delete your review?')">
+                                            <i class="bi bi-trash"></i>
+                                        </button>
+                                    </form>
+                                }
+                            </div>
+                        </div>
+                        <p class="card-text mb-0">@feedback.comment</p>
+                    </div>
+                </div>
+            }
+        </div>
+
+
+
 
     </div>
 
 
-    <div class="cover-container w-50 background-color:black p-1">
 
-        <img src="@Model.coverModel.imgName" class="img-fluid" alt="Cover_Photo">
-
-    </div>
 
 </div>
 <script>
