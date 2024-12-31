@@ -182,6 +182,17 @@ public class BookController : Controller
         Console.WriteLine("Amount of Copies Updated");
     }
     
+    
+    //Book/Index/1
+    public IActionResult Index(int id)
+    {
+       
+        BookViewModel bookViewModel = bookRepo.getBookById(id);
+        Console.WriteLine(bookViewModel.authorModel+" No author found");
+        return View(bookViewModel);
+    }
+
+
     public IActionResult Privacy()
     {
         return View();
