@@ -123,4 +123,24 @@ public class ShoppingCartController : Controller
 			return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
 		}
 	}
+
+	public IActionResult Index()
+	{
+		try
+		{
+			int? userId = HttpContext.Session.GetInt32("userId");
+
+			if (userId.HasValue)
+			{
+				var cart = shoppingCartRepo.GetShoppingCart(userId.Value);
+				return View(cart);
+			}
+			
+		}
+		catch (Exception ex)
+		{
+			return RedirectToAction("Showlogin","Home");
+		}
+		return View();
+	}
 }
