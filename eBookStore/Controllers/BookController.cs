@@ -182,6 +182,16 @@ public class BookController : Controller
         Console.WriteLine("Amount of Copies Updated");
     }
     
+    
+    //Book/Index/1
+    public IActionResult Index(int id)
+    {
+       
+        BookViewModel doda = bookRepo.getBookById(id);
+        return View(doda);
+    }
+
+
     public IActionResult Privacy()
     {
         return View();
