@@ -59,6 +59,7 @@ public class GeneralRatingModelController : Controller
         var averageRating = _genraleRatingRepository.GetAverageRating();
         Console.WriteLine("Getting average rating {0}", averageRating);
         return Ok(averageRating);
+        
     }
 
     //this func will get all the general ratings from the database and show them in web page
