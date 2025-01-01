@@ -28,32 +28,37 @@
                         <li class="nav-item">
                             <a class="nav-link" asp-controller="Home" asp-action="landingPage">Home</a>
                         </li>
+                        <li class="nav-item">
+                            <a class="nav-link" asp-controller="Gallery" asp-action="index">Gallery</a>
+                        </li>
 												@if(currentUser != 0){
 														<li class="nav-item">
 																<a class="nav-link" asp-controller="PersonalLibrary" asp-action="Index">My Library</a>
 														</li>
+														<li class="nav-item">
+																<a class="nav-link" asp-controller="Home" asp-action="SearchForm">
+																		Search
+																</a>
+														</li>
+														<li class="nav-item">
+																<a class="nav-link" asp-controller="ShoppingCart" asp-action="Index">
+																		Cart <span class="badge bg-accent cart-count">0</span>
+																</a>
+														</li>
 												}
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="Gallery" asp-action="index">Gallery</a>
-                        </li>
-                        <li class="nav-item">
-                            <a class="nav-link" asp-controller="ShoppingCart" asp-action="Index">
-                                Cart <span class="badge bg-accent cart-count">0</span>
-                            </a>
-                        </li>
-                        
+
                         <li class="nav-item user-menu">
                             <a class="nav-link" href="#">
                                 <i class="bi bi-person-circle"></i> Account
                             </a>
                             <div class="user-menu-content">
 																@if(currentUser == 0){
-																		<a class="dropdown-item" asp-controller="Home" asp-action="showLogin">Login</a>
-																		<a class="dropdown-item" asp-controller="Home" asp-action="register">Register</a>
+																		<a class="dropdown-item" asp-controller="Auth" asp-action="Login">Login</a>
+																		<a class="dropdown-item" asp-controller="Auth" asp-action="Register">Register</a>
 																}
-                                <a class="dropdown-item" asp-controller="Home" asp-action="SearchForm">Search</a>
-                                <a class="dropdown-item" asp-controller="Home" asp-action="profile">Account Overview</a>
+																else {
+																		<a class="dropdown-item" asp-controller="Home" asp-action="profile">Account Overview</a>
+																}
                                 <div class="dropdown-divider"></div>
                                 <a class="dropdown-item" asp-controller="Home" asp-action="Privacy">Privacy</a>
                             </div>
