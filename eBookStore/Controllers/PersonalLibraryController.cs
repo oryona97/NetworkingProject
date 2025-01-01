@@ -23,7 +23,7 @@ public class PersonalLibraryController : Controller
 		_libraryRepo = new PersonalLibraryRepository(_connectionString, repoLogger);
 	}
 
-	[Route("/")]
+	[Route("library")]
 	[Route("PersonalLibrary")]
 	// GET: PersonalLibrary
 	public IActionResult Index()

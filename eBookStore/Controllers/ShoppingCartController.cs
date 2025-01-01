@@ -23,7 +23,7 @@ public class ShoppingCartController : Controller
 		shoppingCartRepo = new ShoppingCartRepository(connectionString);
 	}
 
-	[Route("/")]
+	[Route("cart")]
 	[Route("ShoppingCart")]
 	//this method is used to show the shopping cart
 	public IActionResult Index()
