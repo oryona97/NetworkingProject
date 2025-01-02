@@ -1,3 +1,4 @@
+
 -- Create Database
 USE master;
 GO
@@ -11,6 +12,8 @@ GO
 
 
 -- Drop existing tables if they exist (in reverse order of creation)
+IF OBJECT_ID('dbo.UserNotifications', 'U') IS NOT NULL DROP TABLE dbo.UserNotifications;
+IF OBJECT_ID('dbo.BookDiscount', 'U') IS NOT NULL DROP TABLE dbo.BookDiscount;
 IF OBJECT_ID('dbo.Reciept', 'U') IS NOT NULL DROP TABLE dbo.Reciept;
 IF OBJECT_ID('dbo.BookShoppingCart', 'U') IS NOT NULL DROP TABLE dbo.BookShoppingCart;
 IF OBJECT_ID('dbo.Book_ShoppingCart', 'U') IS NOT NULL DROP TABLE dbo.Book_ShoppingCart;
@@ -205,6 +208,22 @@ CREATE TABLE [Reciept] (
 )
 GO
 
+CREATE TABLE [BookDiscount] (
+    bookId int PRIMARY KEY REFERENCES [Book](id) ON DELETE CASCADE,
+    discountPercentage decimal(5, 2) NOT NULL CHECK (discountPercentage >= 0.0 AND discountPercentage <= 1.0),
+    saleStartDate datetime NOT NULL,
+    saleEndDate datetime NOT NULL
+);
+GO
+CREATE TABLE [UserNotifications] (
+    id INT IDENTITY(1,1) PRIMARY KEY, 
+    userId INT NOT NULL REFERENCES [User](id) ON DELETE CASCADE, 
+    message NVARCHAR(MAX) NOT NULL, 
+    createdAt DATETIME DEFAULT GETDATE()
+);
+GO
+
+
 -- Add Foreign Key Constraints with ON DELETE CASCADE
 ALTER TABLE [PersonalLibrary] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id]) ON DELETE CASCADE;
 GO
@@ -305,6 +324,50 @@ BEGIN
 END;
 GO
 
+
+
+CREATE TRIGGER trg_DeleteInvalidSaleEndDate
+ON [BookDiscount]
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- מחיקת שורות עם saleEndDate שכבר עבר
+    DELETE FROM [BookDiscount]
+    WHERE saleEndDate < GETDATE();
+
+    PRINT 'Rows with past saleEndDate have been deleted.';
+END;
+GO
+
+--this trigger for sand massege to user when the book is due in 5 days
+IF OBJECT_ID('dbo.sp_NotifyUsersOnBorrowedBooks', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.sp_NotifyUsersOnBorrowedBooks;
+GO
+
+CREATE PROCEDURE sp_NotifyUsersOnBorrowedBooks
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO [UserNotifications] (userId, message)
+    SELECT 
+        BB.userId,
+        CONCAT('The book with ID ', BB.bookId, ' is due in 5 days. Please return it on time.')
+    FROM [BorrowedBooks] BB
+    WHERE 
+        DATEDIFF(DAY, BB.createdAt, GETDATE()) = 25
+        AND NOT EXISTS (
+            SELECT 1
+            FROM [UserNotifications] UN
+            WHERE UN.userId = BB.userId 
+              AND UN.message LIKE CONCAT('%book with ID ', BB.bookId, '%')
+        );
+
+    PRINT 'Notifications have been added for users.';
+END;
+GO
 
 SET IDENTITY_INSERT [User] ON;
 -- Insert comprehensive dummy data
