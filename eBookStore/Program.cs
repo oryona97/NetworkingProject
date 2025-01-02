@@ -1,4 +1,5 @@
 using eBookStore.Repository;
+using eBookStore.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
@@ -11,6 +12,10 @@ builder.Services.AddScoped<UserRepository>((serviceProvider) =>
 	return new UserRepository(configuration.GetConnectionString("DefaultConnection"), logger);
 });
 
+// Register the background service
+builder.Services.AddHostedService<NotificationBackgroundService>();
+
+// Add session support
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>
 {

@@ -115,7 +115,30 @@ namespace eBookStore.Repository
 			return true;
 		}
 
+		//this func for active Trigger to notify users on borrowed books
+		public async Task NotifyUsersOnBorrowedBooksAsync()
+		{
+			try
+			{
+				using var connection = new SqlConnection(_connectionString);
+				await connection.OpenAsync();
 
+				using var command = new SqlCommand("sp_NotifyUsersOnBorrowedBooks", connection)
+				{
+					CommandType = CommandType.StoredProcedure
+				};
+
+				await command.ExecuteNonQueryAsync();
+				Console.WriteLine("Notification procedure executed successfully.");
+				_logger.LogInformation("Notification procedure executed successfully.");
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Error executing notification procedure.");
+				_logger.LogError(ex, "Error executing notification procedure.");
+				throw; 
+			}
+		}
 
 
 		public async Task<int> SaveAsync(UserModel user)
