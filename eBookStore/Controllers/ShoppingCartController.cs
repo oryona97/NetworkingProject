@@ -12,6 +12,7 @@ public class ShoppingCartController : Controller
 	private readonly IConfiguration _configuration;
 	private string? connectionString;
 	private ShoppingCartRepository shoppingCartRepo;
+	private BookRepository _booksRepo;
 
 	public ShoppingCartController(IConfiguration configuration, ILogger<ShoppingCartController> logger)
 	{
@@ -19,6 +20,7 @@ public class ShoppingCartController : Controller
 		connectionString = _configuration.GetConnectionString("DefaultConnection");
 		_logger = logger;
 		shoppingCartRepo = new ShoppingCartRepository(connectionString);
+		_booksRepo = new BookRepository(connectionString);
 	}
 
 	[Route("cart")]
@@ -36,7 +38,17 @@ public class ShoppingCartController : Controller
 				{
 					cart = new ShoppingCartViewModel { shoppingCart = new ShoppingCartModel() };
 				}
-				return View("Index", cart);
+				var books = cart.shoppingCart.Books;
+				var bookViews = new List<BookViewModel>();
+				foreach (var v in books)
+				{
+					var bookView = _booksRepo.getBookById(v.bookId);
+					if (bookView != null)
+					{
+						bookViews.Add(bookView);
+					}
+				}
+				return View("Index", bookViews);
 			}
 			else
 			{
