@@ -11,14 +11,14 @@ public class ShoppingCartController : Controller
 	private readonly ILogger<ShoppingCartController> _logger;
 	private readonly IConfiguration _configuration;
 	private string? connectionString;
-	private ShoppingCartRepository shoppingCartRepo;
+	private ShoppingCartRepository _shoppingCartRepo;
 
 	public ShoppingCartController(IConfiguration configuration, ILogger<ShoppingCartController> logger)
 	{
 		_configuration = configuration;
 		connectionString = _configuration.GetConnectionString("DefaultConnection");
 		_logger = logger;
-		shoppingCartRepo = new ShoppingCartRepository(connectionString);
+		_shoppingCartRepo = new ShoppingCartRepository(connectionString);
 	}
 
 	[Route("cart")]
@@ -31,7 +31,7 @@ public class ShoppingCartController : Controller
 			int? nullableUserId = HttpContext.Session.GetInt32("userId");
 			if (nullableUserId.HasValue)
 			{
-				var cart = shoppingCartRepo.GetShoppingCart(nullableUserId.Value);
+				var cart = _shoppingCartRepo.GetShoppingCart(nullableUserId.Value);
 				if (cart == null || cart.shoppingCart == null)
 				{
 					cart = new ShoppingCartViewModel { shoppingCart = new ShoppingCartModel() };
@@ -59,8 +59,8 @@ public class ShoppingCartController : Controller
 			if (nullableUserId.HasValue)
 			{
 				//shoppingCartRepo.AddToShoppingCart(nullableUserId.Value, bookId, format);
-				shoppingCartRepo.AddToShoppingCart(nullableUserId.Value, 2, "PDF");
-				return View("ShowShoppingCart", shoppingCartRepo.GetShoppingCart(nullableUserId.Value));
+				_shoppingCartRepo.AddToShoppingCart(nullableUserId.Value, 2, "PDF");
+				return View("ShowShoppingCart", _shoppingCartRepo.GetShoppingCart(nullableUserId.Value));
 			}
 			else
 			{
@@ -87,8 +87,8 @@ public class ShoppingCartController : Controller
 				//shoppingCartRepo.RemoveOneFromShoppingCart(nullableUserId.Value, bookId);
 
 				//this line is for testing
-				shoppingCartRepo.RemoveOneFromShoppingCart(nullableUserId.Value, 4);
-				return View("ShowShoppingCart", shoppingCartRepo.GetShoppingCart(nullableUserId.Value));
+				_shoppingCartRepo.RemoveOneFromShoppingCart(nullableUserId.Value, 4);
+				return View("ShowShoppingCart", _shoppingCartRepo.GetShoppingCart(nullableUserId.Value));
 			}
 			else
 			{
@@ -110,8 +110,8 @@ public class ShoppingCartController : Controller
 			int? nullableUserId = HttpContext.Session.GetInt32("userId");
 			if (nullableUserId.HasValue)
 			{
-				shoppingCartRepo.RemoveAllFromShoppingCart(nullableUserId.Value);
-				return View("ShowShoppingCart", shoppingCartRepo.GetShoppingCart(nullableUserId.Value));
+				_shoppingCartRepo.RemoveAllFromShoppingCart(nullableUserId.Value);
+				return View("ShowShoppingCart", _shoppingCartRepo.GetShoppingCart(nullableUserId.Value));
 			}
 			else
 			{
