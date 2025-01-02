@@ -1,8 +1,12 @@
 
+
+
 @model eBookStore.Models.ViewModels.LandingPageViewModel
 @{
     ViewData["Title"] = "Home";
     Console.WriteLine(Model.SpecialSales[0].coverModel.imgName);
+
+    
 }
 
 <div class="home-container">
@@ -132,12 +136,6 @@
 
             <div class="Categorys row ms-1" style="height: 120px;">
 
-                <button class="category-buttom col-1 ">Action</button>
-                <button class="category-buttom col-1 ">Drama</button>
-                <button class="category-buttom col-1 ">Romance</button>
-
-
-
             </div>
 
 
@@ -145,79 +143,108 @@
     </div>
 </div>
 
-@section Scripts {
+@section Scripts 
+{
+
     <script>
-        // Additional interactivity or scripts can be added here
-        console.log("Home page loaded.");
 
+        //HashMap of all book cover Path
+        var books = @Json.Serialize(Model.allBooks);
 
-        // Array of image URLs (replace with your own or fetch from API)
-        const imageUrls = [
-            '@Model.allBooks[0].coverModel.imgName',
-            '@Model.allBooks[1].coverModel.imgName',
-            '@Model.allBooks[2].coverModel.imgName',
-            '@Model.allBooks[3].coverModel.imgName',
-            '@Model.allBooks[4].coverModel.imgName',
-        ];
-
-       
+        var bookCoversPath = {}
+        for(let book of books)
+        {
+            bookCoversPath[book.book.id]=book.coverModel.imgName;
+        }
 
         // Select the roller track container
         const carouselInner = document.querySelector('.carousel-inner');
 
 
-        // Function to dynamically populate images
-       function populateCarousel(images, imagesPerItem = 4) {
+        function populateCarousel2(bookCoversPath, imagesPerItem = 4) 
+        {
             let chunk = []; // Temporary array to hold a chunk of images
+            let index = 0; // Counter for the current index
 
-            images.forEach((url, index) => {
-                // Push the current image URL into the chunk
-                chunk.push(url);
+            for (let bookID in bookCoversPath) 
+            {
+                if (bookCoversPath.hasOwnProperty(bookID)) 
+                {
+                    // Store both bookID and chunkUrl in the chunk array
+                    chunk.push({ bookID: bookID, imgName: bookCoversPath[bookID] });
 
-                // When the chunk reaches the desired number of images (or it's the last image)
-                if (chunk.length === imagesPerItem || index === images.length - 1) {
-                    // Create a carousel item
-                    const carouselItem = document.createElement('div');
-                    carouselItem.className = `carousel-item ${carouselInner.children.length === 0 ? ' active' : ''}`;
-                    
+                    // Check if the chunk is full or if it's the last item
+                    if (chunk.length === imagesPerItem || index === Object.keys(bookCoversPath).length - 1) 
+                    {
+                        // Create a carousel item
+                        const carouselItem = document.createElement('div');
+                        carouselItem.className = `carousel-item ${carouselInner.children.length === 0 ? ' active' : ''}`;
 
-                    // Create a container for the row of images
-                    const row = document.createElement('div');
-                    row.className = 'row';
+                        // Create a container for the row of images
+                        const row = document.createElement('div');
+                        row.className = 'row';
 
-                    // Add each image in the chunk to the row
-                    chunk.forEach((chunkUrl) => {
-                        const col = document.createElement('div');
-                        col.className = 'col-2'; // Adjust based on how many images per row 
-                        col.style = 'padding-inline: 10px;';
+                        // Add each image in the chunk to the row
+                        chunk.forEach(({ bookID, imgName }) => 
+                        {
+                            const col = document.createElement('div');
+                            col.className = 'col-2'; // Adjust based on how many images per row
+                            col.style = 'padding-inline: 10px;';
 
-                        const img = document.createElement('img');
-                        img.src = `\\images\\bookCovers\\${chunkUrl || 'default_book_cover.jpg'}`; // Dynamically set the image URL or fallback
-                        img.alt = chunkUrl;
-                        img.style = "border-radius: 30px;"
-                        img.className = 'img-fluid'; // Ensure responsiveness
-                        
+                            const imgA = document.createElement('a');
+                            imgA.href = `/Book/Index/${bookID}`; // Dynamically set the href for each book
 
-                        col.appendChild(img);
-                        row.appendChild(col);
-                    });
+                            const img = document.createElement('img');
+                            img.src = `\\images\\bookCovers\\${imgName || 'default_book_cover.jpg'}`; // Dynamically set the image URL or fallback
+                            img.alt = imgName;
+                            img.style = "border-radius: 30px;";
+                            img.className = 'img-fluid'; // Ensure responsiveness
 
-                    // Append the row to the carousel item
-                    carouselItem.appendChild(row);
+                            imgA.appendChild(img);
+                            col.appendChild(imgA);
+                            row.appendChild(col);
+                        });
 
-                    // Append the carousel item to the carousel inner container
-                    carouselInner.appendChild(carouselItem);
+                        // Append the row to the carousel item
+                        carouselItem.appendChild(row);
 
-                    // Clear the chunk
-                    chunk = [];
+                        // Append the carousel item to the carousel inner container
+                        carouselInner.appendChild(carouselItem);
+
+                        // Clear the chunk
+                        chunk = [];
+                    }
+
+                    // Increment the index
+                    index++;
                 }
-            });
+            }
         }
 
 
-        // Populate the carousel dynamically
-        populateCarousel(imageUrls,6);
+        populateCarousel2(bookCoversPath,6);
+
+    </script>
+
+
+
+    <script>
+
+        const categorysContainer = document.querySelector('.Categorys');
+
+        var bookCaregorys = @Json.Serialize(Model.listOfCategorys);
+
+        for(var category in bookCaregorys)
+        {
+            const item = document.createElement('button');
+            item.className = "category-buttom col-1";
+            item.textContent = bookCaregorys[category];
+
+            categorysContainer.appendChild(item);
+        }
+
 
 
     </script>
+    
 }
