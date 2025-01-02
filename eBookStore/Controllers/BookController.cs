@@ -153,7 +153,7 @@ public class BookController : Controller
     public void DeleteBookViewModel(int bookId)
     {
         Console.WriteLine("Book Deleted");
-        bookRepo.DeleteBookViewModel(2);
+        bookRepo.DeleteBookViewModel(bookId);
         Console.WriteLine("Book Deleted");
     }
 
