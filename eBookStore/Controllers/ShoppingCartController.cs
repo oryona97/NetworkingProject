@@ -2,9 +2,7 @@ using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using eBookStore.Models;
 using eBookStore.Models.ViewModels;
-using Microsoft.Data.SqlClient;
 using eBookStore.Repository;
-using System.Text;
 namespace eBookStore.Controllers;
 
 
@@ -38,11 +36,11 @@ public class ShoppingCartController : Controller
 				{
 					cart = new ShoppingCartViewModel { shoppingCart = new ShoppingCartModel() };
 				}
-				return View("ShowShoppingCart", cart);
+				return View("Index", cart);
 			}
 			else
 			{
-				return RedirectToAction("Showlogin", "Home");
+				return RedirectToAction("Login", "Auth");
 			}
 		}
 		catch (Exception ex)
@@ -66,7 +64,7 @@ public class ShoppingCartController : Controller
 			}
 			else
 			{
-				return RedirectToAction("Home/showLogIn");
+				return RedirectToAction("auth/login");
 			}
 		}
 		catch (Exception ex)
@@ -94,7 +92,7 @@ public class ShoppingCartController : Controller
 			}
 			else
 			{
-				return RedirectToAction("Home/showLogIn");
+				return RedirectToAction("auth/login");
 			}
 		}
 		catch (Exception ex)
@@ -117,7 +115,7 @@ public class ShoppingCartController : Controller
 			}
 			else
 			{
-				return RedirectToAction("Home/showLogIn");
+				return RedirectToAction("auth/login");
 			}
 		}
 		catch (Exception ex)
