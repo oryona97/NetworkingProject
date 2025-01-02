@@ -66,6 +66,31 @@ public class BookRepository
 		AddGenreModel(bookViewModel.genreModel);
 		AddAuthorModel(bookViewModel.authorModel);
 	}
+
+	//this func to delete bookViewModel from db
+	public void DeleteBookViewModel(int bookId)
+	{
+		try
+		{
+			using (var connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				//dlelete book model
+				string query = "DELETE FROM Book WHERE id = @bookId;";
+				using (var command = new SqlCommand(query, connection))
+				{
+					command.Parameters.AddWithValue("@bookId", bookId);
+					command.ExecuteNonQuery();
+				}
+				
+			}
+		}
+		catch (SqlException ex)
+		{
+			Console.WriteLine($"Database error during deleting book {ex}");
+			throw;
+		}
+	}
 	
 	//this func to add AuthorModel to the database
 	public void AddAuthorModel(AuthorModel authorModel)
@@ -1048,6 +1073,94 @@ public class BookRepository
 		}
 	}
 
+	//this func to change book book BuyingPrice this func is to backend
+	public void changeBuyingPrice(int bookId, double newPrice)
+	{
+		try
+		{
+			using (var connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "UPDATE Book SET buyingPrice = @newPrice WHERE id = @bookId;";
+
+				using (var command = new SqlCommand(query, connection))
+				{
+					command.Parameters.AddWithValue("@bookId", bookId);
+					command.Parameters.AddWithValue("@newPrice", newPrice);
+
+					command.ExecuteNonQuery();
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+			Console.WriteLine($"Database error during changing buying price {ex}");
+			throw;
+		}
+	}
+
+	//this func to add to HistoryBookPriceModel this func is to frontend
+	public void addHistoryBookPriceModel(int bookId ,double newPrice)
+	{
+		float buyingPrice=0;
+		//get the current buyingPrice from book
+		try{
+			using (var connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "SELECT buyingPrice FROM Book WHERE id = @bookId;";
+
+				using (var command = new SqlCommand(query, connection))
+				{
+					command.Parameters.AddWithValue("@bookId", bookId);
+
+					using (var reader = command.ExecuteReader())
+					{
+						if (reader.Read())
+						{
+                        	buyingPrice = reader["buyingPrice"] != DBNull.Value ? Convert.ToSingle(reader["buyingPrice"]) : 0;
+							
+						}
+					}
+				}
+			}
+		Console.WriteLine($"buyingPrice: {buyingPrice}");
+
+		}catch (SqlException ex)
+		{
+			Console.WriteLine($"Database error during getting buying price {ex}");
+			throw;
+		}
+
+		try
+		{
+			using (var connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "INSERT INTO HistoryBookPrice (bookId, price, createdAt) VALUES (@bookId, @price, @createdAt);";
+
+				using (var command = new SqlCommand(query, connection))
+				{
+					command.Parameters.AddWithValue("@bookId", bookId);
+					command.Parameters.AddWithValue("@price", buyingPrice);
+					command.Parameters.AddWithValue("@createdAt", DateTime.Now);
+
+					command.ExecuteNonQuery();
+				}
+			}
+
+			//this for Upfate the buyingPrice in book
+			changeBuyingPrice(bookId, newPrice);
+		}
+		catch (SqlException ex)
+		{
+			Console.WriteLine($"Database error during adding history book price {ex}");
+			throw;
+		}
+	}
+
+	 
+	
 
 }
 

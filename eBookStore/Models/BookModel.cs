@@ -31,7 +31,6 @@ public class BookModel
 	[Required(ErrorMessage = "historyPrice is required")]
 	public int priceHistory { get; set; }
 
-	[Required(ErrorMessage = "onSale is required")]
 	public bool onSale { get; set; }
 
 	[Required(ErrorMessage = "canborrow is required")]
@@ -40,7 +39,7 @@ public class BookModel
 	[Required(ErrorMessage = "startRate is required")]
 	public float starRate { get; set; }
 
-	public DateTime createdAt { get; set; }
+	public DateTime createdAt { get; set; }= DateTime.Now;
 
 }
 

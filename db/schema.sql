@@ -1,3 +1,4 @@
+
 -- Create Database
 USE master;
 GO
@@ -11,6 +12,8 @@ GO
 
 
 -- Drop existing tables if they exist (in reverse order of creation)
+IF OBJECT_ID('dbo.UserNotifications', 'U') IS NOT NULL DROP TABLE dbo.UserNotifications;
+IF OBJECT_ID('dbo.BookDiscount', 'U') IS NOT NULL DROP TABLE dbo.BookDiscount;
 IF OBJECT_ID('dbo.Reciept', 'U') IS NOT NULL DROP TABLE dbo.Reciept;
 IF OBJECT_ID('dbo.BookShoppingCart', 'U') IS NOT NULL DROP TABLE dbo.BookShoppingCart;
 IF OBJECT_ID('dbo.Book_ShoppingCart', 'U') IS NOT NULL DROP TABLE dbo.Book_ShoppingCart;
@@ -73,7 +76,7 @@ CREATE TABLE [Book] (
   [canBorrow] bit,
   [starRate] decimal(3,2),
   [createdAt] datetime
-  
+
 )
 GO
 
@@ -172,7 +175,6 @@ GO
 
 CREATE TABLE [HistoryBookPrice] (
   [id] int IDENTITY(50,1) PRIMARY KEY,
-  [datePrice] date,
   [price] decimal(10,2),
   [bookId] int,
   [createdAt] datetime
@@ -206,54 +208,165 @@ CREATE TABLE [Reciept] (
 )
 GO
 
--- Add Foreign Key Constraints
-ALTER TABLE [PersonalLibrary] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id])
+CREATE TABLE [BookDiscount] (
+    bookId int PRIMARY KEY REFERENCES [Book](id) ON DELETE CASCADE,
+    discountPercentage decimal(5, 2) NOT NULL CHECK (discountPercentage >= 0.0 AND discountPercentage <= 1.0),
+    saleStartDate datetime NOT NULL,
+    saleEndDate datetime NOT NULL
+);
 GO
-ALTER TABLE [PersonalLibrary] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id])
+CREATE TABLE [UserNotifications] (
+    id INT IDENTITY(1,1) PRIMARY KEY, 
+    userId INT NOT NULL REFERENCES [User](id) ON DELETE CASCADE, 
+    message NVARCHAR(MAX) NOT NULL, 
+    createdAt DATETIME DEFAULT GETDATE()
+);
 GO
-ALTER TABLE [Book] ADD FOREIGN KEY ([publisherId]) REFERENCES [Publisher] ([id])
+
+
+-- Add Foreign Key Constraints with ON DELETE CASCADE
+ALTER TABLE [PersonalLibrary] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [Book] ADD FOREIGN KEY ([genreId]) REFERENCES [Genre] ([id])
+ALTER TABLE [PersonalLibrary] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [HistoryBookPrice] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id])
+ALTER TABLE [Book] ADD FOREIGN KEY ([publisherId]) REFERENCES [Publisher] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [BorrowedBooks] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id])
+ALTER TABLE [Book] ADD FOREIGN KEY ([genreId]) REFERENCES [Genre] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [BorrowedBooks] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id])
+            -- this constraint is to ensure that the borrow price is less than the buying price
+ALTER TABLE [Book] ADD CONSTRAINT CHK_Book_BorrowPrice_LessThan_BuyingPrice CHECK (borrowPrice < buyingPrice);
 GO
-ALTER TABLE [HistoryPurchases] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id])
+ALTER TABLE [HistoryBookPrice] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [HistoryPurchases] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id])
+ALTER TABLE [BorrowedBooks] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [Rating] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id])
+ALTER TABLE [BorrowedBooks] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [Rating] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id])
+ALTER TABLE [HistoryPurchases] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [Feedback] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id])
+ALTER TABLE [HistoryPurchases] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [Feedback] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id])
+ALTER TABLE [Rating] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [GeneralRating] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id])
+ALTER TABLE [Rating] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [GeneralFeedback] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id])
+ALTER TABLE [Feedback] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [BookRentQueue] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id])
+ALTER TABLE [Feedback] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [BookRentQueue] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id])
+ALTER TABLE [GeneralRating] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [Auther] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id])
+ALTER TABLE [GeneralFeedback] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [Cover] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id])
+ALTER TABLE [BookRentQueue] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [ShoppingCart] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id])
+ALTER TABLE [BookRentQueue] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [BookShoppingCart] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id])
+ALTER TABLE [Auther] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [BookShoppingCart] ADD FOREIGN KEY ([userId]) REFERENCES [ShoppingCart] ([userId])
+ALTER TABLE [Cover] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [Reciept] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id])
+ALTER TABLE [ShoppingCart] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id]) ON DELETE CASCADE;
 GO
-ALTER TABLE [Reciept] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id])
+ALTER TABLE [BookShoppingCart] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
+GO
+ALTER TABLE [BookShoppingCart] ADD FOREIGN KEY ([userId]) REFERENCES [ShoppingCart] ([userId]) ON DELETE CASCADE;
+GO
+ALTER TABLE [Reciept] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id]) ON DELETE CASCADE;
+GO
+ALTER TABLE [Reciept] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
+GO
+
+--Triggers--
+CREATE TRIGGER trg_DeleteExpiredBorrowedBooks
+ON BorrowedBooks
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    --temp table to store deleted records
+    DECLARE @DeletedBooks TABLE (
+        bookId INT,
+        userId INT,
+        createdAt DATETIME
+    );
+
+    -- delete expired borrowed books
+    DELETE FROM BorrowedBooks
+    OUTPUT DELETED.bookId, DELETED.userId, DELETED.createdAt INTO @DeletedBooks
+    WHERE DATEDIFF(DAY, createdAt, GETDATE()) > 30;
+
+    --match the deleted books with the personal library and delete them
+    DELETE PL
+    FROM PersonalLibrary PL
+    WHERE EXISTS (
+        SELECT 1
+        FROM @DeletedBooks DB
+        WHERE DB.bookId = PL.bookId
+          AND DB.userId = PL.userId
+    );
+
+    -- upfate amoutOfCoppies in the book table
+    UPDATE B
+    SET amountOfCopies = CASE 
+                            WHEN amountOfCopies < 3 THEN amountOfCopies + 1 
+                            ELSE amountOfCopies 
+                         END
+    FROM Book B
+    WHERE EXISTS (
+        SELECT 1
+        FROM @DeletedBooks DB
+        WHERE DB.bookId = B.id
+    );
+
+    PRINT 'Expired borrowed books have been deleted, and inventory updated successfully.';
+END;
+GO
+
+
+
+CREATE TRIGGER trg_DeleteInvalidSaleEndDate
+ON [BookDiscount]
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    -- מחיקת שורות עם saleEndDate שכבר עבר
+    DELETE FROM [BookDiscount]
+    WHERE saleEndDate < GETDATE();
+
+    PRINT 'Rows with past saleEndDate have been deleted.';
+END;
+GO
+
+--this trigger for sand massege to user when the book is due in 5 days
+IF OBJECT_ID('dbo.sp_NotifyUsersOnBorrowedBooks', 'P') IS NOT NULL
+    DROP PROCEDURE dbo.sp_NotifyUsersOnBorrowedBooks;
+GO
+
+CREATE PROCEDURE sp_NotifyUsersOnBorrowedBooks
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    INSERT INTO [UserNotifications] (userId, message)
+    SELECT 
+        BB.userId,
+        CONCAT('The book with ID ', BB.bookId, ' is due in 5 days. Please return it on time.')
+    FROM [BorrowedBooks] BB
+    WHERE 
+        DATEDIFF(DAY, BB.createdAt, GETDATE()) = 25
+        AND NOT EXISTS (
+            SELECT 1
+            FROM [UserNotifications] UN
+            WHERE UN.userId = BB.userId 
+              AND UN.message LIKE CONCAT('%book with ID ', BB.bookId, '%')
+        );
+
+    PRINT 'Notifications have been added for users.';
+END;
 GO
 
 SET IDENTITY_INSERT [User] ON;
@@ -298,7 +411,7 @@ INSERT INTO [Book] ([id], [publisherId], [genreId], [amountOfCopies], [title], [
                     [pubDate], [ageLimit], [priceHistory], [onSale], [canBorrow], [starRate], [createdAt])
 VALUES 
 (1, 1, 1, 3, 'The Great Adventure', 2.99, 15.99, '2023-01-15', 12, 1, 1, 1, 4.5, GETDATE()),
-(2, 2, 3, 3, 'Starship Chronicles', 3.50, 19.99, '2022-11-20', 16, 2, 0, 1, 4.7, GETDATE()),
+(2, 2, 3, 2, 'Starship Chronicles', 3.50, 19.99, '2022-11-20', 16, 2, 0, 1, 4.7, GETDATE()),
 (3, 3, 4, 3, 'Murder in the Library', 2.50, 14.50, '2023-05-10', 18, 3, 1, 1, 4.2, GETDATE()),
 (4, 4, 5, 3, 'Love Across Continents', 2.75, 16.50, '2023-02-28', 16, 4, 1, 1, 4.6, GETDATE()),
 (5, 5, 2, 3, 'The Rise of Technology', 3.25, 18.99, '2022-09-05', 14, 5, 0, 1, 4.4, GETDATE());
@@ -333,7 +446,7 @@ SET IDENTITY_INSERT [Cover] OFF;
 
 INSERT INTO [PersonalLibrary] ([userId], [bookId], [createdAt])
 VALUES 
-( 1, 1, GETDATE()),
+( 1, 2, GETDATE()),
 ( 2, 2, GETDATE()),
 ( 3, 3, GETDATE()),
 ( 4, 4, GETDATE()),
@@ -342,13 +455,13 @@ VALUES
 
 -- Borrowed Books
 SET IDENTITY_INSERT [BorrowedBooks] ON;
-INSERT INTO [BorrowedBooks] ([id], [userId], [bookId])
+INSERT INTO [BorrowedBooks] ([id], [userId], [bookId],[createdAt])
 VALUES 
-(1, 1, 2),
-(2, 2, 3),
-(3, 3, 4),
-(4, 4, 5),
-(5, 5, 1);
+(1, 1, 2,GETDATE()),
+(2, 2, 3,GETDATE()),
+(3, 3, 4,GETDATE()),
+(4, 4, 5,GETDATE()),
+(5, 5, 1,GETDATE());
 SET IDENTITY_INSERT [BorrowedBooks] OFF;
 
 -- Ratings
@@ -395,13 +508,13 @@ SET IDENTITY_INSERT [HistoryPurchases] OFF;
 
 -- History Book Price
 SET IDENTITY_INSERT [HistoryBookPrice] ON;
-INSERT INTO [HistoryBookPrice] ([id], [datePrice], [price], [bookId], [createdAt])
+INSERT INTO [HistoryBookPrice] ([id],  [price], [bookId], [createdAt])
 VALUES 
-(1, '2023-01-01', 14.99, 1, GETDATE()),
-(2, '2022-11-01', 18.99, 2, GETDATE()),
-(3, '2023-05-01', 13.50, 3, GETDATE()),
-(4, '2023-02-15', 15.50, 4, GETDATE()),
-(5, '2022-08-20', 17.99, 5, GETDATE());
+(1,  14.99, 1, GETDATE()),
+(2,  18.99, 2, GETDATE()),
+(3,  13.50, 3, GETDATE()),
+(4,  15.50, 4, GETDATE()),
+(5,  17.99, 5, GETDATE());
 SET IDENTITY_INSERT [HistoryBookPrice] OFF;
 
 -- Shopping Cart
