@@ -149,6 +149,14 @@ public class BookController : Controller
         Console.WriteLine("Book Added");
     }
 
+    //this func to delete bookViewModel from db
+    public void DeleteBookViewModel(int bookId)
+    {
+        Console.WriteLine("Book Deleted");
+        bookRepo.DeleteBookViewModel(2);
+        Console.WriteLine("Book Deleted");
+    }
+
     
     //this func return all Genres name that exsist in db
     public List<string> GetAllGenres()

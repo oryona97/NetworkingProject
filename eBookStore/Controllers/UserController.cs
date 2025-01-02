@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using eBookStore.Models;
+using eBookStore.Repository;
 
 namespace eBookStore.Controllers;
 
@@ -16,7 +17,13 @@ public class UserController : Controller
         _logger = logger;
     }
 
-
+    public IActionResult changeBuingPriceAndUpdateBookAndHistoryBuingPrice(int bookId, float newPrice)
+    {
+        BookRepository bookRepo = new BookRepository(connectionString);
+        bookRepo.addHistoryBookPriceModel(bookId, newPrice);
+        return RedirectToAction("showBook","Home");
+    }
+    
     
 
     public IActionResult Privacy()

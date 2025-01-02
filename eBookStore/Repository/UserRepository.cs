@@ -1,5 +1,6 @@
 using eBookStore.Models;
 using eBookStore.Models.ViewModels;
+using eBookStore.Repository;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using System.Data;
@@ -76,7 +77,43 @@ namespace eBookStore.Repository
 		}
 
 
+		//this func for admin can make other user to be admin
+		public bool UpdateUserToAdmin(int userId)
+		{
+			try
+			{
+				using SqlConnection connection = new SqlConnection(_connectionString);
+				connection.Open();
+				string sql = "UPDATE [User] SET type = admin WHERE id = @userId";
+				using SqlCommand command = new SqlCommand(sql, connection);
+				command.Parameters.AddWithValue("@userId", userId);
+				command.ExecuteNonQuery();
+				return true;
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine("Error updating user to admin: {0}", userId);
+				_logger.LogError(ex, "Error updating user to admin: {UserId}", userId);
+				throw;
+			}
+		}
 
+		//this func for admin can add book to db
+		public bool AddBookViewModel(BookViewModel bookViewModel)
+		{
+			try
+			{
+				BookRepository bookRepository = new BookRepository(_connectionString);
+				bookRepository.AddBookViewModel(bookViewModel);
+
+			}catch(Exception ex)
+			{
+				Console.WriteLine("Error adding book: {0}", bookViewModel);
+				_logger.LogError(ex, "Error adding book: {BookModel}", new { bookViewModel });
+				throw;
+			}
+			return true;
+		}
 
 
 
