@@ -49,6 +49,30 @@ public class UserController : Controller
         return View();
     }
 
+
+    //this func is used to add discount to a book and update the book for admin
+    [HttpPost]
+    [HttpGet]
+    public IActionResult AddDiscountAndUpdateBook(int bookId, float discountPercentage, DateTime saleEndDate)
+    {
+        try
+        {
+            UserRepository userRepo = new UserRepository(connectionString, _loggerUserRepo);
+
+            userRepo.AddDiscountAndUpdateBook(bookId, discountPercentage, saleEndDate);
+            Console.WriteLine($"Discount added and book updated successfully for bookId {bookId}.");
+            return Json(new { message = "Discount added and book updated successfully", bookId });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error adding discount for bookId {bookId}", bookId);
+            Console.WriteLine($"Error: {ex.Message}");
+            return Json(new { error = ex.Message });
+        }
+    }
+
+    
+
     public IActionResult Privacy()
     {
         return View();

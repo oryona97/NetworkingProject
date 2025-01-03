@@ -194,5 +194,69 @@ namespace eBookStore.Repository
 			command.Parameters.Add("@LastName", SqlDbType.NVarChar).Value = (object?)user.lastName ?? DBNull.Value;
 			command.Parameters.Add("@PhoneNumber", SqlDbType.NVarChar).Value = (object?)user.phoneNumber ?? DBNull.Value;
 		}
+
+		//this func for admin can discount for book
+		public void AddDiscountAndUpdateBook(int bookId, float discountPercentage, DateTime saleEndDate)
+		{
+			try
+			{
+				using (var connection = new SqlConnection(_connectionString))
+				{
+					connection.Open();
+
+					using (var transaction = connection.BeginTransaction())
+					{
+						try
+						{
+							string insertQuery = @"
+								INSERT INTO BookDiscount (bookId, discountPercentage, saleStartDate, saleEndDate)
+								VALUES (@bookId, @discountPercentage, GETDATE(), @saleEndDate);
+							";
+
+							using (var insertCommand = new SqlCommand(insertQuery, connection, transaction))
+							{
+								insertCommand.Parameters.AddWithValue("@bookId", bookId);
+								insertCommand.Parameters.AddWithValue("@discountPercentage", discountPercentage);
+								insertCommand.Parameters.AddWithValue("@saleEndDate", saleEndDate);
+
+								insertCommand.ExecuteNonQuery();
+							}
+
+							string updateQuery = @"
+								UPDATE Book
+								SET onSale = 1
+								WHERE id = @bookId;
+							";
+
+							using (var updateCommand = new SqlCommand(updateQuery, connection, transaction))
+							{
+								updateCommand.Parameters.AddWithValue("@bookId", bookId);
+
+								updateCommand.ExecuteNonQuery();
+							}
+
+							transaction.Commit();
+
+							Console.WriteLine("BookDiscount added and Book table updated successfully.");
+							_logger.LogInformation("BookDiscount added and Book table updated successfully for bookId {bookId}", bookId);
+						}
+						catch (Exception ex)
+						{
+							transaction.Rollback();
+							Console.WriteLine($"Error during adding discount and updating book: {ex.Message}");
+							_logger.LogError(ex, "Error during adding discount and updating book for bookId {bookId}", bookId);
+							throw;
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Database error: {ex.Message}");
+				_logger.LogError(ex, "Database error during AddDiscountAndUpdateBook for bookId {bookId}", bookId);
+				throw;
+			}
+		}
+	
 	}
 }
