@@ -1,6 +1,15 @@
 @model eBookStore.Models.ViewModels.GalleryPageViewModel
 @{
     ViewData["Title"] = "Gallery";
+    
+
+    foreach (var cate in Model.listOfCategorys)
+    {
+    Console.WriteLine(cate);
+    }
+
+
+    
 }
 
 <div class="Gallery-container d-flex">
@@ -13,8 +22,8 @@
             <ul class="categorysList nav nav-pills flex-column mb-auto">
 
                 <li class="nav-item">
-                    <a href="#" class="nav-link active" aria-current="page">
-                        <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                    <a href="#" class="nav-link active" data-genre="all" aria-current="page">
+                        <svg class="bi me-2"  width="16" height="16"><use xlink:href="#home"/></svg>
                         All-Caregorys
                     </a>
                 </li>
@@ -22,8 +31,8 @@
                 @foreach(var cate in Model.listOfCategorys)
                 {
                     <li>
-                        <a href="#" class="nav-link link-dark">
-                            <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
+                        <a href="#" data-genre="@cate.Replace(" ","-")" class="nav-link link-dark">
+                            <svg class="bi me-2"  width="16" height="16"><use xlink:href="#speedometer2"/></svg>
                             @cate
                         </a>
                     </li>
@@ -40,33 +49,83 @@
 
         <hr>
             <h2>Welcome to the book gallery:</h2>
+
+            <div class="dropdown show">
+                <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                    Order-By
+                </a>
+
+                <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <a class="dropdown-item" href="#">Price Increase</a>
+                    <a class="dropdown-item" href="#">Price Decrease</a>
+                    <a class="dropdown-item" href="#">Most Popular</a>
+                    <a class="dropdown-item" href="#">Genre</a>
+                    <a class="dropdown-item" href="#">Year of Publishing</a>
+                </div>
+            </div>           
+
         <hr>
 
-        <div class="Book-Cards row">
-
-            <div class="card" style="width: 18rem;">
-                <img src="\images\bookCovers\default_book_cover.jpg" class="card-img-top" alt="...">
-
-                <div class="card-body d-grid">
-                    <h5 class="card-title">Card title</h5>
-                    <p class="card-text">Some quick example text to build on the card title and make up the bulk of the card's content.</p>
-                    <a href="#" class="buy-buttom text-center";">Buy-Now</a>
-                </div>
-            </div>  
+        <!--Books Gallery-->
+        <div class="Books-Container row" style="row-gap: 10px; column-gap: 10px;">
 
             @foreach(var book in Model.allBooks)
             {
-                <div class="card" style="width: 18rem;">
+                <div class="card book-item" data-genre="@book.genreModel.name.Replace(" ", "-")" style="width: 18rem;">
                     <a href="@Url.Action("Index", "Book")/@book.book.id">
                         <img src="\images\bookCovers\@book.coverModel.imgName" class="card-img-top" alt="@book.coverModel.imgName">
                     </a>
                     <div class="card-body d-grid">
                         <h5 class="card-title">@book.book.title</h5>
-                        <p class="card-text">
-                            <!-- Need to fill all book info-->
-                        </p>
+                        <!-- Need to Fix onSale logic + Price history-->
+                        @if(book.book.onSale)
+                        {
+                            <p class="card-text">
+                                    <a>Author: Need Fix </a><br> 
+                                    <a>Published by: @book.publisherModel.name</a><br>
+                                    <a>Genre: @book.genreModel.name</a><br>
+                                    <a>Age limit: @book.book.ageLimit</a><br>
+                                    <a>Publish date: @book.book.pubDate</a><br>
+                                    <a>Rating: @book.book.starRate</a><br>
+                                    <a class="text-muted text-decoration-line-through">Original Price: @book.book.priceHistory$</a><br>
+                                    <a>Sale Price: @book.book.buyingPrice$</a>
 
-                        <a href="#" class="buy-buttom text-center";">Buy-Now</a>
+                            </p>
+                        }
+                        else
+                        {
+                            <p class="card-text">
+                                <a>Author: Need Fix </a><br> 
+                                <a>Published by: @book.publisherModel.name</a><br>
+                                <a>Genre: @book.genreModel.name</a><br>
+                                <a>Age limit: @book.book.ageLimit</a><br>
+                                <a>Publish date: @book.book.pubDate</a><br>
+                                <a>Rating: @book.book.starRate</a><br>
+                                <a>Price: @book.book.priceHistory$</a><br>
+                            </p>
+
+                        }
+
+                        @if(book.book.canBorrow)
+                        {
+                            <div class="price-container card-footer text-center">
+                                <div class="row" style="column-gap: 5px;">
+                                    <div class="col" style="background-color: rgb(74, 234, 133);" id="Buy-Button">
+                                        <a href="#" class="Buy-button">Buy</a>
+                                    </div>
+                                    <div class="col" style="background-color: rgb(85, 83, 210);" id="Borrow-Button">
+                                        <a href="#" class="Borrow-button">Borrow</a>
+                                    </div>
+                                </div>
+                            </div>
+                        }   
+                        else
+                        {
+                            <div class="price-container card-footer">
+                                <a href="#" class="Buy-button text-center">Buy</a>
+                            </div>
+
+                        }
                     </div>
                 </div> 
             }
@@ -96,62 +155,44 @@
     var categoryList = galleryModel.listOfCategorys;
     console.log(categoryList);
 
-    function populateCategorys()
-    {
-        for(let category of categoryList)
-        {
-            const categoryLabel = document.createElement('li');
-
-            const categoryLabelA = document.createElement('a');
-            categoryLabelA.className = "nav-link link-dark";
-            categoryLabelA.textContent = category;
-
-            const categoryLabelSVG = document.createElement('svg');
-            categoryLabelSVG.className = "bi me-2";
-            categoryLabelSVG.height = "16";
-            categoryLabelSVG.width = "16";
-
-            categoryLabel.appendChild(categoryLabelA);
-            categoryLabelA.appendChild(categoryLabelSVG);
-            bookCategorysContainer.appendChild(categoryLabel);
-        }
-    }
 
 
 
-    function populateBookCards(bookName)
-    {
-        const Book = document.createElement('div');
-        Book.className = 'card';
-        Book.style = 'width: 18rem';
+    document.addEventListener('DOMContentLoaded', () => {
+        const categoryLinks = document.querySelectorAll('.categorysList .nav-link');
+        const books = document.querySelectorAll('.book-item');
 
-        const img = document.createElement('img');
-        img.src = '\\images\\bookCovers\\default_book_cover.jpg';
-        img.style = 'card-img-top';
-        img.alt = bookName;
-        Book.appendChild(img);
-
-        const BookBody = document.createElement('div');
-        Book.appendChild(BookBody);
-
-        const bookTitle = document.createElement('h5');
-        bookTitle.className = "card-title";
-        BookBody.appendChild(bookTitle);
-
-        const bookText = document.createElement('p');
-        bookText.className ='card-text';
-        BookBody.appendChild(bookText);
+        categoryLinks.forEach(link => {
 
 
-        const bookBTN = document.createElement('a');
-        bookBTN.href = '#';
-        bookBTN.className ='btn btn-primary';
-        bookBTN.textContent = 'Buy-Now';
-        BookBody.appendChild(bookBTN);
+            link.addEventListener('click', (e) => {
+                e.preventDefault();
+                const genre = e.target.closest('a').getAttribute('data-genre');
 
-        BookCards.appendChild(Book);
-    }
+                // Highlight active link
+                categoryLinks.forEach(l => l.classList.remove('active'));
+                e.target.closest('a').classList.add('active');
 
+                // Filter books
+                books.forEach(book => {
+                    if (genre === 'all' || book.getAttribute('data-genre') === genre) {
+                        book.style.display = 'block';
+                    } else {
+                        book.style.display = 'none';
+                    }
+                });
+            });
+
+
+        });
+    });
+
+    document.querySelectorAll('.dropdown-item').forEach(item => {
+    item.addEventListener('click', event => {
+        console.log(event.target.textContent); // Log the selected item
+        // Add sorting/filtering logic here
+    });
+});
 
 
 

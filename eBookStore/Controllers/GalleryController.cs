@@ -32,7 +32,7 @@ public class GalleryController : Controller
 
         data.allBooks = _bookRepo.getAllBooks();
         data.listOfCategorys = _bookRepo.getAllGenres();
-
+        
         return View(data);
     }
 
