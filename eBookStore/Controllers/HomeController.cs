@@ -202,6 +202,7 @@ public class HomeController : Controller
 		LandingPageViewModel info = new LandingPageViewModel();
 		info.allBooks = _bookRepo.getAllBooks();
 		info.SpecialSales = _bookRepo.getAllBooks();
+		info.listOfCategorys = _bookRepo.getAllGenres();
 
 		return View(info);
 	}
