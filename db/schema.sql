@@ -211,8 +211,8 @@ GO
 CREATE TABLE [BookDiscount] (
     bookId int PRIMARY KEY REFERENCES [Book](id) ON DELETE CASCADE,
     discountPercentage decimal(5, 2) NOT NULL CHECK (discountPercentage >= 0.0 AND discountPercentage <= 1.0),
-    saleStartDate datetime NOT NULL,
-    saleEndDate datetime NOT NULL
+    saleStartDate datetime DEFAULT GETDATE(),
+    saleEndDate datetime NOT NULL 
 );
 GO
 CREATE TABLE [UserNotifications] (
@@ -333,7 +333,7 @@ AS
 BEGIN
     SET NOCOUNT ON;
 
-    -- מחיקת שורות עם saleEndDate שכבר עבר
+    
     DELETE FROM [BookDiscount]
     WHERE saleEndDate < GETDATE();
 
@@ -366,6 +366,20 @@ BEGIN
         );
 
     PRINT 'Notifications have been added for users.';
+END;
+GO
+
+CREATE TRIGGER trg_ValidateSaleEndDate
+ON [BookDiscount]
+AFTER INSERT, UPDATE
+AS
+BEGIN
+    SET NOCOUNT ON;
+
+    DELETE FROM [BookDiscount]
+    WHERE DATEDIFF(DAY, saleStartDate, saleEndDate) > 7;
+
+    PRINT 'Rows with invalid saleEndDate (more than 7 days after saleStartDate) have been deleted.';
 END;
 GO
 
@@ -570,3 +584,5 @@ SET IDENTITY_INSERT [GeneralFeedback] OFF;
 -- Print success message
 PRINT 'eBook Database created and populated successfully!';
 GO
+
+
