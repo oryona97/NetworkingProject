@@ -55,8 +55,8 @@ GO
 
 CREATE TABLE [PersonalLibrary] (
   [userId] int,
-  [bookId] int,
-  PRIMARY KEY (userId),
+  [bookId] int ,
+  PRIMARY KEY (userId,bookId),
   [createdAt] datetime
 )
 GO
