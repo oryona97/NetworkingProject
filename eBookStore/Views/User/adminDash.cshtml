@@ -14,7 +14,7 @@
                 </a>
             </li>
             <li>
-                <a href="#" data-function="manageGallery" class="nav-link link-dark">
+                <a href="#" data-function="galleryManagerDisplay" class="nav-link link-dark">
                     <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
                     Manage Gallery
                 </a>
@@ -37,7 +37,9 @@
     <!-- מקום להצגת הנתונים -->
     <div id="dataDisplay" class="flex-grow-1 p-3">
 
-        <div class="galleryManagerDisplay">
+
+        <!-- Manage Gallery -->
+        <div class="galleryManagerDisplay" style="display:none">
             <h1>Add Book</h1>
             <p>Fill all the req fields:</p>
 
@@ -100,6 +102,44 @@
 
         </div>
 
+        <!-- Manage users§-->
+
+
+        <div class="ManageUsersDisplay row">
+            <!-- User List Section -->
+            <div class="ListOfUsers col-4" style="background-color: black; color: white; padding: 10px; border-radius: 5px;">
+                <h3>User List</h3>
+                <ul style="list-style: none; padding: 0;">
+                    @if (Model.allUsers != null && Model.allUsers.Any())
+                    {
+                        @foreach (var user in Model.allUsers)
+                        {
+                            <li class="nav-item" style="margin-bottom: 10px;">
+                                <a href="#" class="nav-link active" data-username="@user.username" style="color: white; text-decoration: none;" aria-current="page">
+                                    <svg class="bi me-2" width="16" height="16">
+                                        <use xlink:href="#home" />
+                                    </svg>
+                                    @user.username
+                                </a>
+                            </li>
+                        }
+                    }
+                    else
+                    {
+                        <li>No users available.</li>
+                    }
+                </ul>
+            </div>
+
+            <!-- User Edit Section -->
+            <div class="UserEdit col-8" style="background-color: #f9f9f9; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+                <h3>User Details</h3>
+                <p>Select a user from the list to view or edit their details.</p>
+            </div>
+        </div>
+
+
+
         <h2>Welcome!</h2>
         <p>Select an option from the sidebar to display data here.</p>
 
@@ -117,7 +157,7 @@
 
         const dataMap = {
             generalData: `<h2>General Data</h2><p>Here is some general data about the system.</p>`,
-            manageGallery: `<h2>Manage Gallery</h2><p>Here you can manage the gallery.</p>`,
+            galleryManagerDisplay: document.querySelector(".galleryManagerDisplay").outerHTML,
             manageUsers: `<h2>Manage Users</h2><p>Here you can manage the users of the system.</p>`,
             discount: `<h2>Create Discount</h2><p>Here you can create and manage discounts.</p>`
         };
@@ -127,6 +167,7 @@
                 event.preventDefault();
                 const functionType = link.getAttribute("data-function");
                 dataDisplay.innerHTML = dataMap[functionType] || `<h2>Not Found</h2><p>No data available for this action.</p>`;
+                document.querySelector("."+functionType).style="display:block"
                 sidebarLinks.forEach(l => l.classList.remove("active"));
                 link.classList.add("active");
             });
