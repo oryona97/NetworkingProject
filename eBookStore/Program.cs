@@ -21,6 +21,9 @@ builder.Services.AddScoped<UserRepository>((serviceProvider) =>
 // Register the background service
 builder.Services.AddHostedService<NotificationBackgroundService>();
 
+// Register the new SaleEndDateCheckerService
+builder.Services.AddHostedService<SaleEndDateCheckerService>();
+
 // Add session support
 builder.Services.AddDistributedMemoryCache();
 builder.Services.AddSession(options =>

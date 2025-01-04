@@ -15,7 +15,6 @@ public class HistoryBookPriceModel
 	[Required(ErrorMessage = "price is required")]
 	public float price { get; set; }
 
-	public DateTime datePrice { get; set; } = DateTime.Now;
 	public DateTime createdAt { get; set; } = DateTime.Now;
 
 }
