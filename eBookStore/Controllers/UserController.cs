@@ -143,6 +143,26 @@ public class UserController : Controller
         }
         return RedirectToAction("landingpage","Home");
     }
+
+
+    //this func is for reset password
+
+    
+    public async Task<IActionResult> ResetPassword(string email)
+    {
+        UserRepository userRepo = new UserRepository(connectionString, _loggerUserRepo);
+        var result = await userRepo.ResetPasswordAsync(email);
+        if (result)
+        {
+            ViewBag.Message = "Password reset successfully. Check your email for the new password.";
+        }
+        else
+        {
+            ViewBag.Message = "Email not found.";
+        }
+        
+        return View("ResetPassword");
+    }
     
 
     public IActionResult Privacy()
