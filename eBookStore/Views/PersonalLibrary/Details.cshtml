@@ -6,6 +6,43 @@
     var userOwnsBook = Model.ownerUserIds.Contains(currentUserId);
 }
 
+<div class="grid h-100 mt-5">
+    <div class="row">
+        @if (Model.book != null)
+            {
+
+            
+                <div class="info-container w-50 p-1">
+                    <h2 class="Title-container">@Model.book.title</h2>
+
+                    <a>Author: Need Fix @Model.authorModel</a><br> 
+                    <a>Published by: @Model.publisherModel.name</a><br>
+                    <a>Genre: @Model.genreModel.name</a><br>
+                    <a>Age limit: @Model.book.ageLimit</a><br>
+                    <a>Publish date: @Model.book.pubDate</a><br>
+                    <a>Rating: @Model.book.starRate</a>      
+
+                </div>
+
+            }
+            else{
+                <p>No Book details aviable</p>
+            }
+
+            @if(@Model.coverModel != null)
+            {
+                <div class="cover-container w-50 p-1 d-flex" style="justify-content: end;">
+
+                    <img src="\images\bookCovers\@Model.coverModel.imgName" class="bookCoverImg img-thumbnail" style="max-width: 280px;" alt="Cover_Photo">
+
+                </div>
+
+            }
+    </div>
+
+
+
+
 <div class="mb-4">
     <h5 class="text-secondary mb-3 d-flex align-items-center gap-2">
         <i class="bi bi-chat-square-text"></i>
