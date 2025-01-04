@@ -172,7 +172,10 @@
                         </div>
                         <div>
                             <label for="saleEndDate">Sale End Date:</label>
-                            <input type="date" id="saleEndDate" name="saleEndDate" required />
+                            <input type="date" id="saleEndDate" name="saleEndDate" 
+                                    min="@DateTime.Now.ToString("yyyy-MM-dd")" 
+                                    max="@DateTime.Now.AddDays(7).ToString("yyyy-MM-dd")" 
+                                    required />
                         </div>
                     </fieldset>
                     <button type="submit" class="btn btn-primary">Apply Discount</button>
@@ -192,8 +195,12 @@
     let data = @Json.Serialize(Model);
     let bookviewmodel = data.bookViewModel;
     console.log(bookviewmodel);
+    
+    
+
     document.addEventListener("DOMContentLoaded", () => {
         // Event Listener for Sidebar Links
+
     const sidebarLinks = document.querySelectorAll(".adminFunctions .nav-link");
     const sections = {
         generalData: document.querySelector(".galleryManagerDisplay"),
@@ -202,12 +209,37 @@
         discount: document.querySelector(".discount")
     };
 
+
     sidebarLinks.forEach(link => {
         link.addEventListener("click", (event) => {
             event.preventDefault();
 
             // Hide all sections
             Object.values(sections).forEach(section => section.style.display = "none");
+
+
+        saleEndDateInput.addEventListener("input", () => {
+            const currentDate = new Date();
+            const maxDate = new Date();
+            maxDate.setDate(currentDate.getDate() + 7);
+
+            const selectedDate = new Date(saleEndDateInput.value);
+
+            if (selectedDate > maxDate) {
+                alert("Sale End Date cannot be more than 7 days from today.");
+                saleEndDateInput.value = ""; // Reset the input
+            }
+        });
+
+        sidebarLinks.forEach(link => {
+            link.addEventListener("click", (event) => {
+                event.preventDefault();
+                const functionType = link.getAttribute("data-function");
+                dataDisplay.innerHTML = dataMap[functionType] || `<h2>Not Found</h2><p>No data available for this action.</p>`;
+                document.querySelector("."+functionType).style="display:block"
+                sidebarLinks.forEach(l => l.classList.remove("active"));
+                link.classList.add("active");
+            });
 
             // Show the selected section
             const functionType = link.getAttribute("data-function");
@@ -219,6 +251,7 @@
             // Update active link
             sidebarLinks.forEach(l => l.classList.remove("active"));
             link.classList.add("active");
+
         });
     });
 

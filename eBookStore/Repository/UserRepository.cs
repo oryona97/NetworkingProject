@@ -407,7 +407,38 @@ namespace eBookStore.Repository
 			return notifications;
 		}
 	
+		// this funnc to change password
+		public bool ChangePassword(int userId, string newPassword)
+		{
+			try
+			{
+				using (var connection = new SqlConnection(_connectionString))
+				{
+					connection.Open();
 
+					const string query = @"
+						UPDATE [User]
+						SET password = @newPassword
+						WHERE id = @userId;
+					";
+
+					using (var command = new SqlCommand(query, connection))
+					{
+						command.Parameters.AddWithValue("@newPassword", HashPassword(newPassword));
+						command.Parameters.AddWithValue("@userId", userId);
+
+						command.ExecuteNonQuery();
+					}
+				}
+
+				return true;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error changing password for userId {UserId}", userId);
+				throw;
+			}
+		}
 	}
 
 	
