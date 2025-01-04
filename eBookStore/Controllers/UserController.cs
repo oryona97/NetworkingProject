@@ -163,6 +163,31 @@ public class UserController : Controller
         
         return View("ResetPassword");
     }
+
+    [HttpGet]
+    public IActionResult UserNotifications()
+    {
+        int? userId = HttpContext.Session.GetInt32("userId"); // Get the logged-in user's ID from Session
+
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Auth"); // Redirect to login if no user is logged in
+        }
+
+        UserRepository userRepo = new UserRepository(connectionString, _loggerUserRepo);
+
+        try
+        {
+            // Fetch notifications for the user
+            var notifications = userRepo.GetUserNotifications(userId.Value);
+            return View(notifications); // Pass the list of notifications to the View
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error fetching notifications for userId {UserId}", userId);
+            return View("Error"); // Redirect to an error page in case of failure
+        }
+    }
     
 
     public IActionResult Privacy()
