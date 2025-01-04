@@ -137,6 +137,7 @@ public class UserController : Controller
         data.bookViewModel= new BookViewModel();
         data.publishersList= _bookRepo.getAllPublishers();
         data.genreList = _bookRepo.getAllGenres();
+        data.allUsers = _bookRepo.GetAllUserModels();
         if(data.userModel.type=="admin")
         {
             return View(data);
@@ -146,8 +147,6 @@ public class UserController : Controller
 
 
     //this func is for reset password
-
-    
     public async Task<IActionResult> ResetPassword(string email)
     {
         UserRepository userRepo = new UserRepository(connectionString, _loggerUserRepo);
@@ -163,6 +162,7 @@ public class UserController : Controller
         
         return View("ResetPassword");
     }
+
 
     [HttpGet]
     public IActionResult UserNotifications()
@@ -188,6 +188,7 @@ public class UserController : Controller
             return View("Error"); // Redirect to an error page in case of failure
         }
     }
+
     
 
     public IActionResult Privacy()

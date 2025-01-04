@@ -262,6 +262,7 @@ namespace eBookStore.Repository
 				throw;
 			}
 		}
+
 		public async Task<bool> ResetPasswordAsync(string email)
 		{
 			try
@@ -406,6 +407,7 @@ namespace eBookStore.Repository
 			return notifications;
 		}
 	
+
 	}
 
 	
