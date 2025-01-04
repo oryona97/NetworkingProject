@@ -1,6 +1,7 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using eBookStore.Models;
+using eBookStore.Models.ViewModels;
 using eBookStore.Repository;
 
 namespace eBookStore.Controllers;
@@ -11,13 +12,17 @@ public class UserController : Controller
     private readonly ILogger<UserRepository> _loggerUserRepo ;
     private readonly IConfiguration _configuration;
     private string? connectionString;
+
+    private BookRepository _bookRepo;
+
+    private UserRepository _UserRepository;
     public UserController(IConfiguration configuration ,ILogger<UserController> logger )
     {
         _configuration = configuration;
         connectionString = _configuration.GetConnectionString("DefaultConnection");
         _logger = logger;
         _loggerUserRepo = new Logger<UserRepository>(new LoggerFactory());
-        
+        _bookRepo = new BookRepository(connectionString);
     }
 
     public IActionResult changeBuingPriceAndUpdateBookAndHistoryBuingPrice(int bookId, float newPrice)
@@ -71,6 +76,73 @@ public class UserController : Controller
         }
     }
 
+    //handle jpg uoload(bookCovers)
+    [HttpPost]
+    public async Task<IActionResult> UploadCover(IFormFile coverImage)
+    {
+        if (coverImage == null || coverImage.Length == 0)
+        {
+            ModelState.AddModelError("coverImage", "Please upload a valid JPG image.");
+            return View();
+        }
+
+        // Validate the file type
+        var fileExtension = Path.GetExtension(coverImage.FileName).ToLower();
+        if (fileExtension != ".jpg" && fileExtension != ".jpeg")
+        {
+            ModelState.AddModelError("coverImage", "Only JPG images are allowed.");
+            return View();
+        }
+
+        // Define the path to save the file
+        var uploadPath = Path.Combine(Directory.GetCurrentDirectory(), "wwwroot/images/bookCovers");
+        if (!Directory.Exists(uploadPath))
+        {
+            Directory.CreateDirectory(uploadPath);
+        }
+
+        var filePath = Path.Combine(uploadPath, Path.GetFileName(coverImage.FileName));
+
+        // Save the file
+        using (var stream = new FileStream(filePath, FileMode.Create))
+        {
+            await coverImage.CopyToAsync(stream);
+        }
+
+        ViewBag.Message = "File uploaded successfully!";
+        return View();
+    }
+
+   [HttpPost]
+    public IActionResult CreateBook(AdminDashViewModel model)
+    {
+
+        // Save the model to the database or process as needed
+        Console.WriteLine("Testetetet");
+
+        _bookRepo.AddBookViewModel(model.bookViewModel);
+
+        return View("adminDash",model); // Redirect to a success page
+    }
+
+
+
+
+    //Admin Dashboad view
+    public IActionResult adminDash()
+    {
+        int? adminID = HttpContext.Session.GetInt32("userId");
+        AdminDashViewModel data = new AdminDashViewModel();
+        data.userModel = _bookRepo.getUserModelById(adminID.Value);
+        data.bookViewModel= new BookViewModel();
+        data.publishersList= _bookRepo.getAllPublishers();
+        data.genreList = _bookRepo.getAllGenres();
+        if(data.userModel.type=="admin")
+        {
+            return View(data);
+        }
+        return RedirectToAction("landingpage","Home");
+    }
     
 
     public IActionResult Privacy()
