@@ -20,7 +20,7 @@
                 </a>
             </li>
             <li>
-                <a href="#" data-function="manageUsers" class="nav-link link-dark">
+                <a href="#" data-function="ManageUsersDisplay" class="nav-link link-dark">
                     <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
                     Manage Users
                 </a>
@@ -116,7 +116,7 @@
         <!-- Manage users§-->
 
 
-        <div class="ManageUsersDisplay row">
+        <div id="ManageUsersDisplay" class="ManageUsersDisplay row" style="display:none">
             <!-- User List Section -->
             <div class="ListOfUsers col-4" style="background-color: black; color: white; padding: 10px; border-radius: 5px;">
                 <h3>User List</h3>
@@ -126,10 +126,13 @@
                         @foreach (var user in Model.allUsers)
                         {
                             <li class="nav-item" style="margin-bottom: 10px;">
-                                <a href="#" class="nav-link active" data-username="@user.username" style="color: white; text-decoration: none;" aria-current="page">
-                                    <svg class="bi me-2" width="16" height="16">
-                                        <use xlink:href="#home" />
-                                    </svg>
+                                <a href="#" class="nav-link" data-username="@user.username" 
+                                data-email="@user.email"
+                                data-firstname="@user.firstName" 
+                                data-lastname="@user.lastName"
+                                data-phone="@user.phoneNumber" 
+                                data-type="@user.type" 
+                                style="color: white; text-decoration: none;">
                                     @user.username
                                 </a>
                             </li>
@@ -142,10 +145,12 @@
                 </ul>
             </div>
 
-            <!-- User Edit Section -->
-            <div class="UserEdit col-8" style="background-color: #f9f9f9; padding: 20px; border-radius: 5px; box-shadow: 0 2px 4px rgba(0,0,0,0.1);">
+            <!-- User Details Section -->
+            <div class="UserDetails col-8" style="background-color: #f9f9f9; padding: 20px; border-radius: 5px;">
                 <h3>User Details</h3>
-                <p>Select a user from the list to view or edit their details.</p>
+                <div id="UserDetailsContent">
+                    <p>Select a user from the list to view their details.</p>
+                </div>
             </div>
         </div>
 
@@ -195,17 +200,23 @@
 
     document.addEventListener("DOMContentLoaded", () => {
         // Event Listener for Sidebar Links
-        const saleEndDateInput = document.getElementById("saleEndDate");
-        const sidebarLinks = document.querySelectorAll(".adminFunctions .nav-link");
-        const dataDisplay = document.getElementById("dataDisplay");
 
-        const dataMap = {
-            generalData: `<h2>General Data</h2><p>Here is some general data about the system.</p>`,
-            galleryManagerDisplay: document.querySelector(".galleryManagerDisplay").outerHTML,
-            manageUsers: `<h2>Manage Users</h2><p>Here you can manage the users of the system.</p>`,
-            discount: document.querySelector(".discount").outerHTML
+    const sidebarLinks = document.querySelectorAll(".adminFunctions .nav-link");
+    const sections = {
+        generalData: document.querySelector(".galleryManagerDisplay"),
+        galleryManagerDisplay: document.querySelector(".galleryManagerDisplay"),
+        ManageUsersDisplay: document.querySelector("#ManageUsersDisplay"),
+        discount: document.querySelector(".discount")
+    };
 
-        };
+
+    sidebarLinks.forEach(link => {
+        link.addEventListener("click", (event) => {
+            event.preventDefault();
+
+            // Hide all sections
+            Object.values(sections).forEach(section => section.style.display = "none");
+
 
         saleEndDateInput.addEventListener("input", () => {
             const currentDate = new Date();
@@ -229,7 +240,20 @@
                 sidebarLinks.forEach(l => l.classList.remove("active"));
                 link.classList.add("active");
             });
+
+            // Show the selected section
+            const functionType = link.getAttribute("data-function");
+            const targetSection = sections[functionType];
+            if (targetSection) {
+                targetSection.style.display = "block";
+            }
+
+            // Update active link
+            sidebarLinks.forEach(l => l.classList.remove("active"));
+            link.classList.add("active");
+
         });
+    });
 
         // Event Listener for Upload Button and File Input
         const uploadButton = document.querySelector(".upload-butt");
@@ -263,6 +287,38 @@
 
                 alert(`Uploading "${file.name}"...`);
             }
+        });
+
+
+
+        const userLinks = document.querySelectorAll(".nav-link[data-username]");
+        const userDetailsContent = document.getElementById("UserDetailsContent");
+
+        userLinks.forEach(link => {
+            link.addEventListener("click", (event) => {
+                event.preventDefault();
+
+                // Get user details from data attributes
+                const username = link.getAttribute("data-username");
+                const email = link.getAttribute("data-email");
+                const firstName = link.getAttribute("data-firstname");
+                const lastName = link.getAttribute("data-lastname");
+                const phone = link.getAttribute("data-phone");
+                const type = link.getAttribute("data-type");
+
+                // Update the UserDetailsContent section
+                userDetailsContent.innerHTML = `
+                    <div>
+                        <h4>Details for: ${username}</h4>
+                        <p><strong>Email:</strong> ${email}</p>
+                        <p><strong>First Name:</strong> ${firstName}</p>
+                        <p><strong>Last Name:</strong> ${lastName}</p>
+                        <p><strong>Phone:</strong> ${phone}</p>
+                        <p><strong>Type:</strong> ${type}</p>
+                    </div>
+                    <button class="btn btn-primary" onclick="editUser('${username}')">Edit User</button>
+                `;
+            });
         });
     });
 </script>
