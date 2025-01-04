@@ -125,7 +125,7 @@ public class AuthController : Controller
                                     var returnUrl = TempData["ReturnUrl"]?.ToString();
                                     if (!string.IsNullOrEmpty(returnUrl))
                                     {
-                                        return Redirect(returnUrl);
+                                        return RedirectToAction("landingPage","Home");
                                     }
 
                                     return RedirectToAction("Index", "PersonalLibrary");
