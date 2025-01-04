@@ -59,12 +59,109 @@ public class BookRepository
 	//this funct to Add bookViewModel to the database
 	public void AddBookViewModel(BookViewModel bookViewModel)
 	{
-		// Add book
+		// בדוק אם הז'אנר קיים לפי שם
+		int genreId = GetGenreIdByName(bookViewModel.genreModel.name);
+		if (genreId == 0)
+		{
+			// הוסף ז'אנר חדש אם הוא לא קיים
+			AddGenreModel(bookViewModel.genreModel);
+			genreId = GetGenreIdByName(bookViewModel.genreModel.name);
+		}
+		bookViewModel.book.genreId = genreId;
+
+		// בצע את אותה בדיקה ל-Publisher
+		int publisherId = gettingPublisherIdByName(bookViewModel.publisherModel.name);
+		if (publisherId == 0)
+		{
+			AddPublisherModel(bookViewModel.publisherModel);
+			publisherId = gettingPublisherIdByName(bookViewModel.publisherModel.name);
+		}
+		bookViewModel.book.publisherId = publisherId;
+
+		// הגדר ערכי ברירת מחדל לספר
+		bookViewModel.book.onSale = false;
+		bookViewModel.book.amountOfCopies = 3;
+
+		// הוסף את הספר
 		AddBook(bookViewModel.book);
+
+		// קבל את ה-id של הספר שנוסף
+		int bookId = getBookIDByName(bookViewModel.book.title);
+		if (bookId == 0)
+		{
+			throw new Exception("Failed to retrieve book ID after adding the book.");
+		}
+		bookViewModel.coverModel = new CoverModel
+		{
+			bookId = bookId,
+			imgName = $"{bookViewModel.book.title}_cover.jpg".Replace(" ", "_"),
+			createdAt = DateTime.Now
+		};
+
+		
 		AddCoverModel(bookViewModel.coverModel);
-		AddPublisherModel(bookViewModel.publisherModel);
-		AddGenreModel(bookViewModel.genreModel);
-		AddAuthorModel(bookViewModel.authorModel);
+	}
+
+	public int GetGenreIdByName(string genreName)
+	{
+		try
+		{
+			using (var connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "SELECT id FROM Genre WHERE name = @name;";
+
+				using (var command = new SqlCommand(query, connection))
+				{
+					command.Parameters.AddWithValue("@name", genreName);
+
+					using (var reader = command.ExecuteReader())
+					{
+						if (reader.Read())
+						{
+							return Convert.ToInt32(reader["id"]);
+						}
+					}
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+			Console.WriteLine($"Database error during fetching genreId: {ex.Message}");
+		}
+		return 0;
+	}
+
+	public int getBookIDByName(string bookTitle)
+	{
+		var bookID = 0;
+		try
+		{
+			using (var connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "SELECT * FROM [Book] WHERE title = @bookTitle";
+
+				using (var command = new SqlCommand(query, connection))
+				{
+					command.Parameters.AddWithValue("@bookTitle", bookTitle);
+
+					using (var reader = command.ExecuteReader())
+					{
+						if (reader.Read())
+						{
+							bookID = Convert.ToInt32(reader["id"]);
+							return bookID;
+						}
+					}
+				}
+			}
+		}
+		catch (Exception ex)
+		{
+			Console.WriteLine($"Error fetching book: {ex.Message}");
+		}
+		return 0;
 	}
 
 	//this func to delete bookViewModel from db
@@ -543,6 +640,7 @@ public class BookRepository
 		return null; 
 	}
 
+
 	//this func to get book by title
 	public GenreModel getGenreModelById(int Id)
 	{
@@ -750,6 +848,44 @@ public class BookRepository
 		return null; 
     }
 
+	//this func is used for grtting pubName and return pubId
+	public int gettingPublisherIdByName(string name)
+	{
+		var publisherId =0;
+		try
+		{
+			using (SqlConnection connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "SELECT id FROM Publisher WHERE name = @name;";
+
+				using (SqlCommand command = new SqlCommand(query, connection))
+				{
+
+					command.Parameters.AddWithValue("@name", name);
+
+					using (SqlDataReader reader = command.ExecuteReader())
+					{
+						if (reader.Read())
+						{
+
+							publisherId = Convert.ToInt32(reader["id"]);
+
+							return publisherId;
+						}
+					}
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+			Console.WriteLine($"Database error during getting publisherId  {ex}");
+			throw;
+		}
+
+		return publisherId;
+	}
+
 	//this func to get publisher by id
 	public PublisherModel PubModelByBookId(int Id)
 	{
@@ -794,7 +930,7 @@ public class BookRepository
 	
 
 	//this func to get all publishers
-	public List<PublisherModel> getAllPublishers (int pubId)
+	public List<PublisherModel> getAllPublishers ()
 	{
 		var pubList = new List<PublisherModel>();
 		try
@@ -802,12 +938,10 @@ public class BookRepository
 			using (SqlConnection connection = new SqlConnection(connectionString))
 			{
 				connection.Open();
-				string query = "SELECT * FROM Publisher WHERE id = @pubId;";
+				string query = "SELECT * FROM Publisher";
 
 				using (SqlCommand command = new SqlCommand(query, connection))
 				{
-					command.Parameters.AddWithValue("@pubId", pubId);
-
 					using (SqlDataReader reader = command.ExecuteReader())
 					{
 						while(reader.Read())

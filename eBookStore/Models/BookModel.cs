@@ -4,7 +4,6 @@ using System.ComponentModel.DataAnnotations;
 public class BookModel
 {
 	public int id { get; set; }
-	[Required(ErrorMessage = "publisherId is required")]
 	public int publisherId { get; set; }
 	
 	[Required(ErrorMessage = "genreId is required")]

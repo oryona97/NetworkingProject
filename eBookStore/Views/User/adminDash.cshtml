@@ -1,0 +1,169 @@
+@model eBookStore.Models.ViewModels.AdminDashViewModel
+@{
+    
+}
+
+
+<div class="d-flex">
+    <div class="d-flex flex-column flex-shrink-0 p-3 bg-secondary" style="width: 280px; height: 100h;">
+        <ul class="adminFunctions nav nav-pills flex-column mb-auto">
+            <li class="nav-item">
+                <a href="#" class="nav-link active" data-function="generalData" aria-current="page">
+                    <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
+                    General Data
+                </a>
+            </li>
+            <li>
+                <a href="#" data-function="manageGallery" class="nav-link link-dark">
+                    <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
+                    Manage Gallery
+                </a>
+            </li>
+            <li>
+                <a href="#" data-function="manageUsers" class="nav-link link-dark">
+                    <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
+                    Manage Users
+                </a>
+            </li>
+            <li>
+                <a href="#" data-function="discount" class="nav-link link-dark">
+                    <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
+                    Create Discount
+                </a>
+            </li>
+        </ul>
+    </div>
+
+    <!-- מקום להצגת הנתונים -->
+    <div id="dataDisplay" class="flex-grow-1 p-3">
+
+        <div class="galleryManagerDisplay">
+            <h1>Add Book</h1>
+            <p>Fill all the req fields:</p>
+
+            <form method="post" enctype="multipart/form-data" asp-action="CreateBook">
+                <fieldset>
+                    <h3>Book Info</h3>
+                    <div>
+                        <label for="bookViewModel.genreModel.name">Category:</label>
+                        <input type="text" name="bookViewModel.genreModel.name" />
+                    </div>
+                    <div>
+                        <label for="bookViewModel.book.title">Title:</label>
+                        <input type="text" name="bookViewModel.book.title" />
+                    </div>
+                    <div>
+                        <label for="bookViewModel.book.borrowPrice">Borrow Price($):</label>
+                        <input type="text" name="bookViewModel.book.borrowPrice" />
+                    </div>
+                    <div>
+                        <label for="bookViewModel.book.buyingPrice">Buy Price($):</label>
+                        <input type="text" name="bookViewModel.book.buyingPrice" />
+                    </div>
+                    <div>
+                        <label for="bookViewModel.book.pubDate">Publish Date:</label>
+                        <input type="date" name="bookViewModel.book.pubDate" />
+                    </div>
+                    <div>
+                        <label for="bookViewModel.book.ageLimit">Age Limit:</label>
+                        <input type="text" name="bookViewModel.book.ageLimit" />
+                    </div>
+                    <div>
+                        <label for="bookViewModel.book.canBorrow">Borrowable:</label>
+                        <input type="checkbox" name="bookViewModel.book.canBorrow" />
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <h3>Publisher Info</h3>
+                    <div>
+                        <label for="bookViewModel.publisherModel.name">Publisher:</label>
+                        <input type="text" name="bookViewModel.publisherModel.name" />
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <h3>Author Info</h3>
+                    <div>
+                        <label for="bookViewModel.authorModel.name">Author Name:</label>
+                        <input type="text" name="bookViewModel.authorModel.name" />
+                    </div>
+                </fieldset>
+                <fieldset>
+                    <h3>Book Cover</h3>
+                    <div>
+                        <label for="coverImage">Upload Book Cover (JPG only):</label>
+                        <input type="file" id="coverImage" name="bookViewModel.coverModel.imgName" accept=".jpg,.jpeg" />
+                    </div>
+                </fieldset>
+                <button type="submit" class="upload-butt btn btn-primary">Upload</button>
+            </form>
+            
+
+        </div>
+
+        <h2>Welcome!</h2>
+        <p>Select an option from the sidebar to display data here.</p>
+
+    </div>
+</div>
+
+<script>
+    let data = @Json.Serialize(Model);
+    let bookviewmodel = data.bookViewModel;
+    console.log(bookviewmodel);
+    document.addEventListener("DOMContentLoaded", () => {
+        // Event Listener for Sidebar Links
+        const sidebarLinks = document.querySelectorAll(".adminFunctions .nav-link");
+        const dataDisplay = document.getElementById("dataDisplay");
+
+        const dataMap = {
+            generalData: `<h2>General Data</h2><p>Here is some general data about the system.</p>`,
+            manageGallery: `<h2>Manage Gallery</h2><p>Here you can manage the gallery.</p>`,
+            manageUsers: `<h2>Manage Users</h2><p>Here you can manage the users of the system.</p>`,
+            discount: `<h2>Create Discount</h2><p>Here you can create and manage discounts.</p>`
+        };
+
+        sidebarLinks.forEach(link => {
+            link.addEventListener("click", (event) => {
+                event.preventDefault();
+                const functionType = link.getAttribute("data-function");
+                dataDisplay.innerHTML = dataMap[functionType] || `<h2>Not Found</h2><p>No data available for this action.</p>`;
+                sidebarLinks.forEach(l => l.classList.remove("active"));
+                link.classList.add("active");
+            });
+        });
+
+        // Event Listener for Upload Button and File Input
+        const uploadButton = document.querySelector(".upload-butt");
+        const coverInput = document.getElementById("coverImage");
+
+        // Show selected file name or validation error
+        coverInput.addEventListener("change", (event) => {
+            const file = event.target.files[0];
+            if (file) {
+                const allowedExtensions = ['.jpg', '.jpeg'];
+                const fileExtension = file.name.split('.').pop().toLowerCase();
+
+                if (!allowedExtensions.includes(`.${fileExtension}`)) {
+                    alert("Invalid file type! Please upload a JPG image.");
+                    coverInput.value = ""; // Reset the input
+                } else {
+                    alert(`File "${file.name}" is ready to upload.`);
+                }
+            }
+        });
+
+        // Action when the upload button is clicked
+        uploadButton.addEventListener("click", (event) => {
+            const file = coverInput.files[0];
+            if (!file) {
+                alert("Please select a file before uploading.");
+                event.preventDefault(); // Prevent form submission
+            } else {
+
+                //addressing bookModel
+
+                alert(`Uploading "${file.name}"...`);
+            }
+        });
+    });
+</script>
