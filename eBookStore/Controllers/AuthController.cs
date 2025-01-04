@@ -62,14 +62,14 @@ public class AuthController : Controller
 
                         if (rowAffect > 0)
                         {
-                            var userModel = new UserModel
+                            var userModel = new RegisterViewModel
                             {
-                                username = model.Username,
-                                password = model.Password,
-                                email = model.Email,
-                                firstName = model.FirstName,
-                                lastName = model.LastName,
-                                phoneNumber = model.PhoneNumber
+                                Username = model.Username,
+                                Password = model.Password,
+                                Email = model.Email,
+                                FirstName = model.FirstName,
+                                LastName = model.LastName,
+                                PhoneNumber = model.PhoneNumber
                             };
 
                             return View("Register", userModel);
