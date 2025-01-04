@@ -99,6 +99,17 @@
                 <button type="submit" class="upload-butt btn btn-primary">Upload</button>
             </form>
             
+            <!-- Delete Book Form -->
+            <form method="post" asp-action="DeleteBook">
+                <fieldset>
+                    <h3>Delete Book</h3>
+                    <div>
+                        <label for="bookIdToDelete">Book name:</label>
+                        <input type="text" id="bookIdToDelete" name="title" required />
+                    </div>
+                </fieldset>
+                <button type="submit" class="btn btn-danger">Delete Book</button>
+            </form>
 
         </div>
 
@@ -138,6 +149,32 @@
             </div>
         </div>
 
+        <div class="CrateDiscaountDisplay">
+                <!-- Discount Form -->
+            <div class="discount" style="display:none">
+                <h1>Create Discount</h1>
+                <p>Fill in the details below to create a discount for a book:</p>
+
+                <form method="post" asp-controller="User" asp-action="ApplyDiscount">
+                    <fieldset>
+                        <div>
+                            <label for="title">Book Name:</label>
+                            <input type="text" id="title" name="_title" required />
+                        </div>
+                        <div>
+                            <label for="discountPercentage">Discount Percentage (%):</label>
+                            <input type="text" id="discountPercentage" name="discountPercentage" min="0" max="1" required />
+                        </div>
+                        <div>
+                            <label for="saleEndDate">Sale End Date:</label>
+                            <input type="date" id="saleEndDate" name="saleEndDate" required />
+                        </div>
+                    </fieldset>
+                    <button type="submit" class="btn btn-primary">Apply Discount</button>
+                </form>
+            </div>
+        </div>
+
 
 
         <h2>Welcome!</h2>
@@ -159,7 +196,8 @@
             generalData: `<h2>General Data</h2><p>Here is some general data about the system.</p>`,
             galleryManagerDisplay: document.querySelector(".galleryManagerDisplay").outerHTML,
             manageUsers: `<h2>Manage Users</h2><p>Here you can manage the users of the system.</p>`,
-            discount: `<h2>Create Discount</h2><p>Here you can create and manage discounts.</p>`
+            discount: document.querySelector(".discount").outerHTML
+
         };
 
         sidebarLinks.forEach(link => {
