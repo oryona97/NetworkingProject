@@ -1,9 +1,15 @@
+using Stripe;
 using eBookStore.Repository;
+using eBookStore.Models;
 using eBookStore.Services;
 
 var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddControllersWithViews();
+
+//stripe configuration settings
+builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));
+StripeConfiguration.ApiKey = builder.Configuration["Stripe:SecretKey"];
 
 builder.Services.AddScoped<UserRepository>((serviceProvider) =>
 {

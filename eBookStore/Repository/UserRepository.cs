@@ -12,7 +12,7 @@ namespace eBookStore.Repository
 		private readonly string _connectionString;
 		private readonly ILogger<UserRepository> _logger;
 
-		public UserRepository(string connectionString, ILogger<UserRepository> logger)
+		public UserRepository(string? connectionString, ILogger<UserRepository> logger)
 		{
 			_connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
 			_logger = logger ?? throw new ArgumentNullException(nameof(logger));
