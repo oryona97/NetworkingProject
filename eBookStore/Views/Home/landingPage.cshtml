@@ -4,6 +4,7 @@
 @model eBookStore.Models.ViewModels.LandingPageViewModel
 @{
     ViewData["Title"] = "Home";
+    var currentUserId = Context.Session.GetInt32("userId") ?? 0;
     
 }
 
@@ -136,6 +137,102 @@
 
             </div>
 
+            <div class="SiteReviews">
+                
+
+                @if (currentUserId != 0)
+                {
+                    <div class="card border-0 bg-white shadow-sm mb-4">
+                        <div class="card-body">
+                            <h6 class="mb-3 text-primary">
+                                <i class="bi bi-plus-circle me-2"></i>
+                                Add Your Review
+                            </h6>
+                            <form asp-action="AddReview" asp-route-bookId="" method="post">
+                                <div class="form-group">
+                                    <textarea 
+                                        name="comment" 
+                                        class="form-control"
+                                        rows="4"
+                                        required
+                                        minlength="10"
+                                        maxlength="500"
+                                        placeholder="Share your thoughts about this book..."
+                                    ></textarea>
+                                    <div class="form-text text-muted">
+                                        <small>10-500 characters</small>
+                                    </div>
+                                </div>
+                                <div class="text-end mt-3">
+                                    <button type="submit" class="btn btn-primary">
+                                        <i class="bi bi-send me-2"></i>
+                                        Post Review
+                                    </button>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                }
+
+                @if (Model.allFeedbacks != null && Model.allFeedbacks.Any())
+                {
+                    <div class="reviews-container" style="max-height: 400px; overflow-y: auto;">
+                        @foreach (var feedback in Model.allFeedbacks)
+                        {
+                            var isReviewOwner = currentUserId == (feedback.userId);
+
+                            <div class="card border-0 bg-light mb-3 review-card">
+                                <div class="card-body">
+                                    <div class="d-flex justify-content-between align-items-center mb-2">
+                                        <div class="d-flex align-items-center gap-2">
+                                            <i class="bi bi-person-circle text-secondary"></i>
+                                            <h6 class="card-subtitle mb-0">@feedback.userId</h6>
+                                            <span class="badge bg-primary text-white">Verified Owner</span>
+                                        </div>
+                                        <div class="d-flex align-items-center gap-3">
+                                            <small class="text-muted">
+                                                <i class="bi bi-clock me-1"></i>
+                                                @feedback.createdAt.ToString("MMM dd, yyyy")
+                                            </small>
+                                            @* Show delete button only if the review is by the current user *@
+                                            @if (isReviewOwner)
+                                            {
+                                                <form asp-action="DeleteReview" 
+                                                    asp-route-reviewId="@feedback.id" 
+                                                    method="post" 
+                                                    class="delete-review-form d-inline">
+                                                    <button type="submit" 
+                                                            class="btn btn-link text-danger p-0 delete-review-btn"
+                                                            onclick="return confirm('Are you sure you want to delete your review?')">
+                                                        <i class="bi bi-trash"></i>
+                                                    </button>
+                                                </form>
+                                            }
+                                        </div>
+                                    </div>
+                                    <p class="card-text mb-0">@feedback.comment</p>
+                                </div>
+                            </div>
+                        }
+                    </div>
+                }
+                else
+                {
+                    <div class="text-center py-4 bg-light rounded-3">
+                        <i class="bi bi-chat-square text-muted display-4"></i>
+                        <p class="text-muted mt-2">No reviews yet.</p>
+                    </div>
+                }
+
+
+
+
+
+
+            </div>
+
+            
+
 
         </div>
     </div>
@@ -228,6 +325,7 @@
 
     <script>
 
+        /*
         const categorysContainer = document.querySelector('.Categorys');
 
         var bookCaregorys = @Json.Serialize(Model.listOfCategorys);
@@ -240,6 +338,7 @@
 
             categorysContainer.appendChild(item);
         }
+        */
 
 
 
