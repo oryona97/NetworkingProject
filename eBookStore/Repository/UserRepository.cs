@@ -362,6 +362,50 @@ namespace eBookStore.Repository
 				throw;
 			}
 		}
+		public List<UserNotificationModel> GetUserNotifications(int userId)
+		{
+			var notifications = new List<UserNotificationModel>();
+
+			try
+			{
+				using (var connection = new SqlConnection(_connectionString))
+				{
+					connection.Open();
+
+					const string query = @"
+						SELECT id, message, createdAt
+						FROM UserNotifications
+						WHERE userId = @userId
+						ORDER BY createdAt DESC;
+					";
+
+					using (var command = new SqlCommand(query, connection))
+					{
+						command.Parameters.AddWithValue("@userId", userId);
+
+						using (var reader = command.ExecuteReader())
+						{
+							while (reader.Read())
+							{
+								notifications.Add(new UserNotificationModel
+								{
+									Id = reader.GetInt32(reader.GetOrdinal("id")),
+									Message = reader.GetString(reader.GetOrdinal("message")),
+									CreatedAt = reader.GetDateTime(reader.GetOrdinal("createdAt"))
+								});
+							}
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error fetching notifications for userId {UserId}", userId);
+				throw;
+			}
+
+			return notifications;
+		}
 	
 
 	}
