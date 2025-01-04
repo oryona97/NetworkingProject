@@ -190,10 +190,37 @@ public class UserController : Controller
     }
 
     
-
+    public IActionResult DeleteBook(string title)
+    {
+        var bookTitle = _bookRepo.getBookIDByName(title);
+        _bookRepo.DeleteBookViewModel(bookTitle);
+        return RedirectToAction("adminDash");
+    }
     public IActionResult Privacy()
     {
         return View();
+    }
+
+    //this func to add Discount
+    [HttpPost]
+    public IActionResult ApplyDiscount(string _title, float discountPercentage, DateTime saleEndDate)
+    {
+        var bookId = 0;
+       Console.WriteLine("Title: {0}, Discount: {1}, Sale End Date: {2}", _title, discountPercentage, saleEndDate);
+        try
+        {
+            var userRepo = new UserRepository(connectionString, _loggerUserRepo);
+            bookId = _bookRepo.getBookIDByName(_title);
+            userRepo.AddDiscountAndUpdateBook(bookId, discountPercentage, saleEndDate);
+            TempData["Message"] = "Discount applied successfully!";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error applying discount for bookId {BookId}", bookId);
+            TempData["Error"] = "An error occurred while applying the discount.";
+        }
+
+        return RedirectToAction("AdminDash");
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

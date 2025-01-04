@@ -151,7 +151,7 @@ public class BookRepository
 						if (reader.Read())
 						{
 							bookID = Convert.ToInt32(reader["id"]);
-							return bookID;
+							return Convert.ToInt32(bookID);
 						}
 					}
 				}
