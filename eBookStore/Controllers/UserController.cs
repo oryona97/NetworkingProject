@@ -137,12 +137,14 @@ public class UserController : Controller
         data.bookViewModel= new BookViewModel();
         data.publishersList= _bookRepo.getAllPublishers();
         data.genreList = _bookRepo.getAllGenres();
+        data.allUsers = _bookRepo.GetAllUserModels();
         if(data.userModel.type=="admin")
         {
             return View(data);
         }
         return RedirectToAction("landingpage","Home");
     }
+
     
 
     public IActionResult Privacy()
