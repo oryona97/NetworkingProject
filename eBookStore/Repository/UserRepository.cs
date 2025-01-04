@@ -1,9 +1,14 @@
+using System.Threading.Tasks;
 using eBookStore.Models;
 using eBookStore.Models.ViewModels;
 using eBookStore.Repository;
 using Microsoft.Data.SqlClient;
 using Microsoft.Extensions.Logging;
 using System.Data;
+using System.Net;
+using System.Net.Mail;
+using System.Security.Cryptography;
+using System.Text;
 
 namespace eBookStore.Repository
 {
@@ -257,6 +262,107 @@ namespace eBookStore.Repository
 				throw;
 			}
 		}
+		public async Task<bool> ResetPasswordAsync(string email)
+		{
+			try
+			{
+				// Check if the email exists in the database
+				using var connection = new SqlConnection(_connectionString);
+				await connection.OpenAsync();
+
+				const string getUserQuery = "SELECT id FROM [User] WHERE Email = @Email;";
+				using var command = new SqlCommand(getUserQuery, connection);
+				command.Parameters.AddWithValue("@Email", email);
+
+				var userId = await command.ExecuteScalarAsync();
+				if (userId == null)
+				{
+					return false; // Email not found
+				}
+
+				// Generate a new random password
+				var newPassword = GenerateRandomPassword();
+				var hashedPassword = HashPassword(newPassword);
+
+				// Update the password in the database
+				const string updatePasswordQuery = "UPDATE [User] SET password = @Password WHERE id = @UserId;";
+				using var updateCommand = new SqlCommand(updatePasswordQuery, connection);
+				updateCommand.Parameters.AddWithValue("@Password", hashedPassword);
+				updateCommand.Parameters.AddWithValue("@UserId", userId);
+
+				await updateCommand.ExecuteNonQueryAsync();
+
+				// Send the email with the new password
+				Console.WriteLine("Sending email with new password to: {0}", email);
+				Console.WriteLine("New password: {0}", newPassword);
+				SendEmail(email, "Password Reset", $"Your new password is: {newPassword}");
+
+				return true;
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error resetting password for email: {Email}", email);
+				return false;
+			}
+		}
+
+	// Function to generate a random password
+	private string GenerateRandomPassword()
+	{
+		const string chars = "ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789";
+		var random = new RNGCryptoServiceProvider();
+		var password = new StringBuilder();
+		var data = new byte[4];
+
+		for (int i = 0; i < 8; i++)
+		{
+			random.GetBytes(data);
+			var index = BitConverter.ToUInt32(data, 0) % chars.Length;
+			password.Append(chars[(int)index]);
+		}
+
+		return password.ToString();
+	}
+
+	// Function to hash the password using SHA256
+	private string HashPassword(string password)
+	{
+		using var sha256 = SHA256.Create();
+		var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));
+		return Convert.ToBase64String(hashedBytes);
+	}
+	//this is the code for sending email ----  JTSA8CEGTD1189NX7D3DCXNQ
+	// Function to send an email with the new password
+		private void SendEmail(string toEmail, string subject, string body)
+		{	
+			try{
+				var smtpClient = new SmtpClient("smtp.gmail.com") 
+				{
+					Port = 587,
+					Credentials = new NetworkCredential("dor.isreali@gmail.com", "gkbj mvnj uscg hfev"),
+					EnableSsl = true,
+				};
+
+				var mailMessage = new MailMessage
+				{
+					From = new MailAddress("dor.isreali@gmail.com"),
+					Subject = subject,
+					Body = body,
+					IsBodyHtml = true,
+				};
+				mailMessage.To.Add(toEmail);
+
+				smtpClient.Send(mailMessage);
+				Console.WriteLine("Email sent successfully to: {0}", toEmail);
+			}catch(Exception ex)
+			{
+				Console.WriteLine("Error sending email: {0}", ex.Message);
+				_logger.LogError(ex, "Error sending email to: {ToEmail}", toEmail);
+				throw;
+			}
+		}
 	
 	}
+
+	
 }
