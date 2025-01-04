@@ -515,6 +515,7 @@ public class BookRepository
 								rating = this.getRatingModel(book.id),
 								coverModel = this.getCoverModelById(book.id),
 								genreModel =this.getGenreModelById(book.genreId),
+								authorModel = this.getAuthorModelById(book.id)
 							};
 							
 							if (bookViewModel.feedbackModel != null)

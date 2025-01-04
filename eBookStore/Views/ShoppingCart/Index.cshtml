@@ -1,169 +1,125 @@
+@model IEnumerable<eBookStore.Models.ViewModels.BookViewModel>
+@{
+    ViewData["Title"] = "Shopping Cart";
+    var currentUser = Context.Session.GetInt32("userId") ?? 0;
+}
 
-<section class="h-100">
-  <div class="container h-100 py-5">
-    <div class="row d-flex justify-content-center align-items-center h-100">
-      <div class="col-10">
+<style>
+    .cart-item {
+        transition: all 0.2s ease;
+        border-radius: 8px;
+        background: #fff;
+        padding: 1.5rem;
+        margin-bottom: 1rem;
+        border: 1px solid #eee;
+    }
 
-        <div class="d-flex justify-content-between align-items-center mb-4">
-          <h3 class="fw-normal mb-0">Shopping Cart</h3>
-          <div>
-            <p class="mb-0"><span class="text-muted">Sort by:</span> <a href="#!" class="text-body">price <i
-                  class="fas fa-angle-down mt-1"></i></a></p>
-          </div>
+    .cart-item:hover {
+        border-color: #dee2e6;
+    }
+
+    .remove-btn {
+        transition: all 0.2s ease;
+        border: none;
+        background: none;
+        color: #dc3545;
+        padding: 0.5rem;
+    }
+
+    .remove-btn:hover {
+        color: #bb2d3b;
+    }
+
+    .book-image {
+        border-radius: 4px;
+    }
+
+    .summary-card {
+        border: 1px solid #eee;
+        border-radius: 8px;
+    }
+
+    .checkout-btn, .continue-btn {
+        transition: background-color 0.2s ease;
+    }
+
+    .empty-cart {
+        text-align: center;
+        padding: 4rem 2rem;
+    }
+</style>
+
+<div class="container py-5">
+    @if (!Model?.Any() ?? true)
+    {
+        <div class="empty-cart">
+            <i class="bi bi-cart text-muted" style="font-size: 2.5rem;"></i>
+            <h4 class="mt-4 mb-3">Your cart is empty</h4>
+            <p class="text-muted">Looking for something to read?</p>
+            <a href="@Url.Action("Index", "Book")" class="btn btn-primary continue-btn">
+                Browse Books
+            </a>
         </div>
-
-        <div class="card rounded-3 mb-4">
-          <div class="card-body p-4">
-            <div class="row d-flex justify-content-between align-items-center">
-              <div class="col-md-2 col-lg-2 col-xl-2">
-                <img
-                  src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-shopping-carts/img1.webp"
-                  class="img-fluid rounded-3" alt="Cotton T-shirt">
-              </div>
-              <div class="col-md-3 col-lg-3 col-xl-3">
-                <p class="lead fw-normal mb-2">Basic T-shirt</p>
-                <p><span class="text-muted">Size: </span>M <span class="text-muted">Color: </span>Grey</p>
-              </div>
-              <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-                <button data-mdb-button-init data-mdb-ripple-init class="btn btn-link px-2"
-                  onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                  <i class="fas fa-minus"></i>
-                </button>
-
-                <input id="form1" min="0" name="quantity" value="2" type="number"
-                  class="form-control form-control-sm" />
-
-                <button data-mdb-button-init data-mdb-ripple-init class="btn btn-link px-2"
-                  onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>
-              <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                <h5 class="mb-0">$499.00</h5>
-              </div>
-              <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                <a href="#!" class="text-danger"><i class="fas fa-trash fa-lg"></i></a>
-              </div>
+    }
+    else
+    {
+        <div class="row g-4">
+            <!-- Cart Items -->
+            <div class="col-lg-8">
+                <h4 class="mb-4">Shopping Cart (@Model.Count() items)</h4>
+                @foreach (var bookVM in Model)
+                {
+                    @if (bookVM?.book != null)
+                    {
+                        <div class="cart-item">
+                            <div class="row align-items-center">
+                                <div class="col-md-2">
+                                    <img src="@(bookVM.coverModel?.imgName ?? "/images/default-cover.jpg")" 
+                                         class="img-fluid book-image" 
+                                         alt="@bookVM.book.title">
+                                </div>
+                                <div class="col-md-7">
+                                    <h5 class="mb-1">@bookVM.book.title</h5>
+                                    @if (bookVM.authorModel != null)
+                                    {
+                                        <p class="text-muted mb-2">by @bookVM.authorModel.name</p>
+                                    }
+                                    <span class="text-primary">$@bookVM.book.buyingPrice.ToString("0.00")</span>
+                                </div>
+                                <div class="col-md-3 text-end">
+                                    <form asp-controller="Cart" asp-action="RemoveFromCart" method="post">
+                                        <input type="hidden" name="bookId" value="@bookVM.book.id" />
+                                        <button type="submit" class="remove-btn">
+                                            Remove
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                }
             </div>
-          </div>
-        </div>
 
-        <div class="card rounded-3 mb-4">
-          <div class="card-body p-4">
-            <div class="row d-flex justify-content-between align-items-center">
-              <div class="col-md-2 col-lg-2 col-xl-2">
-                <img
-                  src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-shopping-carts/img1.webp"
-                  class="img-fluid rounded-3" alt="Cotton T-shirt">
-              </div>
-              <div class="col-md-3 col-lg-3 col-xl-3">
-                <p class="lead fw-normal mb-2">Basic T-shirt</p>
-                <p><span class="text-muted">Size: </span>M <span class="text-muted">Color: </span>Grey</p>
-              </div>
-              <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-                <button data-mdb-button-init data-mdb-ripple-init class="btn btn-link px-2"
-                  onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                  <i class="fas fa-minus"></i>
-                </button>
-
-                <input id="form1" min="0" name="quantity" value="2" type="number"
-                  class="form-control form-control-sm" />
-
-                <button data-mdb-button-init data-mdb-ripple-init class="btn btn-link px-2"
-                  onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>
-              <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                <h5 class="mb-0">$499.00</h5>
-              </div>
-              <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                <a href="#!" class="text-danger"><i class="fas fa-trash fa-lg"></i></a>
-              </div>
+            <!-- Order Summary -->
+            <div class="col-lg-4">
+                <div class="summary-card p-4">
+                    <h4 class="mb-4">Summary</h4>
+                    <div class="d-flex justify-content-between mb-3">
+                        <span class="text-muted">Total</span>
+                        <span class="h5 mb-0">$@Model.Where(b => b?.book != null).Sum(b => b.book.buyingPrice).ToString("0.00")</span>
+                    </div>
+                    <hr class="my-4">
+                    <form asp-controller="Cart" asp-action="Checkout" method="post">
+                        <button type="submit" class="btn btn-primary w-100 mb-3 checkout-btn">
+                            Checkout
+                        </button>
+                    </form>
+                    <a href="@Url.Action("Index", "Book")" 
+                       class="btn btn-outline-secondary w-100 continue-btn">
+                        Continue Shopping
+                    </a>
+                </div>
             </div>
-          </div>
         </div>
-
-        <div class="card rounded-3 mb-4">
-          <div class="card-body p-4">
-            <div class="row d-flex justify-content-between align-items-center">
-              <div class="col-md-2 col-lg-2 col-xl-2">
-                <img
-                  src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-shopping-carts/img1.webp"
-                  class="img-fluid rounded-3" alt="Cotton T-shirt">
-              </div>
-              <div class="col-md-3 col-lg-3 col-xl-3">
-                <p class="lead fw-normal mb-2">Basic T-shirt</p>
-                <p><span class="text-muted">Size: </span>M <span class="text-muted">Color: </span>Grey</p>
-              </div>
-              <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-                <button data-mdb-button-init data-mdb-ripple-init class="btn btn-link px-2"
-                  onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                  <i class="fas fa-minus"></i>
-                </button>
-
-                <input id="form1" min="0" name="quantity" value="2" type="number"
-                  class="form-control form-control-sm" />
-
-                <button data-mdb-button-init data-mdb-ripple-init class="btn btn-link px-2"
-                  onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>
-              <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                <h5 class="mb-0">$499.00</h5>
-              </div>
-              <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                <a href="#!" class="text-danger"><i class="fas fa-trash fa-lg"></i></a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-        <div class="card rounded-3 mb-4">
-          <div class="card-body p-4">
-            <div class="row d-flex justify-content-between align-items-center">
-              <div class="col-md-2 col-lg-2 col-xl-2">
-                <img
-                  src="https://mdbcdn.b-cdn.net/img/Photos/new-templates/bootstrap-shopping-carts/img1.webp"
-                  class="img-fluid rounded-3" alt="Cotton T-shirt">
-              </div>
-              <div class="col-md-3 col-lg-3 col-xl-3">
-                <p class="lead fw-normal mb-2">Basic T-shirt</p>
-                <p><span class="text-muted">Size: </span>M <span class="text-muted">Color: </span>Grey</p>
-              </div>
-              <div class="col-md-3 col-lg-3 col-xl-2 d-flex">
-                <button data-mdb-button-init data-mdb-ripple-init class="btn btn-link px-2"
-                  onclick="this.parentNode.querySelector('input[type=number]').stepDown()">
-                  <i class="fas fa-minus"></i>
-                </button>
-
-                <input id="form1" min="0" name="quantity" value="2" type="number"
-                  class="form-control form-control-sm" />
-
-                <button data-mdb-button-init data-mdb-ripple-init class="btn btn-link px-2"
-                  onclick="this.parentNode.querySelector('input[type=number]').stepUp()">
-                  <i class="fas fa-plus"></i>
-                </button>
-              </div>
-              <div class="col-md-3 col-lg-2 col-xl-2 offset-lg-1">
-                <h5 class="mb-0">$499.00</h5>
-              </div>
-              <div class="col-md-1 col-lg-1 col-xl-1 text-end">
-                <a href="#!" class="text-danger"><i class="fas fa-trash fa-lg"></i></a>
-              </div>
-            </div>
-          </div>
-        </div>
-
-
-        <div class="card">
-          <div class="card-body">
-            <button  type="button" data-mdb-button-init data-mdb-ripple-init class="btn btn-warning btn-block btn-lg">Proceed to Pay</button>
-          </div>
-        </div>
-
-      </div>
-    </div>
-  </div>
-</section>
+    }
+</div>

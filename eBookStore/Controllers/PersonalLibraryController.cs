@@ -1,13 +1,8 @@
 using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using eBookStore.Models;
-using eBookStore.Models.ViewModels;
 using eBookStore.Repository;
-using Microsoft.Extensions.Logging;
-using Microsoft.Extensions.Logging.Abstractions;
-using System.Security.Claims;
 using eBookStore.Models;
-using Microsoft.Data.SqlClient;
 
 namespace eBookStore.Controllers;
 
@@ -28,6 +23,8 @@ public class PersonalLibraryController : Controller
 		_libraryRepo = new PersonalLibraryRepository(_connectionString, repoLogger);
 	}
 
+	[Route("library")]
+	[Route("PersonalLibrary")]
 	// GET: PersonalLibrary
 	public IActionResult Index()
 	{
