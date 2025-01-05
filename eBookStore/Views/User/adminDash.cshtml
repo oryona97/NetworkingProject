@@ -8,7 +8,7 @@
     <div class="d-flex flex-column flex-shrink-0 p-3 bg-secondary" style="width: 280px; height: 100h;">
         <ul class="adminFunctions nav nav-pills flex-column mb-auto">
             <li class="nav-item">
-                <a href="#" class="nav-link active" data-function="generalData" aria-current="page">
+                <a href="#" class="nav-link active" data-function="GeneralInfoDisplay" aria-current="page">
                     <svg class="bi me-2" width="16" height="16"><use xlink:href="#home"/></svg>
                     General Data
                 </a>
@@ -204,101 +204,93 @@
 </div>
 
 <script>
+
     let data = @Json.Serialize(Model);
-    let bookviewmodel = data.bookViewModel;
-    console.log(bookviewmodel);
-    
     
 
-    document.addEventListener("DOMContentLoaded", () => {
-    // Sidebar Navigation
-    const sidebarLinks = document.querySelectorAll(".adminFunctions .nav-link");
-    const sections = {
-        GeneralInfoDisplay: document.querySelector(".GeneralInfoDisplay"),
-        galleryManagerDisplay: document.querySelector(".galleryManagerDisplay"),
-        ManageUsersDisplay: document.querySelector("#ManageUsersDisplay"),
-        discount: document.querySelector(".discount")
-    };
+    document.addEventListener("DOMContentLoaded", () => 
+        {
+        // Sidebar Navigation
+        const sidebarLinks = document.querySelectorAll(".adminFunctions .nav-link");
+        const sections = 
+        {
+            GeneralInfoDisplay: document.querySelector(".GeneralInfoDisplay"),
+            galleryManagerDisplay: document.querySelector(".galleryManagerDisplay"),
+            ManageUsersDisplay: document.querySelector("#ManageUsersDisplay"),
+            discount: document.querySelector(".discount")
+        };
 
-    sidebarLinks.forEach(link => {
-        link.addEventListener("click", (event) => {
-            event.preventDefault();
+        sidebarLinks.forEach(link => {
+            link.addEventListener("click", (event) => {
+                event.preventDefault();
 
-            // Hide all sections
-            Object.values(sections).forEach(section => {
-                if (section) section.style.display = "none";
+                // Hide all sections
+                Object.values(sections).forEach(section => {
+                    if (section) section.style.display = "none";
+                });
+
+                // Show the selected section
+                const functionType = link.getAttribute("data-function");
+                const targetSection = sections[functionType];
+                if (targetSection) {
+                    targetSection.style.display = "block";
+                }
+
+                // Update active link
+                sidebarLinks.forEach(l => l.classList.remove("active"));
+                link.classList.add("active");
+            });
+        });
+
+        // Sale End Date Validation
+        const saleEndDateInput = document.getElementById("saleEndDate");
+        if (saleEndDateInput) {
+            saleEndDateInput.addEventListener("input", () => {
+                const currentDate = new Date();
+                const maxDate = new Date();
+                maxDate.setDate(currentDate.getDate() + 7);
+
+                const selectedDate = new Date(saleEndDateInput.value);
+
+                if (selectedDate > maxDate) {
+                    alert("Sale End Date cannot be more than 7 days from today.");
+                    saleEndDateInput.value = ""; // Reset the input
+                }
+            });
+        }
+
+        // File Upload Validation
+        const uploadButton = document.querySelector(".upload-butt");
+        const coverInput = document.getElementById("coverImage");
+
+        if (coverInput && uploadButton) {
+            coverInput.addEventListener("change", (event) => {
+                const file = event.target.files[0];
+                if (file) {
+                    const allowedExtensions = ['.jpg', '.jpeg'];
+                    const fileExtension = file.name.split('.').pop().toLowerCase();
+
+                    if (!allowedExtensions.includes(`.${fileExtension}`)) {
+                        alert("Invalid file type! Please upload a JPG image.");
+                        coverInput.value = ""; // Reset the input
+                    } else {
+                        alert(`File "${file.name}" is ready to upload.`);
+                    }
+                }
             });
 
-            // Show the selected section
-            const functionType = link.getAttribute("data-function");
-            const targetSection = sections[functionType];
-            if (targetSection) {
-                targetSection.style.display = "";
-            }
-
-            // Update active link
-            sidebarLinks.forEach(l => l.classList.remove("active"));
-            link.classList.add("active");
-        });
-    });
-
-    // Sale End Date Validation
-    const saleEndDateInput = document.getElementById("saleEndDate");
-    if (saleEndDateInput) {
-        saleEndDateInput.addEventListener("input", () => {
-            const currentDate = new Date();
-            const maxDate = new Date();
-            maxDate.setDate(currentDate.getDate() + 7);
-
-            const selectedDate = new Date(saleEndDateInput.value);
-
-            if (selectedDate > maxDate) {
-                alert("Sale End Date cannot be more than 7 days from today.");
-                saleEndDateInput.value = ""; // Reset the input
-            }
-        });
-    }
-
-    // File Upload Validation
-    const uploadButton = document.querySelector(".upload-butt");
-    const coverInput = document.getElementById("coverImage");
-
-    if (coverInput && uploadButton) {
-        coverInput.addEventListener("change", (event) => {
-            const file = event.target.files[0];
-            if (file) {
-                const allowedExtensions = ['.jpg', '.jpeg'];
-                const fileExtension = file.name.split('.').pop().toLowerCase();
-
-                if (!allowedExtensions.includes(`.${fileExtension}`)) {
-                    alert("Invalid file type! Please upload a JPG image.");
-                    coverInput.value = ""; // Reset the input
+            uploadButton.addEventListener("click", (event) => {
+                const file = coverInput.files[0];
+                if (!file) {
+                    alert("Please select a file before uploading.");
+                    event.preventDefault(); // Prevent form submission
                 } else {
-                    alert(`File "${file.name}" is ready to upload.`);
+                    alert(`Uploading "${file.name}"...`);
                 }
-            }
-        });
+            });
+        }
 
-        uploadButton.addEventListener("click", (event) => {
-            const file = coverInput.files[0];
-            if (!file) {
-                alert("Please select a file before uploading.");
-                event.preventDefault(); // Prevent form submission
-            } else {
-                alert(`Uploading "${file.name}"...`);
-            }
-        });
-    }
-
-    // User Details Management
-    const userLinks = document.querySelectorAll(".nav-link[data-username]");
-    const userDetailsContent = document.getElementById("UserDetailsContent");
-
-    userLinks.forEach(link => {
-        link.addEventListener("click", (event) => {
-            event.preventDefault();
-
-
+        // User Details Management
         const userLinks = document.querySelectorAll(".nav-link[data-username]");
         const userDetailsContent = document.getElementById("UserDetailsContent");
 
@@ -306,31 +298,40 @@
             link.addEventListener("click", (event) => {
                 event.preventDefault();
 
-                // Get user details from data attributes
-                const password = link.getAttribute("data-password");
-                const username = link.getAttribute("data-username");
-                const email = link.getAttribute("data-email");
-                const firstName = link.getAttribute("data-firstname");
-                const lastName = link.getAttribute("data-lastname");
-                const phone = link.getAttribute("data-phone");
-                const type = link.getAttribute("data-type");
 
-                // Update the UserDetailsContent section
-                userDetailsContent.innerHTML = `
-                    <div>
-                        <h4>Details for: ${username}</h4>
-                        <p><strong>Password:</strong>${password}</p>
-                        <p><strong>Email:</strong> ${email}</p>
-                        <p><strong>First Name:</strong> ${firstName}</p>
-                        <p><strong>Last Name:</strong> ${lastName}</p>
-                        <p><strong>Phone:</strong> ${phone}</p>
-                        <p><strong>Type:</strong> ${type}</p>
-                    </div>
-                    <button class="btn btn-primary" onclick="editUser('${username}')">Edit User</button>
-                `;
+                const userLinks = document.querySelectorAll(".nav-link[data-username]");
+                const userDetailsContent = document.getElementById("UserDetailsContent");
+
+                userLinks.forEach(link => {
+                    link.addEventListener("click", (event) => {
+                        event.preventDefault();
+
+                        // Get user details from data attributes
+                        const password = link.getAttribute("data-password");
+                        const username = link.getAttribute("data-username");
+                        const email = link.getAttribute("data-email");
+                        const firstName = link.getAttribute("data-firstname");
+                        const lastName = link.getAttribute("data-lastname");
+                        const phone = link.getAttribute("data-phone");
+                        const type = link.getAttribute("data-type");
+
+                        // Update the UserDetailsContent section
+                        userDetailsContent.innerHTML = `
+                            <div>
+                                <h4>Details for: ${username}</h4>
+                                <p><strong>Password:</strong>${password}</p>
+                                <p><strong>Email:</strong> ${email}</p>
+                                <p><strong>First Name:</strong> ${firstName}</p>
+                                <p><strong>Last Name:</strong> ${lastName}</p>
+                                <p><strong>Phone:</strong> ${phone}</p>
+                                <p><strong>Type:</strong> ${type}</p>
+                            </div>
+                            <button class="btn btn-primary" onclick="editUser('${username}')">Edit User</button>
+                        `;
+                    });
+                });
             });
-
         });
     });
-});
+
 </script>
