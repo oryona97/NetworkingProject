@@ -199,8 +199,7 @@
     
 
     document.addEventListener("DOMContentLoaded", () => {
-        // Event Listener for Sidebar Links
-
+    // Sidebar Navigation
     const sidebarLinks = document.querySelectorAll(".adminFunctions .nav-link");
     const sections = {
         generalData: document.querySelector(".galleryManagerDisplay"),
@@ -209,36 +208,13 @@
         discount: document.querySelector(".discount")
     };
 
-
     sidebarLinks.forEach(link => {
         link.addEventListener("click", (event) => {
             event.preventDefault();
 
             // Hide all sections
-            Object.values(sections).forEach(section => section.style.display = "none");
-
-
-        saleEndDateInput.addEventListener("input", () => {
-            const currentDate = new Date();
-            const maxDate = new Date();
-            maxDate.setDate(currentDate.getDate() + 7);
-
-            const selectedDate = new Date(saleEndDateInput.value);
-
-            if (selectedDate > maxDate) {
-                alert("Sale End Date cannot be more than 7 days from today.");
-                saleEndDateInput.value = ""; // Reset the input
-            }
-        });
-
-        sidebarLinks.forEach(link => {
-            link.addEventListener("click", (event) => {
-                event.preventDefault();
-                const functionType = link.getAttribute("data-function");
-                dataDisplay.innerHTML = dataMap[functionType] || `<h2>Not Found</h2><p>No data available for this action.</p>`;
-                document.querySelector("."+functionType).style="display:block"
-                sidebarLinks.forEach(l => l.classList.remove("active"));
-                link.classList.add("active");
+            Object.values(sections).forEach(section => {
+                if (section) section.style.display = "none";
             });
 
             // Show the selected section
@@ -251,15 +227,31 @@
             // Update active link
             sidebarLinks.forEach(l => l.classList.remove("active"));
             link.classList.add("active");
-
         });
     });
 
-        // Event Listener for Upload Button and File Input
-        const uploadButton = document.querySelector(".upload-butt");
-        const coverInput = document.getElementById("coverImage");
+    // Sale End Date Validation
+    const saleEndDateInput = document.getElementById("saleEndDate");
+    if (saleEndDateInput) {
+        saleEndDateInput.addEventListener("input", () => {
+            const currentDate = new Date();
+            const maxDate = new Date();
+            maxDate.setDate(currentDate.getDate() + 7);
 
-        // Show selected file name or validation error
+            const selectedDate = new Date(saleEndDateInput.value);
+
+            if (selectedDate > maxDate) {
+                alert("Sale End Date cannot be more than 7 days from today.");
+                saleEndDateInput.value = ""; // Reset the input
+            }
+        });
+    }
+
+    // File Upload Validation
+    const uploadButton = document.querySelector(".upload-butt");
+    const coverInput = document.getElementById("coverImage");
+
+    if (coverInput && uploadButton) {
         coverInput.addEventListener("change", (event) => {
             const file = event.target.files[0];
             if (file) {
@@ -275,50 +267,46 @@
             }
         });
 
-        // Action when the upload button is clicked
         uploadButton.addEventListener("click", (event) => {
             const file = coverInput.files[0];
             if (!file) {
                 alert("Please select a file before uploading.");
                 event.preventDefault(); // Prevent form submission
             } else {
-
-                //addressing bookModel
-
                 alert(`Uploading "${file.name}"...`);
             }
         });
+    }
 
+    // User Details Management
+    const userLinks = document.querySelectorAll(".nav-link[data-username]");
+    const userDetailsContent = document.getElementById("UserDetailsContent");
 
+    userLinks.forEach(link => {
+        link.addEventListener("click", (event) => {
+            event.preventDefault();
 
-        const userLinks = document.querySelectorAll(".nav-link[data-username]");
-        const userDetailsContent = document.getElementById("UserDetailsContent");
+            // Get user details from data attributes
+            const username = link.getAttribute("data-username");
+            const email = link.getAttribute("data-email");
+            const firstName = link.getAttribute("data-firstname");
+            const lastName = link.getAttribute("data-lastname");
+            const phone = link.getAttribute("data-phone");
+            const type = link.getAttribute("data-type");
 
-        userLinks.forEach(link => {
-            link.addEventListener("click", (event) => {
-                event.preventDefault();
-
-                // Get user details from data attributes
-                const username = link.getAttribute("data-username");
-                const email = link.getAttribute("data-email");
-                const firstName = link.getAttribute("data-firstname");
-                const lastName = link.getAttribute("data-lastname");
-                const phone = link.getAttribute("data-phone");
-                const type = link.getAttribute("data-type");
-
-                // Update the UserDetailsContent section
-                userDetailsContent.innerHTML = `
-                    <div>
-                        <h4>Details for: ${username}</h4>
-                        <p><strong>Email:</strong> ${email}</p>
-                        <p><strong>First Name:</strong> ${firstName}</p>
-                        <p><strong>Last Name:</strong> ${lastName}</p>
-                        <p><strong>Phone:</strong> ${phone}</p>
-                        <p><strong>Type:</strong> ${type}</p>
-                    </div>
-                    <button class="btn btn-primary" onclick="editUser('${username}')">Edit User</button>
-                `;
-            });
+            // Update the UserDetailsContent section
+            userDetailsContent.innerHTML = `
+                <div>
+                    <h4>Details for: ${username}</h4>
+                    <p><strong>Email:</strong> ${email}</p>
+                    <p><strong>First Name:</strong> ${firstName}</p>
+                    <p><strong>Last Name:</strong> ${lastName}</p>
+                    <p><strong>Phone:</strong> ${phone}</p>
+                    <p><strong>Type:</strong> ${type}</p>
+                </div>
+                <button class="btn btn-primary" onclick="editUser('${username}')">Edit User</button>
+            `;
         });
     });
+});
 </script>
