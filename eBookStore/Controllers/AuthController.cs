@@ -4,7 +4,6 @@ using eBookStore.Models;
 using eBookStore.Models.ViewModels;
 using Microsoft.Data.SqlClient;
 using eBookStore.Repository;
-using System.Text;
 namespace eBookStore.Controllers;
 
 
@@ -143,7 +142,7 @@ public class AuthController : Controller
                 ModelState.AddModelError("", "An error occurred during login. Please try again.");
             }
         }
-        return View("Login", model);
+        return View("Index", model);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

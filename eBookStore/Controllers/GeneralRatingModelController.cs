@@ -1,8 +1,6 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using eBookStore.Repository;
 using eBookStore.Models;
-using eBookStore.Models.ViewModels;
 
 namespace eBookStore.Controllers;
 
@@ -18,7 +16,7 @@ public class GeneralRatingModelController : Controller
         _logger = logger;
         _configuration = configuration;
         _connectionString = _configuration.GetConnectionString("DefaultConnection");
-        _genraleRatingRepository = new GeneralRatingRepository(_connectionString);
+        _genraleRatingRepository = new GeneralRatingRepository(_connectionString!);
     }
 
     // Create instance of GeneralRatingModel and initialize all the models in it with values with the func in the model
@@ -33,14 +31,14 @@ public class GeneralRatingModelController : Controller
     public IActionResult AddGeneralRating(GeneralRatingModel generalRatingModel)
     {
         //get user id from the session
-    
+
         int? userId = HttpContext.Session.GetInt32("userId");
-        if(userId == null)
+        if (userId == null)
         {
             return RedirectToAction("ShowLogIn", "Home");
         }
-       
-        if(!_genraleRatingRepository.CheckIfUserRated(userId.Value))
+
+        if (!_genraleRatingRepository.CheckIfUserRated(userId.Value))
         {
             Console.WriteLine("Adding General Rating");
             _genraleRatingRepository.AddGeneralRating(generalRatingModel);
@@ -50,7 +48,7 @@ public class GeneralRatingModelController : Controller
         {
             return BadRequest("User already rated");
         }
-        
+
     }
 
     //this func return average rating of the general rating of the website
@@ -59,7 +57,7 @@ public class GeneralRatingModelController : Controller
         var averageRating = _genraleRatingRepository.GetAverageRating();
         Console.WriteLine("Getting average rating {0}", averageRating);
         return Ok(averageRating);
-        
+
     }
 
     //this func will get all the general ratings from the database and show them in web page
@@ -69,8 +67,4 @@ public class GeneralRatingModelController : Controller
         List<GeneralRatingModel> generalRatingModels = _genraleRatingRepository.GetAllGeneralRating();
         return Ok(generalRatingModels);
     }
-
-    
-
-
 }

@@ -10,19 +10,18 @@ namespace eBookStore.Controllers;
 public class GalleryController : Controller
 {
 
-	private readonly ILogger<HomeController> _logger;
-	private readonly IConfiguration _configuration;
-	private string? connectionString;
-	private BookRepository _bookRepo;
-	private UserRepository _userRepo;
+    private readonly ILogger<HomeController> _logger;
+    private readonly IConfiguration _configuration;
+    private string? connectionString;
+    private BookRepository _bookRepo;
 
-	public GalleryController(IConfiguration configuration, ILogger<HomeController> logger)
-	{
-		_configuration = configuration;
-		connectionString = _configuration.GetConnectionString("DefaultConnection");
-		_logger = logger;
-		_bookRepo = new BookRepository(connectionString);
-	}
+    public GalleryController(IConfiguration configuration, ILogger<HomeController> logger)
+    {
+        _configuration = configuration;
+        connectionString = _configuration.GetConnectionString("DefaultConnection");
+        _logger = logger;
+        _bookRepo = new BookRepository(connectionString);
+    }
 
 
 
@@ -32,7 +31,7 @@ public class GalleryController : Controller
 
         data.allBooks = _bookRepo.getAllBooks();
         data.listOfCategorys = _bookRepo.getAllGenres();
-        
+
         return View(data);
     }
 

@@ -66,8 +66,8 @@ public class PersonalLibraryRepository
                     book = book,
                     publishers = _bookRepository.PubModelByBookId(book.id),
                     feedbackModel = _bookRepository.getfeedbackModelById(book.id),
-                    coverModel = _bookRepository.getCoverModelById(book.id),
-                    genreModel = _bookRepository.getGenreModelById(book.genreId)
+                    coverModel = _bookRepository.getCoverModelById(book.id) ?? new CoverModel(),
+                    genreModel = _bookRepository.getGenreModelById(book.genreId) ?? new GenreModel()
                 };
 
                 userBooks.Add(bookViewModel);

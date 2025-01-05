@@ -92,7 +92,7 @@
                                     @if (isReviewOwner)
                                     {
                                         <form asp-action="DeleteReview" 
-                                            asp-route-bookId="@Model.book.id" 
+                                            asp-route-bookId="@Model.book?.id" 
                                             asp-route-reviewId="@feedback.id" 
                                             method="post" 
                                             class="delete-review-form d-inline">

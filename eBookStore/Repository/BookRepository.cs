@@ -1,8 +1,6 @@
 using eBookStore.Models.ViewModels;
 using Microsoft.Data.SqlClient;
 using eBookStore.Models;
-using System.Diagnostics;
-using Microsoft.AspNetCore.Mvc;
 using System.Text;
 
 namespace eBookStore.Repository;
@@ -10,292 +8,7 @@ public class BookRepository
 {
     private string? connectionString;
 
-	public BookRepository(string _connectionString)
-	{
-		connectionString = _connectionString;
-	}
-
-	
-
-
-	//this func to Add  FeadbackModel List to the database 
-	public void AddFeedbackModel(List<FeedbackModel> feedbackModel)
-	{
-		foreach (var feedback in feedbackModel)
-		{
-			AddFeedback(feedback);
-		}
-	}
-
-	//this func to Add FeedbackModel to the database
-
-	public void AddFeedback(FeedbackModel feedback)
-	{
-		try
-		{
-			using (var connection = new SqlConnection(connectionString))
-			{
-				connection.Open();
-				string query = "INSERT INTO Feedback (userId, bookId, comment, createdAt) VALUES (@userId, @bookId, @comment, @createdAt);";
-
-				using (var command = new SqlCommand(query, connection))
-				{
-					command.Parameters.AddWithValue("@userId", feedback.userId);
-					command.Parameters.AddWithValue("@bookId", feedback.bookId);
-					command.Parameters.AddWithValue("@comment", feedback.comment);
-					command.Parameters.AddWithValue("@createdAt", feedback.createdAt);
-
-					command.ExecuteNonQuery();
-				}
-			}
-		}
-		catch (SqlException ex)
-		{
-			Console.WriteLine($"Database error during adding feedback {ex}");
-			throw;
-		}
-	}
-
-	//this funct to Add bookViewModel to the database
-	public void AddBookViewModel(BookViewModel bookViewModel)
-	{
-		
-		// בדוק אם הז'אנר קיים לפי שם
-		int genreId = GetGenreIdByName(bookViewModel.genreModel.name);
-		if (genreId == 0)
-		{
-			// הוסף ז'אנר חדש אם הוא לא קיים
-			AddGenreModel(bookViewModel.genreModel);
-			genreId = GetGenreIdByName(bookViewModel.genreModel.name);
-		}
-		bookViewModel.book.genreId = genreId;
-
-		// בצע את אותה בדיקה ל-Publisher
-		int publisherId = gettingPublisherIdByName(bookViewModel.publisherModel.name);
-		if (publisherId == 0)
-		{
-			AddPublisherModel(bookViewModel.publisherModel);
-			publisherId = gettingPublisherIdByName(bookViewModel.publisherModel.name);
-		}
-		bookViewModel.book.publisherId = publisherId;
-
-		// הגדר ערכי ברירת מחדל לספר
-		bookViewModel.book.onSale = false;
-		bookViewModel.book.amountOfCopies = 3;
-
-		// הוסף את הספר
-		AddBook(bookViewModel.book);
-
-		// קבל את ה-id של הספר שנוסף
-		int bookId = getBookIDByName(bookViewModel.book.title);
-		if (bookId == 0)
-		{
-			throw new Exception("Failed to retrieve book ID after adding the book.");
-		}
-		bookViewModel.coverModel = new CoverModel
-		{
-			bookId = bookId,
-			imgName = $"{bookViewModel.book.title}_cover.jpg".Replace(" ", "_"),
-			createdAt = DateTime.Now
-		};
-
-				//need to fix - setting authorModel when adding book
-		AuthorModel author = getAuthorModelByName(bookViewModel.authorModel.name);
-		bookViewModel.authorModel.bookId=bookId;
-		if (author == null)
-		{
-			// הוסף סופר חדש אם הוא לא קיים
-			AddAuthorModel(bookViewModel.authorModel);
-			author = getAuthorModelByName(bookViewModel.authorModel.name);
-		}
-		bookViewModel.authorModel = author;
-		//
-		AddCoverModel(bookViewModel.coverModel);
-	}
-
-	public int GetGenreIdByName(string genreName)
-	{
-		try
-		{
-			using (var connection = new SqlConnection(connectionString))
-			{
-				connection.Open();
-				string query = "SELECT id FROM Genre WHERE name = @name;";
-
-				using (var command = new SqlCommand(query, connection))
-				{
-					command.Parameters.AddWithValue("@name", genreName);
-
-					using (var reader = command.ExecuteReader())
-					{
-						if (reader.Read())
-						{
-							return Convert.ToInt32(reader["id"]);
-						}
-					}
-				}
-			}
-		}
-		catch (SqlException ex)
-		{
-			Console.WriteLine($"Database error during fetching genreId: {ex.Message}");
-		}
-		return 0;
-	}
-
-	public int getBookIDByName(string bookTitle)
-	{
-		var bookID = 0;
-		try
-		{
-			using (var connection = new SqlConnection(connectionString))
-			{
-				connection.Open();
-				string query = "SELECT * FROM [Book] WHERE title = @bookTitle";
-
-				using (var command = new SqlCommand(query, connection))
-				{
-					command.Parameters.AddWithValue("@bookTitle", bookTitle);
-
-					using (var reader = command.ExecuteReader())
-					{
-						if (reader.Read())
-						{
-							bookID = Convert.ToInt32(reader["id"]);
-							return Convert.ToInt32(bookID);
-						}
-					}
-				}
-			}
-		}
-		catch (Exception ex)
-		{
-			Console.WriteLine($"Error fetching book: {ex.Message}");
-		}
-		return 0;
-	}
-
-	//this func to delete bookViewModel from db
-	public void DeleteBookViewModel(int bookId)
-	{
-		try
-		{
-			using (var connection = new SqlConnection(connectionString))
-			{
-				connection.Open();
-				//dlelete book model
-				string query = "DELETE FROM Book WHERE id = @bookId;";
-				using (var command = new SqlCommand(query, connection))
-				{
-					command.Parameters.AddWithValue("@bookId", bookId);
-					command.ExecuteNonQuery();
-				}
-				
-			}
-		}
-		catch (SqlException ex)
-		{
-			Console.WriteLine($"Database error during deleting book {ex}");
-			throw;
-		}
-	}
-	
-	//this func to add AuthorModel to the database
-	public void AddAuthorModel(AuthorModel authorModel)
-	{
-		try
-		{
-			using (var connection = new SqlConnection(connectionString))
-			{
-				connection.Open();
-				string query = "INSERT INTO Auther ( name, bookId, createdAt) VALUES ( @name, @bookId, @createdAt);";
-
-				using (var command = new SqlCommand(query, connection))
-				{
-					command.Parameters.AddWithValue("@bookId", authorModel.bookId); 
-					command.Parameters.AddWithValue("@name", authorModel.name);
-					command.Parameters.AddWithValue("@createdAt", authorModel.createdAt);
-
-					command.ExecuteNonQuery();
-				}
-			}
-		}
-		catch (SqlException ex)
-		{
-			Console.WriteLine("Database error during adding author ${ex}");
-			throw;
-		}
-	}
-	//this func to add bookModelto the database 
-	public void AddBook(BookModel book)
-	{
-		try
-		{
-			using (var connection = new SqlConnection(connectionString))
-			{
-				connection.Open();
-				string query = "INSERT INTO Book (publisherId, genreId, amountOfCopies, title, borrowPrice, buyingPrice, pubDate, ageLimit, priceHistory, onSale, canBorrow, starRate, createdAt) VALUES (@publisherId, @genreId, @amountOfCopies, @title, @borrowPrice, @buyingPrice, @pubDate, @ageLimit, @priceHistory, @onSale, @canBorrow, @starRate, @createdAt);";
-
-				using (var command = new SqlCommand(query, connection))
-				{
-					command.Parameters.AddWithValue("@publisherId", book.publisherId);
-					command.Parameters.AddWithValue("@genreId", book.genreId);
-					command.Parameters.AddWithValue("@amountOfCopies", book.amountOfCopies);
-					command.Parameters.AddWithValue("@title", book.title);
-					command.Parameters.AddWithValue("@borrowPrice", book.borrowPrice);
-					command.Parameters.AddWithValue("@buyingPrice", book.buyingPrice);
-					command.Parameters.AddWithValue("@pubDate", book.pubDate);
-					command.Parameters.AddWithValue("@ageLimit", book.ageLimit);
-					command.Parameters.AddWithValue("@priceHistory", book.priceHistory);
-					command.Parameters.AddWithValue("@onSale", book.onSale);
-					command.Parameters.AddWithValue("@canBorrow", book.canBorrow);
-					command.Parameters.AddWithValue("@starRate", book.starRate);
-					command.Parameters.AddWithValue("@createdAt", book.createdAt);
-
-					command.ExecuteNonQuery();
-				}
-			}
-		}
-		catch (SqlException ex)
-		{
-			Console.WriteLine($"Database error during adding book {ex}");
-			throw;
-		}
-	}
-	
-	//this func to add PublisherModel to the database
-	public bool AddPublisherModel(PublisherModel pubModel)
-	{
-		try
-		{
-			using (var connection = new SqlConnection(connectionString))
-			{
-				connection.Open();
-				string query = "INSERT INTO Publisher (name, createdAt) VALUES (@name, @createdAt);";
-
-				using (var command = new SqlCommand(query, connection))
-				{
-					
-					command.Parameters.AddWithValue("@name", pubModel.name);
-					command.Parameters.AddWithValue("@createdAt", pubModel.createdAt);
-
-					command.ExecuteNonQuery();
-				}
-				return true;
-			}
-		}
-		catch (SqlException ex)
-		{
-			Console.WriteLine($"Database error during adding publisher {ex}");
-			return false;
-		}
-		
-	}
-
-	//this AddGenreModel to the database
-	public void AddGenreModel(GenreModel genreModel)
-{
-    try
+    public BookRepository(string? _connectionString)
     {
         connectionString = _connectionString;
     }
@@ -345,23 +58,24 @@ public class BookRepository
     public void AddBookViewModel(BookViewModel bookViewModel)
     {
         // בדוק אם הז'אנר קיים לפי שם
-        int genreId = GetGenreIdByName(bookViewModel.genreModel.name);
+        int genreId = GetGenreIdByName(bookViewModel.genreModel?.name ?? "");
         if (genreId == 0)
         {
             // הוסף ז'אנר חדש אם הוא לא קיים
-            AddGenreModel(bookViewModel.genreModel);
-            genreId = GetGenreIdByName(bookViewModel.genreModel.name);
+            if (bookViewModel.genreModel != null)
+                AddGenreModel(bookViewModel.genreModel);
+            genreId = GetGenreIdByName(bookViewModel.genreModel?.name ?? "");
         }
         bookViewModel.book.genreId = genreId;
 
         // בצע את אותה בדיקה ל-Publisher
         foreach (var publisher in bookViewModel.publishers)
         {
-            int publisherId = gettingPublisherIdByName(publisher.name);
+            int publisherId = gettingPublisherIdByName(publisher.name ?? "");
             if (publisherId == 0)
             {
                 AddPublisherModel(publisher);
-                publisherId = gettingPublisherIdByName(publisher.name);
+                publisherId = gettingPublisherIdByName(publisher.name ?? "");
             }
             bookViewModel.book.publisherId = publisherId;
         }
@@ -374,7 +88,7 @@ public class BookRepository
         AddBook(bookViewModel.book);
 
         // קבל את ה-id של הספר שנוסף
-        int bookId = getBookIDByName(bookViewModel.book.title);
+        int bookId = getBookIDByName(bookViewModel.book.title ?? "");
         if (bookId == 0)
         {
             throw new Exception("Failed to retrieve book ID after adding the book.");
@@ -499,7 +213,7 @@ public class BookRepository
         }
         catch (SqlException ex)
         {
-            Console.WriteLine("Database error during adding author ${ex}");
+            Console.WriteLine($"Database error during adding author {ex}");
             throw;
         }
     }
@@ -748,9 +462,9 @@ public class BookRepository
                                 book = book,
                                 publishers = PubModelByBookId(book.publisherId),
                                 feedbackModel = getfeedbackModelById(book.id),
-                                rating = getRatingModel(book.id),
-                                coverModel = getCoverModelById(book.id),
-                                genreModel = this.getGenreModelById(book.genreId),
+                                rating = getRatingModel(book.id) ?? new RatingModel(),
+                                coverModel = getCoverModelById(book.id) ?? new CoverModel(),
+                                genreModel = this.getGenreModelById(book.genreId) ?? new GenreModel(),
                             };
 
                             foreach (var feedback in bookViewModel.feedbackModel)
@@ -763,7 +477,7 @@ public class BookRepository
                             }
                             bookViewModelList.Add(bookViewModel);
 
-                            bookViewModel.authorModel = getAuthorModelById(book.id);
+                            bookViewModel.authorModel = getAuthorModelById(book.id) ?? new AuthorModel();
                         }
                     }
                 }
@@ -1186,7 +900,7 @@ public class BookRepository
                                 comment = reader["comment"].ToString(),
                                 createdAt = Convert.ToDateTime(reader["createdAt"]),
                             };
-                            feedbackModel.userModel = getUserModelById(feedbackModel.userId);
+                            feedbackModel.userModel = getUserModelById(feedbackModel.userId) ?? new UserModel();
                             fList.Add(feedbackModel);
                         }
                         return fList;
@@ -1437,10 +1151,10 @@ public class BookRepository
                                 book = book,
                                 publishers = this.PubModelByBookId(book.publisherId),
                                 feedbackModel = this.getfeedbackModelById(book.id),
-                                rating = this.getRatingModel(book.id),
-                                coverModel = this.getCoverModelById(book.id),
-                                genreModel = this.getGenreModelById(book.genreId),
-                                authorModel = this.getAuthorModelById(book.id),
+                                rating = this.getRatingModel(book.id) ?? new RatingModel(),
+                                coverModel = this.getCoverModelById(book.id) ?? new CoverModel(),
+                                genreModel = this.getGenreModelById(book.genreId) ?? new GenreModel(),
+                                authorModel = this.getAuthorModelById(book.id)!,
                             };
 
                             if (bookViewModel.feedbackModel != null)
@@ -1455,7 +1169,7 @@ public class BookRepository
                                 }
                             }
 
-                            bookViewModel.authorModel = this.getAuthorModelById(book.id);
+                            bookViewModel.authorModel = this.getAuthorModelById(book.id)!;
                             bookViewModelList.Add(bookViewModel);
 
                         }
