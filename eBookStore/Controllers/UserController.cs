@@ -9,14 +9,14 @@ namespace eBookStore.Controllers;
 public class UserController : Controller
 {
     private readonly ILogger<UserController> _logger;
-    private readonly ILogger<UserRepository> _loggerUserRepo ;
+    private readonly ILogger<UserRepository> _loggerUserRepo;
     private readonly IConfiguration _configuration;
     private string? connectionString;
 
     private BookRepository _bookRepo;
 
-    private UserRepository _UserRepository;
-    public UserController(IConfiguration configuration ,ILogger<UserController> logger )
+    private UserRepository? _UserRepository;
+    public UserController(IConfiguration configuration, ILogger<UserController> logger)
     {
         _configuration = configuration;
         connectionString = _configuration.GetConnectionString("DefaultConnection");
@@ -29,10 +29,10 @@ public class UserController : Controller
     {
         BookRepository bookRepo = new BookRepository(connectionString);
         bookRepo.addHistoryBookPriceModel(bookId, newPrice);
-        return RedirectToAction("showBook","Home");
+        return RedirectToAction("showBook", "Home");
     }
-    
-    
+
+
     [HttpPost]
     [HttpGet]
     public async Task<IActionResult> SendNotifications()
@@ -113,7 +113,7 @@ public class UserController : Controller
         return View();
     }
 
-   [HttpPost]
+    [HttpPost]
     public IActionResult CreateBook(AdminDashViewModel model)
     {
 
@@ -122,7 +122,7 @@ public class UserController : Controller
 
         _bookRepo.AddBookViewModel(model.bookViewModel);
 
-        return View("adminDash",model); // Redirect to a success page
+        return View("adminDash", model); // Redirect to a success page
     }
 
 
@@ -133,17 +133,17 @@ public class UserController : Controller
     {
         int? adminID = HttpContext.Session.GetInt32("userId");
         AdminDashViewModel data = new AdminDashViewModel();
-        data.userModel = _bookRepo.getUserModelById(adminID.Value);
-        data.bookViewModel= new BookViewModel();
-        data.publishersList= _bookRepo.getAllPublishers();
+        data.userModel = _bookRepo.getUserModelById(adminID!.Value)!;
+        data.bookViewModel = new BookViewModel();
+        data.publishersList = _bookRepo.getAllPublishers();
         data.genreList = _bookRepo.getAllGenres();
-        if(data.userModel.type=="admin")
+        if (data.userModel?.type == "admin")
         {
             return View(data);
         }
-        return RedirectToAction("landingpage","Home");
+        return RedirectToAction("landingpage", "Home");
     }
-    
+
 
     public IActionResult Privacy()
     {

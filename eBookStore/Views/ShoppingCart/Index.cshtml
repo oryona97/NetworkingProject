@@ -66,38 +66,47 @@
         <div class="row g-4">
             <!-- Cart Items -->
             <div class="col-lg-8">
-                <h4 class="mb-4">Shopping Cart (@Model.Count() items)</h4>
-                @foreach (var bookVM in Model)
-                {
-                    @if (bookVM?.book != null)
-                    {
-                        <div class="cart-item">
-                            <div class="row align-items-center">
-                                <div class="col-md-2">
-                                    <img src="@(bookVM.coverModel?.imgName ?? "/images/default-cover.jpg")" 
-                                         class="img-fluid book-image" 
-                                         alt="@bookVM.book.title">
-                                </div>
-                                <div class="col-md-7">
-                                    <h5 class="mb-1">@bookVM.book.title</h5>
-                                    @if (bookVM.authorModel != null)
-                                    {
-                                        <p class="text-muted mb-2">by @bookVM.authorModel.name</p>
-                                    }
-                                    <span class="text-primary">$@bookVM.book.buyingPrice.ToString("0.00")</span>
-                                </div>
-                                <div class="col-md-3 text-end">
-                                    <form asp-controller="Cart" asp-action="RemoveFromCart" method="post">
-                                        <input type="hidden" name="bookId" value="@bookVM.book.id" />
-                                        <button type="submit" class="remove-btn">
-                                            Remove
-                                        </button>
-                                    </form>
-                                </div>
-                            </div>
-                        </div>
-                    }
-                }
+                <h4 class="mb-4">Shopping Cart (@Model?.Count() items)</h4>
+@if (Model != null)
+{
+    @foreach (var bookVM in Model)
+    {
+        @if (bookVM?.book != null)
+        {
+            <div class="cart-item">
+                <div class="row align-items-center">
+                    <div class="col-md-2">
+                        <img src="@(bookVM.coverModel?.imgName ?? "/images/default-cover.jpg")" 
+                             class="img-fluid book-image" 
+                             alt="@bookVM.book.title">
+                    </div>
+                    <div class="col-md-7">
+                        <h5 class="mb-1">@bookVM.book.title</h5>
+                        @if (bookVM.authorModel != null)
+                        {
+                            <p class="text-muted mb-2">by @bookVM.authorModel.name</p>
+                        }
+                        <span class="text-primary">$@bookVM.book.buyingPrice.ToString("0.00")</span>
+                    </div>
+                    <div class="col-md-3 text-end">
+                        <form asp-controller="Cart" asp-action="RemoveFromCart" method="post">
+                            <input type="hidden" name="bookId" value="@bookVM.book.id" />
+                            <button type="submit" class="remove-btn">
+                                Remove
+                            </button>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        }
+    }
+}
+else
+{
+    <div class="alert alert-info">
+        Your shopping cart is empty.
+    </div>
+}
             </div>
 
             <!-- Order Summary -->

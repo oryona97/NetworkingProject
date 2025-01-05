@@ -95,11 +95,11 @@
 
             @foreach(var book in Model.allBooks)
             {
-                <div class="card book-item h-100" data-genre="@book.genreModel.name.Replace(" ", "-")" style="width: 18rem; padding-left: 0px; padding-right: 0px;">
+                <div class="card book-item h-100" data-genre="@book?.genreModel?.name.Replace(" ", "-")" style="width: 18rem; padding-left: 0px; padding-right: 0px;">
                     
                     
                     <div class="imageWrapp">
-                        <a href="@Url.Action("Index", "Book")/@book.book.id">
+                        <a href="@Url.Action("Index", "Book")/@book?.book?.id">
                             <img src="\images\bookCovers\@book.coverModel.imgName" class="card-img-top" alt="@book.coverModel.imgName">
                         </a>
                     </div>

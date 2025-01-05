@@ -10,7 +10,7 @@ public class BookController : Controller
 {
     private readonly ILogger<BookController> _logger;
     private readonly IConfiguration _configuration;
-    private string? connectionString;
+    private string connectionString;
     BookRepository bookRepo;
     //create instance of bookViewModel and initialize all the models in it with values with the func in the model
 
@@ -18,7 +18,7 @@ public class BookController : Controller
     {
         _logger = logger;
         _configuration = configuration;
-        connectionString = _configuration.GetConnectionString("DefaultConnection");
+        connectionString = _configuration.GetConnectionString("DefaultConnection")!;
         bookRepo = new BookRepository(connectionString);
     }
 
@@ -189,8 +189,8 @@ public class BookController : Controller
     public IActionResult Index(int id)
     {
 
-        BookViewModel bookViewModel = bookRepo.getBookById(id);
-        Console.WriteLine(bookViewModel.authorModel + " No author found");
+        BookViewModel? bookViewModel = bookRepo.getBookById(id);
+        Console.WriteLine(bookViewModel?.authorModel + " No author found");
         return View(bookViewModel);
     }
 

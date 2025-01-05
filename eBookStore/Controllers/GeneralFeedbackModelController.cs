@@ -1,8 +1,6 @@
-using System.Diagnostics;
 using Microsoft.AspNetCore.Mvc;
 using eBookStore.Repository;
 using eBookStore.Models;
-using eBookStore.Models.ViewModels;
 
 namespace eBookStore.Controllers;
 
@@ -18,7 +16,7 @@ public class GeneralFeedbackModelController : Controller
         _logger = logger;
         _configuration = configuration;
         _connectionString = _configuration.GetConnectionString("DefaultConnection");
-        _generalFeedbackRepository = new GeneralFeedbackModelRepository(_connectionString);
+        _generalFeedbackRepository = new GeneralFeedbackModelRepository(_connectionString!);
     }
 
     // Create instance of GeneralFeedbackModel and initialize all the models in it with values with the func in the model
@@ -30,11 +28,11 @@ public class GeneralFeedbackModelController : Controller
     };
 
     // This function will add the GeneralFeedback to the database
-   
+
     public IActionResult AddGeneralFeedback(GeneralFeedbackModel generalFeedbackModel)
     {
         if (ModelState.IsValid)
-        {   
+        {
             Console.WriteLine("Adding General Feedback");
             _generalFeedbackRepository.AddGeneralFeedback(generalFeedbackModel);
             return Ok("Feedback Added");
@@ -43,7 +41,7 @@ public class GeneralFeedbackModelController : Controller
     }
 
     // This function will get all the general feedbacks from the database and show them in web page
-   
+
     public IActionResult GetAllGeneralFeedback()
     {
         Console.WriteLine("Getting all General Feedback");
