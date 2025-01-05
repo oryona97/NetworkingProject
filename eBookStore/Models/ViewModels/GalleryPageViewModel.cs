@@ -1,10 +1,8 @@
-using eBookStore.Models;
-
 namespace eBookStore.Models.ViewModels;
 
 public class GalleryPageViewModel
 {
-    public List<BookViewModel> allBooks {get; set; }
-    public List<string> listOfCategorys {get; set;}
+    public List<BookViewModel> allBooks { get; set; } = new List<BookViewModel>();
+    public List<string> listOfCategorys { get; set; } = new List<string>();
 
 }

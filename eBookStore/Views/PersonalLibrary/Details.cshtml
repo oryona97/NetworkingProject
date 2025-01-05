@@ -16,7 +16,7 @@
                     <h2 class="Title-container">@Model.book.title</h2>
 
                     <a>Author: Need Fix @Model.authorModel</a><br> 
-                    <a>Published by: @Model.publisherModel.name</a><br>
+                    <a>Published by: @string.Join(", ", @Model.publishers.Select(p => p.name))</a><br>
                     <a>Genre: @Model.genreModel.name</a><br>
                     <a>Age limit: @Model.book.ageLimit</a><br>
                     <a>Publish date: @Model.book.pubDate</a><br>

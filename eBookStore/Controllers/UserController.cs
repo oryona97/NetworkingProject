@@ -9,14 +9,14 @@ namespace eBookStore.Controllers;
 public class UserController : Controller
 {
     private readonly ILogger<UserController> _logger;
-    private readonly ILogger<UserRepository> _loggerUserRepo ;
+    private readonly ILogger<UserRepository> _loggerUserRepo;
     private readonly IConfiguration _configuration;
     private string? connectionString;
 
     private BookRepository _bookRepo;
 
-    private UserRepository _UserRepository;
-    public UserController(IConfiguration configuration ,ILogger<UserController> logger )
+    private UserRepository? _UserRepository;
+    public UserController(IConfiguration configuration, ILogger<UserController> logger)
     {
         _configuration = configuration;
         connectionString = _configuration.GetConnectionString("DefaultConnection");
@@ -29,10 +29,10 @@ public class UserController : Controller
     {
         BookRepository bookRepo = new BookRepository(connectionString);
         bookRepo.addHistoryBookPriceModel(bookId, newPrice);
-        return RedirectToAction("showBook","Home");
+        return RedirectToAction("showBook", "Home");
     }
-    
-    
+
+
     [HttpPost]
     [HttpGet]
     public async Task<IActionResult> SendNotifications()
@@ -113,7 +113,7 @@ public class UserController : Controller
         return View();
     }
 
-   [HttpPost]
+    [HttpPost]
     public IActionResult CreateBook(AdminDashViewModel model)
     {
 
@@ -122,7 +122,7 @@ public class UserController : Controller
 
         _bookRepo.AddBookViewModel(model.bookViewModel);
 
-        return View("adminDash",model); // Redirect to a success page
+        return View("adminDash", model); // Redirect to a success page
     }
 
 
@@ -133,17 +133,18 @@ public class UserController : Controller
     {
         int? adminID = HttpContext.Session.GetInt32("userId");
         AdminDashViewModel data = new AdminDashViewModel();
-        data.userModel = _bookRepo.getUserModelById(adminID.Value);
-        data.bookViewModel= new BookViewModel();
-        data.publishersList= _bookRepo.getAllPublishers();
+        data.userModel = _bookRepo.getUserModelById(adminID!.Value)!;
+        data.bookViewModel = new BookViewModel();
+        data.publishersList = _bookRepo.getAllPublishers();
         data.genreList = _bookRepo.getAllGenres();
         data.allUsers = _bookRepo.GetAllUserModels();
-        if(data.userModel.type=="admin")
+        if (data.userModel?.type == "admin")
         {
             return View(data);
         }
-        return RedirectToAction("landingpage","Home");
+        return RedirectToAction("landingpage", "Home");
     }
+
 
 
     //this func is for reset password
@@ -159,7 +160,7 @@ public class UserController : Controller
         {
             ViewBag.Message = "Email not found.";
         }
-        
+
         return View("ResetPassword");
     }
 
@@ -189,7 +190,7 @@ public class UserController : Controller
         }
     }
 
-    
+
     public IActionResult DeleteBook(string title)
     {
         var bookTitle = _bookRepo.getBookIDByName(title);
@@ -206,7 +207,7 @@ public class UserController : Controller
     public IActionResult ApplyDiscount(string _title, float discountPercentage, DateTime saleEndDate)
     {
         var bookId = 0;
-       Console.WriteLine("Title: {0}, Discount: {1}, Sale End Date: {2}", _title, discountPercentage, saleEndDate);
+        Console.WriteLine("Title: {0}, Discount: {1}, Sale End Date: {2}", _title, discountPercentage, saleEndDate);
         try
         {
             var userRepo = new UserRepository(connectionString, _loggerUserRepo);
@@ -222,7 +223,7 @@ public class UserController : Controller
 
         return RedirectToAction("AdminDash");
     }
-    
+
 
     //thif func to change the user password
     [HttpGet]

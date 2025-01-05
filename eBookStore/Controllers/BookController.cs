@@ -9,16 +9,16 @@ namespace eBookStore.Controllers;
 public class BookController : Controller
 {
     private readonly ILogger<BookController> _logger;
-	private readonly IConfiguration _configuration;
-	private string? connectionString;
-    BookRepository bookRepo  ;
+    private readonly IConfiguration _configuration;
+    private string connectionString;
+    BookRepository bookRepo;
     //create instance of bookViewModel and initialize all the models in it with values with the func in the model
 
-    public  BookController(ILogger<BookController> logger, IConfiguration configuration )
+    public BookController(ILogger<BookController> logger, IConfiguration configuration)
     {
         _logger = logger;
         _configuration = configuration;
-        connectionString = _configuration.GetConnectionString("DefaultConnection");
+        connectionString = _configuration.GetConnectionString("DefaultConnection")!;
         bookRepo = new BookRepository(connectionString);
     }
 
@@ -67,36 +67,30 @@ public class BookController : Controller
                 createdAt = DateTime.Now
             }
         },
-        publisherModel = new PublisherModel
-        {
-            
-            name = "HarperCollinsasd",
-            createdAt = DateTime.Now
-        },
         coverModel = new CoverModel
         {
-            
+
             bookId = 1,
             imgName = "Dorthegiboer.jpg",
             createdAt = DateTime.Now
         },
         genreModel = new GenreModel
         {
-          
+
             name = "Adventure",
             createdAt = DateTime.Now
         },
-        
+
         authorModel = new AuthorModel
         {
             bookId = 50,
             name = "Dor",
             createdAt = DateTime.Now
         },
-        
+
     };
 
-    
+
 
 
     //this func adds feedback of the book
@@ -140,7 +134,7 @@ public class BookController : Controller
     }
 
 
-    
+
     [Route("Book/AddBook")]
     public void AddBook(BookViewModel bookViewModel)
     {
@@ -157,15 +151,15 @@ public class BookController : Controller
         Console.WriteLine("Book Deleted");
     }
 
-    
+
     //this func return all Genres name that exsist in db
     public List<string> GetAllGenres()
     {
         Console.WriteLine("Genres Returned");
         return bookRepo.getAllGenres();
     }
-    
-    
+
+
     //this func return all book can be borrowed
     public List<BookViewModel> GetAllBorrowableBooks()
     {
@@ -189,14 +183,14 @@ public class BookController : Controller
         bookRepo.returnRentedBook(bookId);
         Console.WriteLine("Amount of Copies Updated");
     }
-    
-    
+
+
     //Book/Index/1
     public IActionResult Index(int id)
     {
-       
-        BookViewModel bookViewModel = bookRepo.getBookById(id);
-        Console.WriteLine(bookViewModel.authorModel+" No author found");
+
+        BookViewModel? bookViewModel = bookRepo.getBookById(id);
+        Console.WriteLine(bookViewModel?.authorModel + " No author found");
         return View(bookViewModel);
     }
 

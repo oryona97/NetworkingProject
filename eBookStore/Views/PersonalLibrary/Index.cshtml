@@ -86,7 +86,7 @@
                                 <div class="book-info">
                                     <span class="publisher">
                                         <i class="bi bi-building"></i>
-                                        @(book.publisherModel?.name ?? "Unknown Publisher")
+                                    @string.Join(", ", book.publishers.Select(p => p.name))
                                     </span>
                                     <span class="genre">
                                         <i class="bi bi-tag"></i>
