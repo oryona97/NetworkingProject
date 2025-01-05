@@ -37,44 +37,57 @@
     <!-- מקום להצגת הנתונים -->
     <div id="dataDisplay" class="flex-grow-1 p-3">
 
+        <!-- General Info-->
+        <div class="GeneralInfoDisplay">
+
+        </div>
+
 
         <!-- Manage Gallery -->
         <div class="galleryManagerDisplay" style="display:none">
             <h1>Add Book</h1>
             <p>Fill all the req fields:</p>
+            <hr>
 
             <form method="post" enctype="multipart/form-data" asp-action="CreateBook">
                 <fieldset>
                     <h3>Book Info</h3>
                     <div>
-                        <label for="bookViewModel.genreModel.name">Category:</label>
+                        <label for="bookViewModel.genreModel.name" class="col">Category:</label>
                         <input type="text" name="bookViewModel.genreModel.name" />
                     </div>
+                    <br>
                     <div>
                         <label for="bookViewModel.book.title">Title:</label>
                         <input type="text" name="bookViewModel.book.title" />
                     </div>
+                    <br>
                     <div>
                         <label for="bookViewModel.book.borrowPrice">Borrow Price($):</label>
                         <input type="text" name="bookViewModel.book.borrowPrice" />
                     </div>
+                    <br>
                     <div>
                         <label for="bookViewModel.book.buyingPrice">Buy Price($):</label>
                         <input type="text" name="bookViewModel.book.buyingPrice" />
                     </div>
+                    <br>
                     <div>
                         <label for="bookViewModel.book.pubDate">Publish Date:</label>
                         <input type="date" name="bookViewModel.book.pubDate" />
                     </div>
+                    <br>
                     <div>
                         <label for="bookViewModel.book.ageLimit">Age Limit:</label>
                         <input type="text" name="bookViewModel.book.ageLimit" />
                     </div>
+                    <br>
                     <div>
                         <label for="bookViewModel.book.canBorrow">Borrowable:</label>
                         <input type="checkbox" name="bookViewModel.book.canBorrow" />
                     </div>
                 </fieldset>
+                <hr>
                 <fieldset>
                     <h3>Publisher Info</h3>
                     <div>
@@ -82,6 +95,7 @@
                         <input type="text" name="bookViewModel.publisherModel.name" />
                     </div>
                 </fieldset>
+                <hr>
                 <fieldset>
                     <h3>Author Info</h3>
                     <div>
@@ -89,6 +103,7 @@
                         <input type="text" name="bookViewModel.authorModel.name" />
                     </div>
                 </fieldset>
+                <hr>
                 <fieldset>
                     <h3>Book Cover</h3>
                     <div>
@@ -98,7 +113,7 @@
                 </fieldset>
                 <button type="submit" class="upload-butt btn btn-primary">Upload</button>
             </form>
-            
+            <hr>
             <!-- Delete Book Form -->
             <form method="post" asp-action="DeleteBook">
                 <fieldset>
@@ -127,6 +142,7 @@
                         {
                             <li class="nav-item" style="margin-bottom: 10px;">
                                 <a href="#" class="nav-link" data-username="@user.username" 
+                                data-password="@user.password"
                                 data-email="@user.email"
                                 data-firstname="@user.firstName" 
                                 data-lastname="@user.lastName"
@@ -181,10 +197,6 @@
         </div>
 
 
-
-        <h2>Welcome!</h2>
-        <p>Select an option from the sidebar to display data here.</p>
-
     </div>
 </div>
 
@@ -196,7 +208,7 @@
         // Event Listener for Sidebar Links
     const sidebarLinks = document.querySelectorAll(".adminFunctions .nav-link");
     const sections = {
-        generalData: document.querySelector(".galleryManagerDisplay"),
+        GeneralInfoDisplay: document.querySelector(".GeneralInfoDisplay"),
         galleryManagerDisplay: document.querySelector(".galleryManagerDisplay"),
         ManageUsersDisplay: document.querySelector("#ManageUsersDisplay"),
         discount: document.querySelector(".discount")
@@ -213,7 +225,7 @@
             const functionType = link.getAttribute("data-function");
             const targetSection = sections[functionType];
             if (targetSection) {
-                targetSection.style.display = "block";
+                targetSection.style.display = "";
             }
 
             // Update active link
@@ -266,6 +278,7 @@
                 event.preventDefault();
 
                 // Get user details from data attributes
+                const password = link.getAttribute("data-password");
                 const username = link.getAttribute("data-username");
                 const email = link.getAttribute("data-email");
                 const firstName = link.getAttribute("data-firstname");
@@ -277,6 +290,7 @@
                 userDetailsContent.innerHTML = `
                     <div>
                         <h4>Details for: ${username}</h4>
+                        <p><strong>Password:</strong>${password}</p>
                         <p><strong>Email:</strong> ${email}</p>
                         <p><strong>First Name:</strong> ${firstName}</p>
                         <p><strong>Last Name:</strong> ${lastName}</p>
