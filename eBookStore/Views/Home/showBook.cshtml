@@ -19,7 +19,10 @@
                 {
                     <p><strong>Title:</strong> @bookViewModel.book.title</p>
                     <p><strong>Genre ID:</strong> @bookViewModel.genreModel.name</p>
-                    <p><strong>Publisher:</strong> @(bookViewModel.publisherModel?.name ?? "Unknown Publisher")</p>
+                    <p>
+                        <strong>Publisher:</strong>
+                        @string.Join(", ", bookViewModel.publishers.Select(p => p.name))
+                    </p>
                     <p><strong>Borrow Price:</strong> @bookViewModel.book.borrowPrice</p>
                     <p><strong>Buy Price:</strong> @bookViewModel.book.buyingPrice</p>
                 }

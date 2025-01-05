@@ -1,10 +1,7 @@
-
-
-
 @model eBookStore.Models.ViewModels.LandingPageViewModel
 @{
     ViewData["Title"] = "Home";
-    
+   
 }
 
 <div class="home-container">
@@ -59,7 +56,9 @@
                                     <h5 class="card-title">@Model.SpecialSales[0].book.title</h5>
                                     <p class="card-text">
                                         <a>Author: Need Fix </a><br> 
-                                        <a>Published by: @Model.SpecialSales[0].publisherModel.name</a><br>
+                                        <a>
+                                            Published by: @string.Join(", ", @Model.SpecialSales[0].publishers.Select(p => p.name))
+                                        </a><br>
                                         <a>Genre: @Model.SpecialSales[0].genreModel.name</a><br>
                                         <a>Age limit: @Model.SpecialSales[0].book.ageLimit</a><br>
                                         <a>Publish date: @Model.SpecialSales[0].book.pubDate</a><br>
@@ -84,7 +83,9 @@
                                     <h5 class="card-title">@Model.SpecialSales[3].book.title</h5>
                                     <p class="card-text">
                                         <a>Author: Need Fix </a><br> 
-                                        <a>Published by: @Model.SpecialSales[3].publisherModel.name</a><br>
+                                        <a>
+                                            Published by: @string.Join(", ", @Model.SpecialSales[0].publishers.Select(p => p.name))
+                                        </a><br>
                                         <a>Genre: @Model.SpecialSales[3].genreModel.name</a><br>
                                         <a>Age limit: @Model.SpecialSales[3].book.ageLimit</a><br>
                                         <a>Publish date: @Model.SpecialSales[3].book.pubDate</a><br>

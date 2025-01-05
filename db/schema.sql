@@ -30,9 +30,9 @@ IF OBJECT_ID('dbo.HistoryPurchases', 'U') IS NOT NULL DROP TABLE dbo.HistoryPurc
 IF OBJECT_ID('dbo.BorrowedBooks', 'U') IS NOT NULL DROP TABLE dbo.BorrowedBooks;
 IF OBJECT_ID('dbo.PersonalLibrary', 'U') IS NOT NULL DROP TABLE dbo.PersonalLibrary;
 IF OBJECT_ID('dbo.[User]', 'U') IS NOT NULL DROP TABLE dbo.[User];
+IF OBJECT_ID('dbo.Publisher', 'U') IS NOT NULL DROP TABLE dbo.Publisher;
 IF OBJECT_ID('dbo.Book', 'U') IS NOT NULL DROP TABLE dbo.Book;
 IF OBJECT_ID('dbo.Genre', 'U') IS NOT NULL DROP TABLE dbo.Genre;
-IF OBJECT_ID('dbo.Publisher', 'U') IS NOT NULL DROP TABLE dbo.Publisher;
 
 
 GO
@@ -96,10 +96,11 @@ CREATE TABLE [Genre] (
 GO
 
 CREATE TABLE [Publisher] (
-  [id] int IDENTITY(50,1) PRIMARY KEY ,
-  [name] nvarchar(100) UNIQUE,
-  [createdAt] datetime,
-  
+    [id] int IDENTITY(50,1),
+    [bookId] int,
+    [name] nvarchar(100) UNIQUE,
+    [createdAt] datetime,
+    CONSTRAINT PK_Publisher PRIMARY KEY ([id], [name], [bookId])
 )
 GO
 
@@ -235,6 +236,8 @@ ALTER TABLE [Book] ADD FOREIGN KEY ([genreId]) REFERENCES [Genre] ([id]) ON DELE
 GO
             -- this constraint is to ensure that the borrow price is less than the buying price
 ALTER TABLE [Book] ADD CONSTRAINT CHK_Book_BorrowPrice_LessThan_BuyingPrice CHECK (borrowPrice < buyingPrice);
+GO
+ALTER TABLE [Publisher] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
 GO
 ALTER TABLE [HistoryBookPrice] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
 GO
@@ -395,17 +398,6 @@ VALUES
 
 SET IDENTITY_INSERT [User] OFF;
 
--- Publishers
-SET IDENTITY_INSERT [Publisher] ON;
-INSERT INTO [Publisher] ([id], [name], [createdAt])
-VALUES 
-(1, 'Penguin Random House', GETDATE()),
-(2, 'HarperCollins', GETDATE()),
-(3, 'Simon & Schuster', GETDATE()),
-(4, 'Macmillan Publishers', GETDATE()),
-(5, 'Hachette Book Group', GETDATE());
-SET IDENTITY_INSERT [Publisher]OFF;
-
 -- Genres
 SET IDENTITY_INSERT [Genre] ON;
 INSERT INTO [Genre] ([id], [name], [createdAt])
@@ -420,16 +412,27 @@ SET IDENTITY_INSERT [Genre] OFF;
 -- Books
 SET IDENTITY_INSERT [Book] ON;
 
-INSERT INTO [Book] ([id], [publisherId], [genreId], [amountOfCopies], [title], [borrowPrice], [buyingPrice], 
+INSERT INTO [Book] ([id], [genreId], [amountOfCopies], [title], [borrowPrice], [buyingPrice], 
                     [pubDate], [ageLimit], [priceHistory], [onSale], [canBorrow], [starRate], [createdAt])
 VALUES 
-(1, 1, 1, 3, 'The Great Adventure', 2.99, 15.99, '2023-01-15', 12, 1, 1, 1, 4.5, GETDATE()),
-(2, 2, 3, 2, 'Starship Chronicles', 3.50, 19.99, '2022-11-20', 16, 2, 0, 1, 4.7, GETDATE()),
-(3, 3, 4, 3, 'Murder in the Library', 2.50, 14.50, '2023-05-10', 18, 3, 1, 1, 4.2, GETDATE()),
-(4, 4, 5, 3, 'Love Across Continents', 2.75, 16.50, '2023-02-28', 16, 4, 1, 1, 4.6, GETDATE()),
-(5, 5, 2, 3, 'The Rise of Technology', 3.25, 18.99, '2022-09-05', 14, 5, 0, 1, 4.4, GETDATE());
+(1, 1, 3, 'The Great Adventure', 2.99, 15.99, '2023-01-15', 12, 1, 1, 1, 4.5, GETDATE()),
+(2, 3, 2, 'Starship Chronicles', 3.50, 19.99, '2022-11-20', 16, 2, 0, 1, 4.7, GETDATE()),
+(3, 4, 3, 'Murder in the Library', 2.50, 14.50, '2023-05-10', 18, 3, 1, 1, 4.2, GETDATE()),
+(4, 5, 3, 'Love Across Continents', 2.75, 16.50, '2023-02-28', 16, 4, 1, 1, 4.6, GETDATE()),
+(5, 2, 3, 'The Rise of Technology', 3.25, 18.99, '2022-09-05', 14, 5, 0, 1, 4.4, GETDATE());
 
 SET IDENTITY_INSERT [Book] OFF;
+
+-- Publishers
+SET IDENTITY_INSERT [Publisher] ON;
+INSERT INTO [Publisher] ([id], [bookId], [name], [createdAt])
+VALUES 
+(1, 1, 'Penguin Random House', GETDATE()),
+(2, 2, 'HarperCollins', GETDATE()),
+(3, 3, 'Simon & Schuster', GETDATE()),
+(4, 4, 'Macmillan Publishers', GETDATE()),
+(5, 5, 'Hachette Book Group', GETDATE());
+SET IDENTITY_INSERT [Publisher]OFF;
 
 -- Authors
 SET IDENTITY_INSERT [Auther] ON;

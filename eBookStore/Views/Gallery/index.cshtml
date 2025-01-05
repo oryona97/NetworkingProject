@@ -111,7 +111,7 @@
                         {
                             <p class="card-text">
                                     <a>Author: Need Fix </a><br> 
-                                    <a>Published by: @book.publisherModel.name</a><br>
+                                    <a>Published by: @string.Join(", ", book.publishers.Select(p => p.name))</a><br>
                                     <a>Genre: @book.genreModel.name</a><br>
                                     <a>Age limit: @book.book.ageLimit</a><br>
                                     <a>Publish date: @book.book.pubDate</a><br>
@@ -125,7 +125,7 @@
                         {
                             <p class="card-text">
                                 <a>Author: Need Fix </a><br> 
-                                <a>Published by: @book.publisherModel.name</a><br>
+                                <a>Published by: @string.Join(", ", book.publishers.Select(p => p.name))</a><br>
                                 <a>Genre: @book.genreModel.name</a><br>
                                 <a>Age limit: @book.book.ageLimit</a><br>
                                 <a>Publish date: @book.book.pubDate</a><br>
