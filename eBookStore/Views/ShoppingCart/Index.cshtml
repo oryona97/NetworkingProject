@@ -1,4 +1,5 @@
 @model IEnumerable<eBookStore.Models.ViewModels.BookViewModel>
+@inject IConfiguration Configuration
 @{
     ViewData["Title"] = "Shopping Cart";
     var currentUser = Context.Session.GetInt32("userId") ?? 0;
@@ -67,46 +68,46 @@
             <!-- Cart Items -->
             <div class="col-lg-8">
                 <h4 class="mb-4">Shopping Cart (@Model?.Count() items)</h4>
-@if (Model != null)
-{
-    @foreach (var bookVM in Model)
-    {
-        @if (bookVM?.book != null)
-        {
-            <div class="cart-item">
-                <div class="row align-items-center">
-                    <div class="col-md-2">
-                        <img src="@(bookVM.coverModel?.imgName ?? "/images/default-cover.jpg")" 
-                             class="img-fluid book-image" 
-                             alt="@bookVM.book.title">
-                    </div>
-                    <div class="col-md-7">
-                        <h5 class="mb-1">@bookVM.book.title</h5>
-                        @if (bookVM.authorModel != null)
+                @if (Model != null)
+                {
+                    @foreach (var bookVM in Model)
+                    {
+                        @if (bookVM?.book != null)
                         {
-                            <p class="text-muted mb-2">by @bookVM.authorModel.name</p>
+                            <div class="cart-item">
+                                <div class="row align-items-center">
+                                    <div class="col-md-2">
+                                        <img src="@(bookVM.coverModel?.imgName ?? "/images/default-cover.jpg")" 
+                                             class="img-fluid book-image" 
+                                             alt="@bookVM.book.title">
+                                    </div>
+                                    <div class="col-md-7">
+                                        <h5 class="mb-1">@bookVM.book.title</h5>
+                                        @if (bookVM.authorModel != null)
+                                        {
+                                            <p class="text-muted mb-2">by @bookVM.authorModel.name</p>
+                                        }
+                                        <span class="text-primary">$@bookVM.book.buyingPrice.ToString("0.00")</span>
+                                    </div>
+                                    <div class="col-md-3 text-end">
+                                        <form asp-controller="Cart" asp-action="RemoveFromCart" method="post">
+                                            <input type="hidden" name="bookId" value="@bookVM.book.id" />
+                                            <button type="submit" class="remove-btn">
+                                                Remove
+                                            </button>
+                                        </form>
+                                    </div>
+                                </div>
+                            </div>
                         }
-                        <span class="text-primary">$@bookVM.book.buyingPrice.ToString("0.00")</span>
+                    }
+                }
+                else
+                {
+                    <div class="alert alert-info">
+                        Your shopping cart is empty.
                     </div>
-                    <div class="col-md-3 text-end">
-                        <form asp-controller="Cart" asp-action="RemoveFromCart" method="post">
-                            <input type="hidden" name="bookId" value="@bookVM.book.id" />
-                            <button type="submit" class="remove-btn">
-                                Remove
-                            </button>
-                        </form>
-                    </div>
-                </div>
-            </div>
-        }
-    }
-}
-else
-{
-    <div class="alert alert-info">
-        Your shopping cart is empty.
-    </div>
-}
+                }
             </div>
 
             <!-- Order Summary -->
@@ -118,11 +119,9 @@ else
                         <span class="h5 mb-0">$@Model.Where(b => b?.book != null).Sum(b => b.book.buyingPrice).ToString("0.00")</span>
                     </div>
                     <hr class="my-4">
-                    <form asp-controller="Cart" asp-action="Checkout" method="post">
-                        <button type="submit" class="btn btn-primary w-100 mb-3 checkout-btn">
-                            Checkout
-                        </button>
-                    </form>
+                    <button type="button" id="checkout-button" class="btn btn-primary w-100 mb-3 checkout-btn">
+                        Checkout
+                    </button>
                     <a href="@Url.Action("Index", "Book")" 
                        class="btn btn-outline-secondary w-100 continue-btn">
                         Continue Shopping
@@ -132,3 +131,49 @@ else
         </div>
     }
 </div>
+
+@section scripts {
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        // Initialize Stripe with your publishable key
+        var stripe = Stripe('@Configuration["Stripe:PublicKey"]');
+
+        document.getElementById('checkout-button').addEventListener('click', async function(e) {
+            e.preventDefault();
+            // Prepare the cart data
+            var cartData = {
+                items: [@Html.Raw(string.Join(",", 
+                    Model.Where(b => b?.book != null).Select(b => new
+                    {
+                        productName = b.book.title,
+                        productDescription = b.authorModel?.name != null ? $"by {b.authorModel.name}" : "",
+                        amount = (int)(b.book.buyingPrice * 100), // Convert to cents
+                        currency = "usd"
+                    }).Select(item => System.Text.Json.JsonSerializer.Serialize(item))))]
+            };
+
+            // Create checkout session
+            fetch('/checkout/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(cartData)
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(session) {
+                return stripe.redirectToCheckout({ sessionId: session.sessionId });
+            })
+            .then(function(result) {
+                if (result.error) {
+                    alert(result.error.message);
+                }
+            })
+            .catch(function(error) {
+                console.error('Error:', error);
+            });
+        });
+    </script>
+}
