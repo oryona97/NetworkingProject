@@ -222,7 +222,7 @@ public class UserController : Controller
 
         return RedirectToAction("AdminDash");
     }
-    
+
 
     //thif func to change the user password
     [HttpGet]

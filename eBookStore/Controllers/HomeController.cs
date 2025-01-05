@@ -27,17 +27,13 @@ public class HomeController : Controller
         Console.WriteLine("showBook");
         List<BookViewModel> books = _bookRepo.getAllBooks();
 
-	private GeneralFeedbackModelRepository _generalFeedbackRepo;
-
-	public HomeController(IConfiguration configuration, ILogger<HomeController> logger)
-	{
-		_configuration = configuration;
-		connectionString = _configuration.GetConnectionString("DefaultConnection");
-		_logger = logger;
-		_bookRepo = new BookRepository(connectionString);
-		shoppingCartRepo = new ShoppingCartRepository(connectionString);
-		_generalFeedbackRepo = new GeneralFeedbackModelRepository(connectionString);
-	}
+        return View(books);
+    }
+    public IActionResult showBookBySearch(string? title, int? publisherId, int? genreId, float? minPrice, float? maxPrice, DateTime? fromDate, DateTime? toDate)
+    {
+        List<BookViewModel> books = _bookRepo.SearchBooks(title, publisherId, genreId, minPrice, maxPrice, fromDate, toDate);
+        return View("showBook", books);
+    }
 
     public IActionResult SearchForm()
     {
