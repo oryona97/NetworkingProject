@@ -137,6 +137,7 @@ public class UserController : Controller
         data.bookViewModel = new BookViewModel();
         data.publishersList = _bookRepo.getAllPublishers();
         data.genreList = _bookRepo.getAllGenres();
+        data.allUsers = _bookRepo.GetAllUserModels();
         if (data.userModel?.type == "admin")
         {
             return View(data);
@@ -159,7 +160,7 @@ public class UserController : Controller
         {
             ViewBag.Message = "Email not found.";
         }
-        
+
         return View("ResetPassword");
     }
 
@@ -189,7 +190,7 @@ public class UserController : Controller
         }
     }
 
-    
+
     public IActionResult DeleteBook(string title)
     {
         var bookTitle = _bookRepo.getBookIDByName(title);
@@ -206,7 +207,7 @@ public class UserController : Controller
     public IActionResult ApplyDiscount(string _title, float discountPercentage, DateTime saleEndDate)
     {
         var bookId = 0;
-       Console.WriteLine("Title: {0}, Discount: {1}, Sale End Date: {2}", _title, discountPercentage, saleEndDate);
+        Console.WriteLine("Title: {0}, Discount: {1}, Sale End Date: {2}", _title, discountPercentage, saleEndDate);
         try
         {
             var userRepo = new UserRepository(connectionString, _loggerUserRepo);

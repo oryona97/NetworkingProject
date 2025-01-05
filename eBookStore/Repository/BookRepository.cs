@@ -13,18 +13,6 @@ public class BookRepository
         connectionString = _connectionString;
     }
 
-
-
-
-    //this func to Add  FeadbackModel List to the database 
-    public void AddFeedbackModel(List<FeedbackModel> feedbackModel)
-    {
-        foreach (var feedback in feedbackModel)
-        {
-            AddFeedback(feedback);
-        }
-    }
-
     //this func to Add FeedbackModel to the database
 
     public void AddFeedback(FeedbackModel feedback)
@@ -1361,9 +1349,46 @@ public class BookRepository
         }
     }
 
+    public List<UserModel> GetAllUserModels()
+    {
+        var allUsers = new List<UserModel>();
 
+        try
+        {
+            using (var connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = "SELECT * FROM [User]";
 
+                using (var command = new SqlCommand(query, connection))
+                {
+                    using (var reader = command.ExecuteReader())
+                    {
+                        while (reader.Read())
+                        {
+                            allUsers.Add(new UserModel
+                            {
+                                username = reader["Username"]?.ToString(),
+                                email = reader["Email"]?.ToString(),
+                                firstName = reader["FirstName"]?.ToString(),
+                                lastName = reader["LastName"]?.ToString(),
+                                phoneNumber = reader["PhoneNumber"]?.ToString(),
+                                type = reader["type"]?.ToString()!,
+                                id = Convert.ToInt32(reader["id"]),
+                                createAt = Convert.ToDateTime(reader["createdAt"])
+                            });
+                        }
+                    }
+                }
+            }
+        }
+        catch (Exception ex)
+        {
+            Console.WriteLine($"Error fetching users: {ex.Message}");
+        }
 
+        return allUsers;
+    }
 }
 
 

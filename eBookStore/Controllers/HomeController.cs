@@ -13,14 +13,15 @@ public class HomeController : Controller
     private string? connectionString;
     BookRepository _bookRepo;
     private ShoppingCartRepository shoppingCartRepo;
-
+    private GeneralFeedbackModelRepository _generalFeedbackRepo;
     public HomeController(IConfiguration configuration, ILogger<HomeController> logger)
     {
         _configuration = configuration;
         connectionString = _configuration.GetConnectionString("DefaultConnection");
         _logger = logger;
-        _bookRepo = new BookRepository(connectionString);
-        shoppingCartRepo = new ShoppingCartRepository(connectionString);
+        _bookRepo = new BookRepository(connectionString!);
+        shoppingCartRepo = new ShoppingCartRepository(connectionString!);
+        _generalFeedbackRepo = new GeneralFeedbackModelRepository(connectionString!);
     }
     public IActionResult showBook()
     {
@@ -78,46 +79,46 @@ public class HomeController : Controller
 
     }
 
-	public async Task<IActionResult> AddReview(string comment)
-	{
-		try
-		{
-			int? userId = HttpContext.Session.GetInt32("userId");
-			if (!userId.HasValue)
-			{
-				TempData["Review_Error"] = "You need to be logged in to add a review. Please log in to continue.";
-				return RedirectToAction("Login", "Auth");
-			}
+    public IActionResult AddReview(string comment)
+    {
+        try
+        {
+            int? userId = HttpContext.Session.GetInt32("userId");
+            if (!userId.HasValue)
+            {
+                TempData["Review_Error"] = "You need to be logged in to add a review. Please log in to continue.";
+                return RedirectToAction("Login", "Auth");
+            }
 
-			// Validate comment length
-			if (string.IsNullOrWhiteSpace(comment) || comment.Length < 10 || comment.Length > 500)
-			{
-				TempData["Review_Error"] = "Review must be between 10 and 500 characters.";
-				return RedirectToAction("landingPage");
-			}
+            // Validate comment length
+            if (string.IsNullOrWhiteSpace(comment) || comment.Length < 10 || comment.Length > 500)
+            {
+                TempData["Review_Error"] = "Review must be between 10 and 500 characters.";
+                return RedirectToAction("landingPage");
+            }
 
-			// Verify user owns the book
-			if (userId==0)
-			{
-				TempData["Review_Error"] = "You can only review books in your library.";
-				return RedirectToAction("landingPage");
-			}
+            // Verify user owns the book
+            if (userId == 0)
+            {
+                TempData["Review_Error"] = "You can only review books in your library.";
+                return RedirectToAction("landingPage");
+            }
 
-			GeneralFeedbackModel feedback = new GeneralFeedbackModel();
-			feedback.userId = userId ?? 0;
-			feedback.comment=comment;
-			_generalFeedbackRepo.AddGeneralFeedback(feedback);
-			TempData["Review_Success"] = "Your review has been added successfully.";
+            GeneralFeedbackModel feedback = new GeneralFeedbackModel();
+            feedback.userId = userId ?? 0;
+            feedback.comment = comment;
+            _generalFeedbackRepo.AddGeneralFeedback(feedback);
+            TempData["Review_Success"] = "Your review has been added successfully.";
 
-			return RedirectToAction("landingPage");
-		}
-		catch (Exception ex)
-		{
-			_logger.LogError(ex, "Error adding review for website ID: {userId}");
-			TempData["Review_Error"] = "We couldn't add your review at this time. Please try again later.";
-			return RedirectToAction("landingPage");
-		}
-	}
+            return RedirectToAction("landingPage");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error adding review for website ID: {userId}");
+            TempData["Review_Error"] = "We couldn't add your review at this time. Please try again later.";
+            return RedirectToAction("landingPage");
+        }
+    }
 
 
 
