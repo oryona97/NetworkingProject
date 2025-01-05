@@ -188,7 +188,10 @@
                         </div>
                         <div>
                             <label for="saleEndDate">Sale End Date:</label>
-                            <input type="date" id="saleEndDate" name="saleEndDate" required />
+                            <input type="date" id="saleEndDate" name="saleEndDate" 
+                                    min="@DateTime.Now.ToString("yyyy-MM-dd")" 
+                                    max="@DateTime.Now.AddDays(7).ToString("yyyy-MM-dd")" 
+                                    required />
                         </div>
                     </fieldset>
                     <button type="submit" class="btn btn-primary">Apply Discount</button>
@@ -204,8 +207,11 @@
     let data = @Json.Serialize(Model);
     let bookviewmodel = data.bookViewModel;
     console.log(bookviewmodel);
+    
+    
+
     document.addEventListener("DOMContentLoaded", () => {
-        // Event Listener for Sidebar Links
+    // Sidebar Navigation
     const sidebarLinks = document.querySelectorAll(".adminFunctions .nav-link");
     const sections = {
         GeneralInfoDisplay: document.querySelector(".GeneralInfoDisplay"),
@@ -219,7 +225,9 @@
             event.preventDefault();
 
             // Hide all sections
-            Object.values(sections).forEach(section => section.style.display = "none");
+            Object.values(sections).forEach(section => {
+                if (section) section.style.display = "none";
+            });
 
             // Show the selected section
             const functionType = link.getAttribute("data-function");
@@ -234,11 +242,28 @@
         });
     });
 
-        // Event Listener for Upload Button and File Input
-        const uploadButton = document.querySelector(".upload-butt");
-        const coverInput = document.getElementById("coverImage");
+    // Sale End Date Validation
+    const saleEndDateInput = document.getElementById("saleEndDate");
+    if (saleEndDateInput) {
+        saleEndDateInput.addEventListener("input", () => {
+            const currentDate = new Date();
+            const maxDate = new Date();
+            maxDate.setDate(currentDate.getDate() + 7);
 
-        // Show selected file name or validation error
+            const selectedDate = new Date(saleEndDateInput.value);
+
+            if (selectedDate > maxDate) {
+                alert("Sale End Date cannot be more than 7 days from today.");
+                saleEndDateInput.value = ""; // Reset the input
+            }
+        });
+    }
+
+    // File Upload Validation
+    const uploadButton = document.querySelector(".upload-butt");
+    const coverInput = document.getElementById("coverImage");
+
+    if (coverInput && uploadButton) {
         coverInput.addEventListener("change", (event) => {
             const file = event.target.files[0];
             if (file) {
@@ -254,20 +279,24 @@
             }
         });
 
-        // Action when the upload button is clicked
         uploadButton.addEventListener("click", (event) => {
             const file = coverInput.files[0];
             if (!file) {
                 alert("Please select a file before uploading.");
                 event.preventDefault(); // Prevent form submission
             } else {
-
-                //addressing bookModel
-
                 alert(`Uploading "${file.name}"...`);
             }
         });
+    }
 
+    // User Details Management
+    const userLinks = document.querySelectorAll(".nav-link[data-username]");
+    const userDetailsContent = document.getElementById("UserDetailsContent");
+
+    userLinks.forEach(link => {
+        link.addEventListener("click", (event) => {
+            event.preventDefault();
 
 
         const userLinks = document.querySelectorAll(".nav-link[data-username]");
@@ -300,6 +329,8 @@
                     <button class="btn btn-primary" onclick="editUser('${username}')">Edit User</button>
                 `;
             });
+
         });
     });
+});
 </script>

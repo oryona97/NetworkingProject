@@ -222,6 +222,38 @@ public class UserController : Controller
 
         return RedirectToAction("AdminDash");
     }
+    
+
+    //thif func to change the user password
+    [HttpGet]
+    public IActionResult ChangePassword()
+    {
+        return View();
+    }
+
+    [HttpPost]
+    public IActionResult ChangePassword(string newPassword)
+    {
+        int? userId = HttpContext.Session.GetInt32("userId");
+        if (userId == null)
+        {
+            return RedirectToAction("Login", "Auth");
+        }
+
+        try
+        {
+            UserRepository userRepo = new UserRepository(connectionString, _loggerUserRepo);
+            userRepo.ChangePassword(userId.Value, newPassword);
+            ViewBag.Message = "Password changed successfully!";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error changing password for userId {UserId}", userId);
+            ViewBag.Message = "An error occurred while changing the password. Please try again.";
+        }
+
+        return View();
+    }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()

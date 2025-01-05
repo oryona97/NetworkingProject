@@ -2,13 +2,6 @@
 @{
     ViewData["Title"] = "Gallery";
     
-
-    foreach (var book in Model.allBooks)
-    {
-    Console.WriteLine(book.coverModel);
-    }
-
-
     
 }
 
@@ -110,7 +103,7 @@
                         @if(book.book.onSale)
                         {
                             <p class="card-text">
-                                    <a>Author: Need Fix </a><br> 
+                                    <a>Author: @book.authorModel.name </a><br> 
                                     <a>Published by: @book.publisherModel.name</a><br>
                                     <a>Genre: @book.genreModel.name</a><br>
                                     <a>Age limit: @book.book.ageLimit</a><br>
@@ -124,7 +117,7 @@
                         else
                         {
                             <p class="card-text">
-                                <a>Author: Need Fix </a><br> 
+                                <a>Author: @book.authorModel.name </a><br> 
                                 <a>Published by: @book.publisherModel.name</a><br>
                                 <a>Genre: @book.genreModel.name</a><br>
                                 <a>Age limit: @book.book.ageLimit</a><br>

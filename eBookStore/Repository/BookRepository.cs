@@ -59,6 +59,7 @@ public class BookRepository
 	//this funct to Add bookViewModel to the database
 	public void AddBookViewModel(BookViewModel bookViewModel)
 	{
+		
 		// בדוק אם הז'אנר קיים לפי שם
 		int genreId = GetGenreIdByName(bookViewModel.genreModel.name);
 		if (genreId == 0)
@@ -98,7 +99,17 @@ public class BookRepository
 			createdAt = DateTime.Now
 		};
 
-		
+				//need to fix - setting authorModel when adding book
+		AuthorModel author = getAuthorModelByName(bookViewModel.authorModel.name);
+		bookViewModel.authorModel.bookId=bookId;
+		if (author == null)
+		{
+			// הוסף סופר חדש אם הוא לא קיים
+			AddAuthorModel(bookViewModel.authorModel);
+			author = getAuthorModelByName(bookViewModel.authorModel.name);
+		}
+		bookViewModel.authorModel = author;
+		//
 		AddCoverModel(bookViewModel.coverModel);
 	}
 
@@ -1041,6 +1052,47 @@ public class BookRepository
 							{
 								id = Convert.ToInt32(reader["id"]),
 								bookId = Convert.ToInt32(reader["bookId"]),
+								name = reader["name"].ToString(),
+								createdAt = Convert.ToDateTime(reader["createdAt"])
+							};
+
+							return authorModel;
+						}
+					}
+				}
+			}
+		}
+		catch (SqlException ex)
+		{
+		    Console.WriteLine("Database error during fetching Author ${ex}");
+			throw; 
+		}
+
+		return null; 
+	}
+
+	public AuthorModel getAuthorModelByName(string authorName)
+	{
+		try
+		{
+			using (SqlConnection connection = new SqlConnection(connectionString))
+			{
+				connection.Open();
+				string query = "SELECT * FROM Auther WHERE name = @authorName;";
+
+				using (SqlCommand command = new SqlCommand(query, connection))
+				{
+					
+					command.Parameters.AddWithValue("@authorName", authorName);
+
+					using (SqlDataReader reader = command.ExecuteReader())
+					{
+						if (reader.Read())
+						{
+							
+							var authorModel = new AuthorModel
+							{
+								id = Convert.ToInt32(reader["id"]),
 								name = reader["name"].ToString(),
 								createdAt = Convert.ToDateTime(reader["createdAt"])
 							};
