@@ -1,4 +1,5 @@
 namespace eBookStore.Models.ViewModels;
+using eBookStore.Models;
 
 public class BookViewModel
 {
@@ -21,4 +22,6 @@ public class BookViewModel
     public GenreModel genreModel { get; set; }
     public AuthorModel authorModel { get; set; }
     public List<int> ownerUserIds { get; set; } = new List<int>();
+    public BookDiscountModel? bookDiscountModel {get; set;}
+
 }

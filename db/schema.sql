@@ -417,10 +417,10 @@ SET IDENTITY_INSERT [Book] ON;
 INSERT INTO [Book] ([id], [genreId], [amountOfCopies], [title], [borrowPrice], [buyingPrice], 
                     [pubDate], [ageLimit], [priceHistory], [onSale], [canBorrow], [starRate], [createdAt])
 VALUES 
-(1, 1, 3, 'The Great Adventure', 2.99, 15.99, '2023-01-15', 12, 1, 1, 1, 4.5, GETDATE()),
+(1, 1, 3, 'The Great Adventure', 2.99, 15.99, '2023-01-15', 12, 1, 0, 1, 4.5, GETDATE()),
 (2, 3, 2, 'Starship Chronicles', 3.50, 19.99, '2022-11-20', 16, 2, 0, 1, 4.7, GETDATE()),
-(3, 4, 3, 'Murder in the Library', 2.50, 14.50, '2023-05-10', 18, 3, 1, 1, 4.2, GETDATE()),
-(4, 5, 3, 'Love Across Continents', 2.75, 16.50, '2023-02-28', 16, 4, 1, 1, 4.6, GETDATE()),
+(3, 4, 3, 'Murder in the Library', 2.50, 14.50, '2023-05-10', 18, 3, 0, 1, 4.2, GETDATE()),
+(4, 5, 3, 'Love Across Continents', 2.75, 16.50, '2023-02-28', 16, 4, 0, 1, 4.6, GETDATE()),
 (5, 2, 3, 'The Rise of Technology', 3.25, 18.99, '2022-09-05', 14, 5, 0, 1, 4.4, GETDATE());
 
 SET IDENTITY_INSERT [Book] OFF;

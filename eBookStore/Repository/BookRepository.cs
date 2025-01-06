@@ -554,8 +554,12 @@ public class BookRepository
                         rating = this.getRatingModel(book.id) ?? new RatingModel(),
                         coverModel = this.getCoverModelById(book.id) ?? new CoverModel(),
                         genreModel = this.getGenreModelById(book.genreId) ?? new GenreModel(),
-                        authorModel = this.getAuthorModelById(book.id) ?? new AuthorModel()
+                        authorModel = this.getAuthorModelById(book.id) ?? new AuthorModel(),
                     };
+                    if (book.onSale)
+                    {
+                        bookViewModel.bookDiscountModel = getBookDiscountModelById(book.id);
+                    }
 
                     if (bookViewModel.feedbackModel?.Any() == true)
                     {
@@ -663,6 +667,10 @@ public class BookRepository
                         genreModel = getGenreModelById(book.genreId) ?? new GenreModel(),
                         authorModel = getAuthorModelById(book.id) ?? new AuthorModel()
                     };
+                    if (book.onSale)
+                    {
+                        bookViewModel.bookDiscountModel = getBookDiscountModelById(book.id);
+                    }
 
                 }
 
@@ -1049,6 +1057,48 @@ public class BookRepository
                             };
 
                             return authorModel;
+                        }
+                    }
+                }
+            }
+        }
+        catch (SqlException ex)
+        {
+            Console.WriteLine($"Database error during fetching Author ${ex}");
+            throw;
+        }
+
+        return null;
+    }
+
+    public BookDiscountModel? getBookDiscountModelById(int bookId)
+    {
+        try
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = "SELECT * FROM BookDiscount WHERE bookId = @Id;";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+
+                    command.Parameters.AddWithValue("@Id", bookId);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        if (reader.Read())
+                        {
+
+                            var discountModel = new BookDiscountModel
+                            {
+                                bookId = Convert.ToInt32(reader["bookId"]),
+                                discountPrecentage = float.Parse(reader["discountPercentage"].ToString()),
+                                saleStartDate = Convert.ToDateTime(reader["saleStartDate"]),
+                                saleEndDate = Convert.ToDateTime(reader["saleEndDate"])
+                            };
+
+                            return discountModel;
                         }
                     }
                 }
