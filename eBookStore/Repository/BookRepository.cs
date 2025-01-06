@@ -595,15 +595,10 @@ public class BookRepository
             using var connection = new SqlConnection(connectionString);
             connection.Open();
             const string query = @"
-           SELECT 
-               b.id, b.publisherId, b.genreId, b.amountOfCopies,
-               b.title, b.borrowPrice, b.buyingPrice, b.pubDate,
-               b.ageLimit, b.priceHistory, b.onSale, b.canBorrow,
-               b.starRate, b.createdAt,
-               pl.userId as owner_id
-           FROM [Book] b
-           LEFT JOIN [PersonalLibrary] pl ON b.id = pl.bookId
-           WHERE b.id = @Id";
+            SELECT b.*, pl.userId as owner_id
+            FROM [Book] b
+            LEFT JOIN [PersonalLibrary] pl ON b.id = pl.bookId
+            WHERE b.id = @id";
 
             using var command = new SqlCommand(query, connection);
             command.Parameters.AddWithValue("@Id", id);
@@ -661,13 +656,14 @@ public class BookRepository
                     bookViewModel = new BookViewModel
                     {
                         book = book,
-                        publishers = PubModelByBookId(book.publisherId) ?? new List<PublisherModel>(),
+                        publishers = PubModelByBookId(book.id) ?? new List<PublisherModel>(),
                         feedbackModel = getfeedbackModelById(book.id) ?? new List<FeedbackModel>(),
                         rating = getRatingModel(book.id) ?? new RatingModel(),
                         coverModel = getCoverModelById(book.id) ?? new CoverModel(),
                         genreModel = getGenreModelById(book.genreId) ?? new GenreModel(),
                         authorModel = getAuthorModelById(book.id) ?? new AuthorModel()
                     };
+
                 }
 
                 if (reader["owner_id"] != DBNull.Value)
@@ -689,6 +685,7 @@ public class BookRepository
                 }
             }
 
+            Console.WriteLine("pubs: ", bookViewModel.publishers.Select(p => p.name));
             return bookViewModel;
         }
         catch (Exception ex)
