@@ -19,12 +19,17 @@
                 
                 <div class="card-body d-grid">
                     <h5 class="card-title">@book.book.title</h5>
-                    <!-- Need to Fix onSale logic + Price history-->
+                    <!-- Need to Fix Price history-->
                     @if(book.book.onSale)
                     {
                         <p class="card-text">
                                 <a>Author: Need Fix </a><br> 
-                                <a>Published by: </a><br>
+                                <a>
+                                    @foreach(var pub in book.publishers)
+                                    {
+                                        @pub
+                                    }
+                                </a><br>
                                 <a>Genre: @book.genreModel.name</a><br>
                                 <a>Age limit: @book.book.ageLimit</a><br>
                                 <a>Publish date: @book.book.pubDate</a><br>
@@ -38,7 +43,12 @@
                     {
                         <p class="card-text">
                             <a>Author: Need Fix </a><br> 
-                            <a>Published by: </a><br>
+                            <a>Published by:
+                                @foreach(var pub in book.publishers)
+                                    {
+                                        @pub
+                                    }
+                            </a><br>
                             <a>Genre: @book.genreModel.name</a><br>
                             <a>Age limit: @book.book.ageLimit</a><br>
                             <a>Publish date: @book.book.pubDate</a><br>

@@ -16,7 +16,7 @@
                 <div class="info-container w-50 p-1">
                     <h2 class="Title-container">@Model.book.title</h2>
 
-                    <a>Author: Need Fix @Model.authorModel</a><br> 
+                    <a>Author: @Model.authorModel.name</a><br> 
                     <a>Published by: @string.Join(", ", @Model.publishers.Select(p => p.name))</a><br>
                     <a>Genre: @Model.genreModel.name</a><br>
                     <a>Age limit: @Model.book.ageLimit</a><br>
