@@ -78,13 +78,15 @@ public class UserController : Controller
 
     //handle jpg uoload(bookCovers)
     [HttpPost]
-    public async Task<IActionResult> UploadCover(IFormFile coverImage)
+    public async Task<IActionResult> UploadCover(IFormFile coverImage,string fullCoverName)
     {
-        if (coverImage == null || coverImage.Length == 0)
+
+        if (coverImage == null)
         {
             ModelState.AddModelError("coverImage", "Please upload a valid JPG image.");
             return View();
         }
+        Console.WriteLine(coverImage.FileName);
 
         // Validate the file type
         var fileExtension = Path.GetExtension(coverImage.FileName).ToLower();
@@ -101,7 +103,8 @@ public class UserController : Controller
             Directory.CreateDirectory(uploadPath);
         }
 
-        var filePath = Path.Combine(uploadPath, Path.GetFileName(coverImage.FileName));
+        var filePath = Path.Combine(uploadPath,fullCoverName);
+        Console.WriteLine("uploadPath: "+uploadPath);
 
         // Save the file
         using (var stream = new FileStream(filePath, FileMode.Create))
@@ -114,13 +117,12 @@ public class UserController : Controller
     }
 
     [HttpPost]
-    public IActionResult CreateBook(AdminDashViewModel model)
+    public async Task<IActionResult> CreateBook(AdminDashViewModel model,IFormFile coverImage)
     {
 
         // Save the model to the database or process as needed
-        Console.WriteLine("Testetetet");
-
         _bookRepo.AddBookViewModel(model.bookViewModel);
+        await UploadCover(coverImage,_bookRepo.getCoverModelById(_bookRepo.getBookIDByName(model.bookViewModel.book.title)).imgName);
 
         return View("adminDash", model); // Redirect to a success page
     }
