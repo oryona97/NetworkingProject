@@ -101,27 +101,27 @@
                         @if(book.book.onSale)
                         {
                             <p class="card-text">
-                                    <a>Author: @book.authorModel.name </a><br> 
-                                    <a>Published by: @string.Join(", ", book.publishers.Select(p => p.name))</a><br>
-                                    <a>Genre: @book.genreModel.name</a><br>
-                                    <a>Age limit: @book.book.ageLimit</a><br>
-                                    <a>Publish date: @book.book.pubDate</a><br>
-                                    <a>Rating: @book.book.starRate</a><br>
-                                    <a class="text-muted text-decoration-line-through">Original Price: @book.book.buyingPrice$</a><br>
-                                    <a>Sale Price: @(book.book.buyingPrice * book.bookDiscountModel.discountPrecentage)$</a>
+                                    <a><strong>Author:</strong> @book.authorModel.name </a><br> 
+                                    <a><strong>Published by:</strong> @string.Join(", ", book.publishers.Select(p => p.name))</a><br>
+                                    <a><strong>Genre:</strong> @book.genreModel.name</a><br>
+                                    <a><strong>Age limit:</strong> @book.book.ageLimit</a><br>
+                                    <a><strong>Publish date:</strong> @book.book.pubDate</a><br>
+                                    <a><strong>Rating:</strong> @book.book.starRate</a><br>
+                                    <a class="text-muted text-decoration-line-through"><strong>Original Price:</strong> @book.book.buyingPrice$</a><br>
+                                    <a><strong>Sale Price:</strong> @(book.book.buyingPrice * book.bookDiscountModel.discountPrecentage)$</a>
 
                             </p>
                         }
                         else
                         {
                             <p class="card-text">
-                                <a>Author: @book.authorModel.name </a><br> 
-                                <a>Published by: @string.Join(", ", book.publishers.Select(p => p.name))</a><br>
-                                <a>Genre: @book.genreModel.name</a><br>
-                                <a>Age limit: @book.book.ageLimit</a><br>
-                                <a>Publish date: @book.book.pubDate</a><br>
-                                <a>Rating: @book.book.starRate</a><br>
-                                <a>Price: @book.book.buyingPrice$</a><br>
+                                <a><strong>Author:</strong> @book.authorModel.name </a><br> 
+                                <a><strong>Published by:</strong> @string.Join(", ", book.publishers.Select(p => p.name))</a><br>
+                                <a><strong>Genre:</strong> @book.genreModel.name</a><br>
+                                <a><strong>Age limit:</strong> @book.book.ageLimit</a><br>
+                                <a><strong>Publish date:</strong> @book.book.pubDate</a><br>
+                                <a><strong>Rating:</strong> @book.book.starRate</a><br>
+                                <a><strong>Price:</strong> @book.book.buyingPrice$</a><br>
                             </p>
 
                         }
