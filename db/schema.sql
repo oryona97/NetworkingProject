@@ -6,9 +6,16 @@ IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'eBook')
 CREATE DATABASE eBook;
 GO
 
-USE eBook;
-GO
+-- Drop all foreign keys first
+DECLARE @sql NVARCHAR(MAX) = ''
 
+SELECT @sql += 'ALTER TABLE ' + QUOTENAME(SCHEMA_NAME(schema_id)) + '.' +
+               QUOTENAME(OBJECT_NAME(parent_object_id)) + 
+               ' DROP CONSTRAINT ' + QUOTENAME(name) + ';'
+
+FROM sys.foreign_keys
+
+EXEC sp_executesql @sql
 
 -- Drop existing tables if they exist (in reverse order of creation)
 IF OBJECT_ID('dbo.UserNotifications', 'U') IS NOT NULL DROP TABLE dbo.UserNotifications;
@@ -32,8 +39,6 @@ IF OBJECT_ID('dbo.[User]', 'U') IS NOT NULL DROP TABLE dbo.[User];
 IF OBJECT_ID('dbo.Book', 'U') IS NOT NULL DROP TABLE dbo.Book;
 IF OBJECT_ID('dbo.Publisher', 'U') IS NOT NULL DROP TABLE dbo.Publisher;
 IF OBJECT_ID('dbo.Genre', 'U') IS NOT NULL DROP TABLE dbo.Genre;
-
-
 GO
 
 -- Recreate tables with original schema
@@ -62,7 +67,6 @@ GO
 
 CREATE TABLE [Book] (
   [id] int IDENTITY(50,1) PRIMARY KEY,
-  [publisherId] int,
   [genreId] int,
   [amountOfCopies] int CHECK(amountOfCopies >= 0 and amountOfCopies <= 3),
   [title] nvarchar(200),
@@ -228,8 +232,6 @@ GO
 ALTER TABLE [PersonalLibrary] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id]) ON DELETE CASCADE;
 GO
 ALTER TABLE [PersonalLibrary] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
-GO
-ALTER TABLE [Book] ADD FOREIGN KEY ([publisherId]) REFERENCES [Publisher] ([id]) ON DELETE CASCADE;
 GO
 ALTER TABLE [Book] ADD FOREIGN KEY ([genreId]) REFERENCES [Genre] ([id]) ON DELETE CASCADE;
 GO
