@@ -107,8 +107,8 @@
                                     <a>Age limit: @book.book.ageLimit</a><br>
                                     <a>Publish date: @book.book.pubDate</a><br>
                                     <a>Rating: @book.book.starRate</a><br>
-                                    <a class="text-muted text-decoration-line-through">Original Price: @book.book.priceHistory$</a><br>
-                                    <a>Sale Price: @book.book.buyingPrice$</a>
+                                    <a class="text-muted text-decoration-line-through">Original Price: @book.book.buyingPrice$</a><br>
+                                    <a>Sale Price: @(book.book.buyingPrice * book.bookDiscountModel.discountPrecentage)$</a>
 
                             </p>
                         }
@@ -121,7 +121,7 @@
                                 <a>Age limit: @book.book.ageLimit</a><br>
                                 <a>Publish date: @book.book.pubDate</a><br>
                                 <a>Rating: @book.book.starRate</a><br>
-                                <a>Price: @book.book.priceHistory$</a><br>
+                                <a>Price: @book.book.buyingPrice$</a><br>
                             </p>
 
                         }

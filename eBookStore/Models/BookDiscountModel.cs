@@ -1,7 +1,7 @@
 namespace eBookStore.Models;
 using System.ComponentModel.DataAnnotations;
 
-public class BookdiscountModel
+public class BookDiscountModel
 {   
     [Required(ErrorMessage = "discountId is required")]
     public int bookId { get; set; }
