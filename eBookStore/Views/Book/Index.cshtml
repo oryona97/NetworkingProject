@@ -25,8 +25,8 @@
                     <div class="buyBorrowButtons">
                         @if(Model.book.onSale)
                         {
-                            <a>Old price: @Model.book.priceHistory$</a><br>
-                            <button>New price: @Model.book.buyingPrice$</button>
+                            <a class="text-decoration-line-through">Old price: @Model.book.buyingPrice$</a><br>
+                            <button>New price: @(Model.book.buyingPrice * Model.bookDiscountModel.discountPrecentage)$</button>
                         }
                         else
                         {
