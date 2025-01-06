@@ -1,4 +1,3 @@
-
 -- Create Database
 USE master;
 GO
@@ -30,8 +29,8 @@ IF OBJECT_ID('dbo.HistoryPurchases', 'U') IS NOT NULL DROP TABLE dbo.HistoryPurc
 IF OBJECT_ID('dbo.BorrowedBooks', 'U') IS NOT NULL DROP TABLE dbo.BorrowedBooks;
 IF OBJECT_ID('dbo.PersonalLibrary', 'U') IS NOT NULL DROP TABLE dbo.PersonalLibrary;
 IF OBJECT_ID('dbo.[User]', 'U') IS NOT NULL DROP TABLE dbo.[User];
-IF OBJECT_ID('dbo.Publisher', 'U') IS NOT NULL DROP TABLE dbo.Publisher;
 IF OBJECT_ID('dbo.Book', 'U') IS NOT NULL DROP TABLE dbo.Book;
+IF OBJECT_ID('dbo.Publisher', 'U') IS NOT NULL DROP TABLE dbo.Publisher;
 IF OBJECT_ID('dbo.Genre', 'U') IS NOT NULL DROP TABLE dbo.Genre;
 
 
@@ -96,11 +95,11 @@ CREATE TABLE [Genre] (
 GO
 
 CREATE TABLE [Publisher] (
-    [id] int IDENTITY(50,1),
+    [id] int IDENTITY(50,1) PRIMARY KEY,
     [bookId] int,
     [name] nvarchar(100) UNIQUE,
     [createdAt] datetime,
-    CONSTRAINT PK_Publisher PRIMARY KEY ([id], [name], [bookId])
+    CONSTRAINT PK_Publisher UNIQUE ([id], [bookId])
 )
 GO
 
@@ -237,7 +236,7 @@ GO
             -- this constraint is to ensure that the borrow price is less than the buying price
 ALTER TABLE [Book] ADD CONSTRAINT CHK_Book_BorrowPrice_LessThan_BuyingPrice CHECK (borrowPrice < buyingPrice);
 GO
-ALTER TABLE [Publisher] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
+ALTER TABLE [Publisher] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE NO ACTION;
 GO
 ALTER TABLE [HistoryBookPrice] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
 GO
