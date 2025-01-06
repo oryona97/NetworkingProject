@@ -78,7 +78,8 @@ CREATE TABLE [Book] (
   [onSale] bit,
   [canBorrow] bit,
   [starRate] decimal(3,2),
-  [createdAt] datetime
+  [createdAt] datetime,
+  [publisherId] int,
 
 )
 GO
