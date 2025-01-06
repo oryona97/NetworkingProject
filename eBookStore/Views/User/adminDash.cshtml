@@ -31,6 +31,13 @@
                     Create Discount
                 </a>
             </li>
+            <li>
+                <a href="#" data-function="MakeAdminDisplay" class="nav-link link-dark">
+                    <svg class="bi me-2" width="16" height="16"><use xlink:href="#speedometer2"/></svg>
+                    Make admin
+                </a>
+            </li>
+
         </ul>
     </div>
 
@@ -41,6 +48,11 @@
         <div class="GeneralInfoDisplay">
 
         </div>
+
+         <div class="MakeAdminDisplay" style="display: none;">
+                <p>asdsad</p>
+        </div>
+
 
 
         <!-- Manage Gallery -->
@@ -170,34 +182,34 @@
             </div>
         </div>
 
-        <div class="CrateDiscaountDisplay">
-                <!-- Discount Form -->
-            <div class="discount" style="display:none">
-                <h1>Create Discount</h1>
-                <p>Fill in the details below to create a discount for a book:</p>
+    
+        <!-- Discount Form -->
+        <div class="discount" style="display:none">
+            <h1>Create Discount</h1>
+            <p>Fill in the details below to create a discount for a book:</p>
 
-                <form method="post" asp-controller="User" asp-action="ApplyDiscount">
-                    <fieldset>
-                        <div>
-                            <label for="title">Book Name:</label>
-                            <input type="text" id="title" name="_title" required />
-                        </div>
-                        <div>
-                            <label for="discountPercentage">Discount Percentage (%):</label>
-                            <input type="text" id="discountPercentage" name="discountPercentage" min="0" max="1" required />
-                        </div>
-                        <div>
-                            <label for="saleEndDate">Sale End Date:</label>
-                            <input type="date" id="saleEndDate" name="saleEndDate" 
-                                    min="@DateTime.Now.ToString("yyyy-MM-dd")" 
-                                    max="@DateTime.Now.AddDays(7).ToString("yyyy-MM-dd")" 
-                                    required />
-                        </div>
-                    </fieldset>
-                    <button type="submit" class="btn btn-primary">Apply Discount</button>
-                </form>
-            </div>
+            <form method="post" asp-controller="User" asp-action="ApplyDiscount">
+                <fieldset>
+                    <div>
+                        <label for="title">Book Name:</label>
+                        <input type="text" id="title" name="_title" required />
+                    </div>
+                    <div>
+                        <label for="discountPercentage">Discount Percentage (%):</label>
+                        <input type="text" id="discountPercentage" name="discountPercentage" min="0" max="1" required />
+                    </div>
+                    <div>
+                        <label for="saleEndDate">Sale End Date:</label>
+                        <input type="date" id="saleEndDate" name="saleEndDate" 
+                                min="@DateTime.Now.ToString("yyyy-MM-dd")" 
+                                max="@DateTime.Now.AddDays(7).ToString("yyyy-MM-dd")" 
+                                required />
+                    </div>
+                </fieldset>
+                <button type="submit" class="btn btn-primary">Apply Discount</button>
+            </form>
         </div>
+    
 
 
     </div>
@@ -217,7 +229,8 @@
             GeneralInfoDisplay: document.querySelector(".GeneralInfoDisplay"),
             galleryManagerDisplay: document.querySelector(".galleryManagerDisplay"),
             ManageUsersDisplay: document.querySelector("#ManageUsersDisplay"),
-            discount: document.querySelector(".discount")
+            discount: document.querySelector(".discount"),
+            MakeAdminDisplay: document.querySelector(".MakeAdminDisplay")
         };
 
         sidebarLinks.forEach(link => {
