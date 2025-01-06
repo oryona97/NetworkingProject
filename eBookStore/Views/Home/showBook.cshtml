@@ -1,0 +1,96 @@
+@model List<eBookStore.Models.ViewModels.BookViewModel>
+
+<div class="row">
+    <h1 class="text-center mb-4">Books List</h1>
+
+
+    @if (Model != null && Model.Any())
+    {
+        @foreach(var book in Model)
+        {
+            <div class="card book-item h-100" data-genre="@book.genreModel.name.Replace(" ", "-")" style="width: 18rem; padding-left: 0px; padding-right: 0px;">
+                
+                
+                <div class="imageWrapp">
+                    <a href="@Url.Action("Index", "Book")/@book.book.id">
+                        <img src="\images\bookCovers\@book.coverModel.imgName" class="card-img-top" alt="@book.coverModel.imgName">
+                    </a>
+                </div>
+                
+                <div class="card-body d-grid">
+                    <h5 class="card-title">@book.book.title</h5>
+                    <!-- Need to Fix onSale logic + Price history-->
+                    @if(book.book.onSale)
+                    {
+                        <p class="card-text">
+                                <a>Author: Need Fix </a><br> 
+                                <a>Published by: </a><br>
+                                <a>Genre: @book.genreModel.name</a><br>
+                                <a>Age limit: @book.book.ageLimit</a><br>
+                                <a>Publish date: @book.book.pubDate</a><br>
+                                <a>Rating: @book.book.starRate</a><br>
+                                <a class="text-muted text-decoration-line-through">Original Price: @book.book.priceHistory$</a><br>
+                                <a>Sale Price: @book.book.buyingPrice$</a>
+
+                        </p>
+                    }
+                    else
+                    {
+                        <p class="card-text">
+                            <a>Author: Need Fix </a><br> 
+                            <a>Published by: </a><br>
+                            <a>Genre: @book.genreModel.name</a><br>
+                            <a>Age limit: @book.book.ageLimit</a><br>
+                            <a>Publish date: @book.book.pubDate</a><br>
+                            <a>Rating: @book.book.starRate</a><br>
+                            <a>Price: @book.book.priceHistory$</a><br>
+                        </p>
+
+                    }
+
+                    @if(book.book.canBorrow)
+                    {
+                        <div class="price-container card-footer text-center" style="background-color:white">
+                            <div class="row" style="column-gap: 5px;">
+                                <div class="col" style="background-color: rgb(74, 234, 133);" id="Buy-Button">
+                                    <a href="#" class="Buy-button">Buy</a>
+                                </div>
+                                <div class="col" style="background-color: rgb(85, 83, 210);" id="Borrow-Button">
+                                    <a href="#" class="Borrow-button">Borrow</a>
+                                </div>
+                            </div>
+                        </div>
+                    }   
+                    else
+                    {
+                        <div class="price-container card-footer">
+                            <a href="#" class="Buy-button text-center">Buy</a>
+                        </div>
+
+                    }
+                </div>
+            </div> 
+        }
+    }
+    else
+    {
+        
+        <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
+
+        <div class="alert alert-info text-center mt-5 animate__animated animate__bounceIn" role="alert"
+            style="border: 2px solid #0dcaf0; box-shadow: 0px 4px 10px rgba(0, 0, 0, 0.2); border-radius: 15px;">
+            <h4 class="alert-heading animate__animated animate__flash animate__delay-2s" style="color: #0dcaf0;">
+                <i class="bi bi-emoji-laughing" style="font-size: 30px;"></i> Oops!
+            </h4>
+            <p class="animate__animated animate__fadeIn animate__delay-1s" style="font-size: 18px; color: #495057;">
+                No results found. Try searching for something else!
+            </p>
+        <div class="text-center mt-3">
+            <a asp-action="SearchForm" asp-controller="Home" class="btn btn-outline-info animate__animated animate__pulse animate__infinite">
+                Back to Search
+            </a>
+        </div>
+        </div>
+    }
+
+</div>
