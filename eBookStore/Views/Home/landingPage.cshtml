@@ -56,16 +56,16 @@
                                 <div class="card-body d-grid">
                                     <h5 class="card-title">@Model.SpecialSales[0].book.title</h5>
                                     <p class="card-text">
-                                        <a>Author: Need Fix </a><br> 
+                                        <a><strong>Author:</strong> @Model.SpecialSales[0].authorModel.name</a><br> 
                                         <a>
-                                            Published by: @string.Join(", ", @Model.SpecialSales[0].publishers.Select(p => p.name))
+                                            <strong>Published by:</strong> @string.Join(", ", @Model.SpecialSales[0].publishers.Select(p => p.name))
                                         </a><br>
-                                        <a>Genre: @Model.SpecialSales[0].genreModel.name</a><br>
-                                        <a>Age limit: @Model.SpecialSales[0].book.ageLimit</a><br>
-                                        <a>Publish date: @Model.SpecialSales[0].book.pubDate</a><br>
-                                        <a>Rating: @Model.SpecialSales[0].book.starRate</a><br>
-                                        <a>Original Price: @Model.SpecialSales[0].book.priceHistory$</a><br>
-                                        <a>OnSale: @Model.SpecialSales[0].book.buyingPrice$</a>
+                                        <a><strong>Genre:</strong> @Model.SpecialSales[0].genreModel.name</a><br>
+                                        <a><strong>Age limit:</strong> @Model.SpecialSales[0].book.ageLimit</a><br>
+                                        <a><strong>Publish date:</strong> @Model.SpecialSales[0].book.pubDate</a><br>
+                                        <a><strong>Rating:</strong> @Model.SpecialSales[0].book.starRate</a><br>
+                                        <a class="text-muted text-decoration-line-through"><strong>Original Price:</strong> need fix$</a><br>
+                                        <a><strong>OnSale:</strong> @Model.SpecialSales[0].book.buyingPrice$</a>
 
                                     </p>
                                     <a href="#" class="buy-buttom text-center";">Buy-Now</a>
@@ -83,16 +83,16 @@
                                 <div class="card-body d-grid">
                                     <h5 class="card-title">@Model.SpecialSales[3].book.title</h5>
                                     <p class="card-text">
-                                        <a>Author: Need Fix </a><br> 
+                                        <a><strong>Author:</strong> @Model.SpecialSales[3].authorModel.name</a><br> 
                                         <a>
-                                            Published by: @string.Join(", ", @Model.SpecialSales[0].publishers.Select(p => p.name))
+                                            <strong>Published by:</strong> @string.Join(", ", @Model.SpecialSales[3].publishers.Select(p => p.name))
                                         </a><br>
-                                        <a>Genre: @Model.SpecialSales[3].genreModel.name</a><br>
-                                        <a>Age limit: @Model.SpecialSales[3].book.ageLimit</a><br>
-                                        <a>Publish date: @Model.SpecialSales[3].book.pubDate</a><br>
-                                        <a>Rating: @Model.SpecialSales[3].book.starRate</a><br>
-                                        <a>Original Price: @Model.SpecialSales[3].book.priceHistory$</a><br>
-                                        <a>OnSale: @Model.SpecialSales[3].book.buyingPrice$</a>
+                                        <a><strong>Genre:</strong> @Model.SpecialSales[3].genreModel.name</a><br>
+                                        <a><strong>Age limit:</strong> @Model.SpecialSales[3].book.ageLimit</a><br>
+                                        <a><strong>Publish date:</strong> @Model.SpecialSales[3].book.pubDate</a><br>
+                                        <a><strong>Rating:</strong> @Model.SpecialSales[3].book.starRate</a><br>
+                                        <a class="text-muted text-decoration-line-through"><strong>Original Price:</strong>need fix$</a><br>
+                                        <a><strong>OnSale:</strong> @Model.SpecialSales[3].book.buyingPrice$</a>
 
                                     </p>
                                     <a href="#" class="buy-buttom text-center";">Buy-Now</a>
