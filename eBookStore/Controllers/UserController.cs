@@ -214,6 +214,11 @@ public class UserController : Controller
         {
             var userRepo = new UserRepository(connectionString, _loggerUserRepo);
             bookId = _bookRepo.getBookIDByName(_title);
+            if (bookId == 0) //  0 means the book does not exist
+            {
+                TempData["ErrorMessage"] = "The book does not exist.";
+                return RedirectToAction("adminDash");
+            }   
             userRepo.AddDiscountAndUpdateBook(bookId, discountPercentage, saleEndDate);
             TempData["Message"] = "Discount applied successfully!";
         }

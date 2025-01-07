@@ -155,7 +155,29 @@
                 </form>
             </div>
         </div>
+       <div class="container mt-5">
+    <div class="card shadow-sm">
+            <div class="card-header bg-danger text-white">
+                <h4 class="mb-0">Delete Book</h4>
+            </div>
+            <div class="card-body">
+                <p class="text-muted">Enter the title of the book you wish to delete and confirm the action.</p>
+                <form method="post" action="@Url.Action("DeleteBook", "User")" class="needs-validation" novalidate>
+                    <div class="mb-3">
+                        <label for="bookTitle" class="form-label">Book Title:</label>
+                        <input type="text" id="bookTitle" name="title" class="form-control" placeholder="Enter book title" required />
+                        <div class="invalid-feedback">Please provide a book title.</div>
+                    </div>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-danger">Delete Book</button>
+                    </div>
+                </form>
+            </div>
+        </div>
     </div>
+        
+    </div>
+    
 
         <!-- Manage users§-->
 
@@ -203,30 +225,44 @@
         <!-- Discount Form -->
         <div class="discount" style="display:none">
             <h1>Create Discount</h1>
-            <p>Fill in the details below to create a discount for a book:</p>
+            <p class="text-muted">Fill in the details below to create a discount. Discount percentage must be a number between 0 and 1.</p>
 
-            <form method="post" asp-controller="User" asp-action="ApplyDiscount">
+            <form method="post" asp-controller="User" asp-action="ApplyDiscount" class="needs-validation" novalidate>
                 <fieldset>
-                    <div>
-                        <label for="title">Book Name:</label>
-                        <input type="text" id="title" name="_title" required />
+                    <div class="mb-3">
+                        <label for="title" class="form-label">Book Name:</label>
+                        <input type="text" id="title" name="_title" class="form-control" placeholder="Enter book name" required />
+                        <div class="invalid-feedback">Please provide a book name.</div>
                     </div>
-                    <div>
-                        <label for="discountPercentage">Discount Percentage (%):</label>
-                        <input type="text" id="discountPercentage" name="discountPercentage" min="0" max="1" required />
+                    <div class="mb-3">
+                        <label for="discountPercentage" class="form-label">Discount Percentage (0–1):</label>
+                        <input type="number" id="discountPercentage" name="discountPercentage" class="form-control" min="0" max="1" step="0.01" placeholder="Enter discount percentage" required />
+                        <div class="invalid-feedback">Please enter a valid discount percentage (between 0 and 1).</div>
                     </div>
-                    <div>
-                        <label for="saleEndDate">Sale End Date:</label>
-                        <input type="date" id="saleEndDate" name="saleEndDate" 
-                                min="@DateTime.Now.ToString("yyyy-MM-dd")" 
-                                max="@DateTime.Now.AddDays(7).ToString("yyyy-MM-dd")" 
-                                required />
+                    <div class="mb-3">
+                        <label for="saleEndDate" class="form-label">Sale End Date:</label>
+                        <input type="date" id="saleEndDate" name="saleEndDate" class="form-control" required />
+                        <div class="invalid-feedback">Please provide a valid sale end date.</div>
                     </div>
                 </fieldset>
                 <button type="submit" class="btn btn-primary">Apply Discount</button>
             </form>
+             <div class="container mt-3">
+                @if (TempData["ErrorMessage"] != null)
+                {
+                    <div class="alert alert-danger" role="alert">
+                        @TempData["ErrorMessage"]
+                    </div>
+                }
+                @if (TempData["SuccessMessage"] != null)
+                {
+                    <div class="alert alert-success" role="alert">
+                        @TempData["SuccessMessage"]
+                    </div>
+                }
+            </div>
         </div>
-    
+       
 
 
     </div>
@@ -235,8 +271,87 @@
 <script>
 
     let data = @Json.Serialize(Model);
+
+    //this used for discount
     document.addEventListener("DOMContentLoaded", () => {
-    const forms = document.querySelectorAll(".needs-validation");
+        const discountForm = document.querySelector("form[action$='ApplyDiscount']");
+        const titleInput = document.getElementById("title");
+
+        discountForm.addEventListener("submit", (event) => {
+            if (!titleInput.value.trim()) {
+                event.preventDefault();
+                alert("Please provide a valid book title.");
+                titleInput.focus();
+            }
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        // Add client-side validation for forms
+        const forms = document.querySelectorAll(".needs-validation");
+
+        forms.forEach((form) => {
+            form.addEventListener("submit", (event) => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+
+                const discountPercentageInput = document.getElementById("discountPercentage");
+                const discountPercentage = parseFloat(discountPercentageInput.value);
+
+                // Custom validation for discount percentage
+                if (discountPercentage < 0 || discountPercentage > 1 || isNaN(discountPercentage)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    alert("Discount percentage must be a number between 0 and 1.");
+                    discountPercentageInput.focus();
+                }
+
+                form.classList.add("was-validated");
+            });
+        });
+
+        // Sale End Date Validation
+        const saleEndDateInput = document.getElementById("saleEndDate");
+        if (saleEndDateInput) {
+            saleEndDateInput.addEventListener("input", () => {
+                const currentDate = new Date();
+                const selectedDate = new Date(saleEndDateInput.value);
+
+                if (selectedDate < currentDate) {
+                    alert("Sale End Date must be a future date.");
+                    saleEndDateInput.value = ""; // Reset the input
+                }
+            });
+        }
+    });
+
+
+
+
+
+
+
+    //this functionType used for Validation ListOfUsers addbook
+    document.addEventListener("DOMContentLoaded", () => {
+        const forms = document.querySelectorAll(".needs-validation");
+
+        forms.forEach((form) => {
+            form.addEventListener("submit", (event) => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    alert("Please fill all the fields.");
+                    pubDateInput.focus();
+                }
+                form.classList.add("was-validated");
+            });
+        });
+    });
+
+    document.addEventListener("DOMContentLoaded", () => {
+        const forms = document.querySelectorAll(".needs-validation");
 
         forms.forEach((form) => {
             form.addEventListener("submit", (event) => {
@@ -248,6 +363,7 @@
             });
         });
     });
+
 
     document.addEventListener("DOMContentLoaded", () => 
         {
