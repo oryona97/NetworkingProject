@@ -325,6 +325,66 @@ public class UserController : Controller
         return RedirectToAction("adminDash");
     }
 
+
+    //this func is to edtit user
+    public IActionResult editUser(int userId)
+    {   
+        Console.WriteLine("User ID: {0}", userId);
+        var user = _bookRepo.getUserModelById(userId); 
+        if (user == null)
+        {
+            TempData["ErrorMessage"] = "User not found.";
+            return RedirectToAction("adminDash");
+        }
+
+        return View("EditUser",user); 
+    }
+
+    //this func to update user
+    public IActionResult UpdateUser(int userId, string? email = null, string? firstName = null, string? lastName = null, string? phoneNumber = null)
+    {
+        try
+        {
+            
+            var user = _bookRepo.getUserModelById(userId);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "User not found.";
+                return RedirectToAction("adminDash");
+            }
+
+            var userRepo = new UserRepository(connectionString, _loggerUserRepo);
+
+            if (!string.IsNullOrEmpty(email))
+            {
+                userRepo.changeEmailById(userId,email);
+            }
+            if (!string.IsNullOrEmpty(firstName))
+            {
+                userRepo.changeFirsName(userId, firstName);
+            }
+            if (!string.IsNullOrEmpty(lastName))
+            {
+                userRepo.changelastName(userId,lastName);
+            }
+            if (!string.IsNullOrEmpty(phoneNumber))
+            {
+                userRepo.changePhone(userId, phoneNumber);
+            }
+
+            TempData["SuccessMessage2"] = "User updated successfully!";
+            return RedirectToAction("adminDash");
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error updating user with ID: {UserId}", userId);
+            TempData["ErrorMessage2"] = "An error occurred while updating the user.";
+            return RedirectToAction("adminDash");
+        }
+    }
+
+
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {

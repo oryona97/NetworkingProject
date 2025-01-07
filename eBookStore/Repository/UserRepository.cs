@@ -471,7 +471,140 @@ namespace eBookStore.Repository
 				throw;
 			}
 		}
+
+
+
+
+		//this func to change user Email
+		public void changeEmailById(int userId, string newEmail)
+		{
+			try
+			{
+				using (var connection = new SqlConnection(_connectionString))
+				{
+					connection.Open();
+
+					const string query = @"
+						UPDATE [User]
+						SET email = @newEmail
+						WHERE id = @userId;
+					";
+
+					using (var command = new SqlCommand(query, connection))
+					{
+						command.Parameters.AddWithValue("@newEmail", newEmail);
+						command.Parameters.AddWithValue("@userId", userId);
+
+						command.ExecuteNonQuery();
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error changing email for userId {UserId}", userId);
+				throw;
+			}
+		}
+
+		//this func is for change fist name
+		public void changeFirsName(int userId, string FirstName)
+		{
+			try
+			{
+			using (var connection = new SqlConnection(_connectionString))
+				{
+					connection.Open();
+
+					const string query = @"
+						UPDATE [User]
+						SET FirstName = @FirstName
+						WHERE id = @userId;
+					";
+
+					using (var command = new SqlCommand(query, connection))
+					{
+						command.Parameters.AddWithValue("@FirstName", FirstName);
+						command.Parameters.AddWithValue("@userId", userId);
+
+						command.ExecuteNonQuery();
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error changing email for userId {UserId}", userId);
+				throw;
+			}
+		}
+
+
+
+		//this func is for change last name
+		public void changelastName(int userId, string lastName)
+		{
+			try
+			{
+			using (var connection = new SqlConnection(_connectionString))
+				{
+					connection.Open();
+
+					const string query = @"
+						UPDATE [User]
+						SET lastName = @lastName
+						WHERE id = @userId;
+					";
+
+					using (var command = new SqlCommand(query, connection))
+					{
+						command.Parameters.AddWithValue("@lastName", lastName);
+						command.Parameters.AddWithValue("@userId", userId);
+
+						command.ExecuteNonQuery();
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error changing email for userId {UserId}", userId);
+				throw;
+			}
+		}
+
+
+		public void changePhone(int userId, string phoneNumber)
+		{
+			try
+			{
+			using (var connection = new SqlConnection(_connectionString))
+				{
+					connection.Open();
+
+					const string query = @"
+						UPDATE [User]
+						SET phoneNumber = @phoneNumber
+						WHERE id = @userId;
+					";
+
+					using (var command = new SqlCommand(query, connection))
+					{
+						command.Parameters.AddWithValue("@phoneNumber", phoneNumber);
+						command.Parameters.AddWithValue("@userId", userId);
+
+						command.ExecuteNonQuery();
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error changing email for userId {UserId}", userId);
+				throw;
+			}
+		}
+
+
 	}
+	
+	
 
 	
 }

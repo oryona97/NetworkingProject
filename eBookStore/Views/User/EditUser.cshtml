@@ -1,0 +1,36 @@
+@model eBookStore.Models.UserModel
+
+<form method="post" action="@Url.Action("UpdateUser", "User")">
+    <input type="hidden" name="userId" value="@Model.id" />
+
+    <div class="mb-3">
+        <label for="email" class="form-label">Email:</label>
+        <input type="email" id="email" name="email" value="@Model.email" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label for="firstName" class="form-label">First Name:</label>
+        <input type="text" id="firstName" name="firstName" value="@Model.firstName" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label for="lastName" class="form-label">Last Name:</label>
+        <input type="text" id="lastName" name="lastName" value="@Model.lastName" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label for="phone" class="form-label">Phone:</label>
+        <input type="text" id="phone" name="phoneNumber" value="@Model.phoneNumber" class="form-control" required />
+    </div>
+
+    <div class="mb-3">
+        <label for="type" class="form-label">User Type:</label>
+        <select id="type" name="type" class="form-select">
+            <option value="admin" @(Model.type == "admin" ? "selected" : "")>Admin</option>
+            <option value="user" @(Model.type == "user" ? "selected" : "")>User</option>
+        </select>
+    </div>
+
+    <button type="submit" class="btn btn-success">Save Changes</button>
+    <a href="@Url.Action("adminDash", "User")" class="btn btn-secondary">Cancel</a>
+</form>
