@@ -196,7 +196,13 @@ public class UserController : Controller
     public IActionResult DeleteBook(string title)
     {
         var bookTitle = _bookRepo.getBookIDByName(title);
+        if (bookTitle == 0) //  0 means the book does not exist
+            {
+                TempData["ErrorMessage1"] = "The book does not exist.";
+                return RedirectToAction("adminDash");
+            }  
         _bookRepo.DeleteBookViewModel(bookTitle);
+        TempData["SuccessMessage1"] = "Book Deleted successfully!";
         return RedirectToAction("adminDash");
     }
     public IActionResult Privacy()
