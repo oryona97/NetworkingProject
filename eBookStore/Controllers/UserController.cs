@@ -258,6 +258,62 @@ public class UserController : Controller
         return View();
     }
 
+    //this func to make User admin
+    [HttpPost]
+    public IActionResult MakeAdmin(int userId)
+    {
+        Console.WriteLine("User ID: {0}", userId);
+        try
+        {
+            UserRepository userRepo = new UserRepository(connectionString, _loggerUserRepo);
+            userRepo.UpdateUserToAdmin(userId); 
+            TempData["SuccessMessage"] = "User has been successfully updated to Admin.";
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error updating user to admin: {ex.Message}");
+            TempData["ErrorMessage"] = "Failed to update user to Admin.";
+        }
+
+        return RedirectToAction("adminDash");
+    }
+
+    [HttpPost]
+    public IActionResult ToggleAdmin(int userId)
+    {
+        try
+        {
+            
+            UserRepository userRepo = new UserRepository(connectionString, _loggerUserRepo);
+            var user = _bookRepo.getUserModelById(userId);
+            if (user == null)
+            {
+                TempData["ErrorMessage"] = "User not found.";
+                return RedirectToAction("adminDash");
+            }
+
+            if (user.type == "admin")
+            {
+                
+                userRepo.UpdateUserType(userId, "user");
+                TempData["SuccessMessage"] = $"User {user.username} is no longer an Admin.";
+            }
+            else
+            {
+         
+                userRepo.UpdateUserType(userId, "admin");
+                TempData["SuccessMessage"] = $"User {user.username} is now an Admin.";
+            }
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError($"Error toggling admin status for user {userId}: {ex.Message}");
+            TempData["ErrorMessage"] = "An error occurred while updating the user.";
+        }
+
+        return RedirectToAction("adminDash");
+    }
+
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
     {
