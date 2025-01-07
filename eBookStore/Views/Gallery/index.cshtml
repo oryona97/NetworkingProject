@@ -60,11 +60,11 @@
                     </div>
             </div>
             <div class="dropdown show mt-2">
-                    <a class="btn btn-secondary dropdown-toggle" href="#" role="button" id="dropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false" >
+                    <a class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" id="dropdownMenuLink" aria-haspopup="true" aria-expanded="false" >
                         Order-By
                     </a>
 
-                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink">
+                    <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="background-color: rgb(79, 79, 79);">
                         <a class="dropdown-item" href="#">Price Increase</a>
                         <a class="dropdown-item" href="#">Price Decrease</a>
                         <a class="dropdown-item" href="#">Most Popular</a>
@@ -128,21 +128,49 @@
 
                         @if(book.book.canBorrow)
                         {
-                            <div class="price-container card-footer text-center" style="background-color:white">
-                                <div class="row" style="column-gap: 5px;">
-                                    <div class="col" style="background-color: rgb(74, 234, 133);" id="Buy-Button">
-                                        <a href="#" class="Buy-button">Buy</a>
+                            <div class="price-container card-footer" style="background-color:white">
+                                <div class="row">
+
+                                    <div class="col" style="background-color: rgb(255, 255, 255);" id="Buy-Button">
+                                        <a href="#" class="Buy-button text-black">Buy-Now</a>
                                     </div>
-                                    <div class="col" style="background-color: rgb(85, 83, 210);" id="Borrow-Button">
-                                        <a href="#" class="Borrow-button">Borrow</a>
+                                    
+                                    <div class="dropdown col">
+                                        <a href="#" class="dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">Add to Cart</a>
+                                        
+                                        <li class="dropdown-menu col" style="background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
+                                            <div class="addToCart-menu-content">
+                                                <a class="dropdown-item" asp-controller="ShoppingCart" asp-action="AddToShoppingCart">Buy</a>
+                                                <a class="dropdown-item" asp-controller="ShoppingCart" asp-action="AddToShoppingCart">Borrow</a>
+                                            </div>
+                                        </li>
                                     </div>
+
+                
                                 </div>
                             </div>
                         }   
                         else
                         {
-                            <div class="price-container card-footer">
-                                <a href="#" class="Buy-button text-center">Buy</a>
+                            <div class="price-container card-footer" style="background-color:white">
+                                <div class="row" style="column-gap: 5px;">
+                                    <div class="col" style="background-color: rgb(255, 255, 255);" id="Buy-Button">
+                                        <a href="#" class="Buy-button text-black">Buy-Now</a>
+                                    </div>
+
+                                    <div class="dropdown col">
+                                        <a href="#" class="dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">Add to Cart</a>
+                                        
+                                        <li class="dropdown-menu col" style="background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
+                                            <div class="addToCart-menu-content">
+                                                <a class="dropdown-item" asp-controller="ShoppingCart" asp-action="AddToShoppingCart">Buy</a>
+                                            </div>
+                                        </li>
+                                    </div>
+
+                                    
+
+                                </div>
                             </div>
 
                         }
