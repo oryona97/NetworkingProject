@@ -89,7 +89,7 @@ namespace eBookStore.Repository
 			{
 				using SqlConnection connection = new SqlConnection(_connectionString);
 				connection.Open();
-				string sql = "UPDATE [User] SET type = admin WHERE id = @userId";
+				string sql = "UPDATE [User] SET type = 'admin' WHERE id = @userId";
 				using SqlCommand command = new SqlCommand(sql, connection);
 				command.Parameters.AddWithValue("@userId", userId);
 				command.ExecuteNonQuery();
@@ -99,6 +99,38 @@ namespace eBookStore.Repository
 			{
 				Console.WriteLine("Error updating user to admin: {0}", userId);
 				_logger.LogError(ex, "Error updating user to admin: {UserId}", userId);
+				throw;
+			}
+		}
+
+		public void UpdateUserType(int userId, string newType)
+		{
+			try
+			{
+				using (var connection = new SqlConnection(_connectionString))
+				{
+					connection.Open();
+					using (var command = new SqlCommand("UPDATE [User] SET type = @type WHERE Id = @UserId", connection))
+					{
+						command.Parameters.AddWithValue("@type", newType);
+						command.Parameters.AddWithValue("@UserId", userId);
+
+						int rowsAffected = command.ExecuteNonQuery();
+
+						if (rowsAffected > 0)
+						{
+							Console.WriteLine($"Successfully updated UserId: {userId} to Type: {newType}");
+						}
+						else
+						{
+							Console.WriteLine($"No rows were updated. Check if UserId: {userId} exists.");
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				Console.WriteLine($"Error updating UserId: {userId} to Type: {newType}. Exception: {ex.Message}");
 				throw;
 			}
 		}
