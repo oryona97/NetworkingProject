@@ -78,103 +78,117 @@
 
         <!-- Manage Gallery -->
         <div class="galleryManagerDisplay container mt-5" style="display:none;">
-        <div class="card shadow-sm">
-            <div class="card-header bg-primary text-white">
-                <h1 class="h3">Add Book</h1>
-                <p>Fill all the required fields below to add a new book.</p>
+            <div class="card shadow-sm">
+                <div class="card-header bg-primary text-white">
+                    <h1 class="h3">Add Book</h1>
+                    <p>Fill all the required fields below to add a new book.</p>
+                </div>
+                <div class="card-body">
+                    <form method="post" id="createBookForm" enctype="multipart/form-data" asp-action="CreateBook" class="needs-validation" novalidate>
+                        <fieldset>
+                            <legend class="h5 text-secondary">Book Info</legend>
+                            <div class="mb-3">
+                                <label for="bookViewModel.genreModel.name" class="form-label">Category:</label>
+                                <input type="text" name="bookViewModel.genreModel.name" class="form-control" placeholder="Enter category" required />
+                                <div class="invalid-feedback">Category is required.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="bookViewModel.book.title" class="form-label">Title:</label>
+                                <input type="text" name="bookViewModel.book.title" class="form-control" placeholder="Enter title" required />
+                                <div class="invalid-feedback">Title is required.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="bookViewModel.book.borrowPrice" class="form-label">Borrow Price ($):</label>
+                                <input type="text" name="bookViewModel.book.borrowPrice" class="form-control" placeholder="Enter borrow price" required />
+                                <div class="invalid-feedback">Borrow Price is required.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="bookViewModel.book.buyingPrice" class="form-label">Buy Price ($):</label>
+                                <input type="text" name="bookViewModel.book.buyingPrice" class="form-control" placeholder="Enter buy price" required />
+                                <div class="invalid-feedback">Buy Price is required.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="bookViewModel.book.pubDate" class="form-label">Publish Date:</label>
+                                <input type="date" name="bookViewModel.book.pubDate" class="form-control" required />
+                                <div class="invalid-feedback">Publish Date is required.</div>
+                            </div>
+                            <div class="mb-3">
+                                <label for="bookViewModel.book.ageLimit" class="form-label">Age Limit:</label>
+                                <input type="text" name="bookViewModel.book.ageLimit" class="form-control" placeholder="Enter age limit" required />
+                                <div class="invalid-feedback">Age Limit is required.</div>
+                            </div>
+                            <div class="form-check mb-3">
+                                <input type="checkbox" name="bookViewModel.book.canBorrow" class="form-check-input" id="canBorrow" />
+                                <label class="form-check-label" for="canBorrow">Borrowable</label>
+                            </div>
+                        </fieldset>
+                        <hr>
+                        <fieldset>
+                            <legend class="h5 text-secondary">Publisher Info</legend>
+                            <div class="mb-3">
+                                <label for="bookViewModel.publisherModel.name" class="form-label">Publisher:</label>
+                                <input type="text" name="bookViewModel.publisherModel.name" class="form-control" placeholder="Enter publisher name" required />
+                                <div class="invalid-feedback">Publisher name is required.</div>
+                            </div>
+                        </fieldset>
+                        <hr>
+                        <fieldset>
+                            <legend class="h5 text-secondary">Author Info</legend>
+                            <div class="mb-3">
+                                <label for="bookViewModel.authorModel.name" class="form-label">Author Name:</label>
+                                <input type="text" name="bookViewModel.authorModel.name" class="form-control" placeholder="Enter author name" required />
+                                <div class="invalid-feedback">Author Name is required.</div>
+                            </div>
+                        </fieldset>
+                        <hr>
+                        <fieldset>
+                            <legend class="h5 text-secondary">Book Cover</legend>
+                            <div class="mb-3">
+                                <label for="coverImage" class="form-label">Upload Book Cover (JPG only):</label>
+                                <input type="file" id="coverImage" name="coverImage" class="form-control" accept=".jpg,.jpeg" required />
+                                <div class="invalid-feedback">Book cover is required.</div>
+                            </div>
+                        </fieldset>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-success">Upload Book</button>
+                        </div>
+                    </form>
+                </div>
             </div>
-            <div class="card-body">
-                <form method="post" enctype="multipart/form-data" asp-action="CreateBook" class="needs-validation" novalidate>
-                    <fieldset>
-                        <legend class="h5 text-secondary">Book Info</legend>
-                        <div class="mb-3">
-                            <label for="bookViewModel.genreModel.name" class="form-label">Category:</label>
-                            <input type="text" name="bookViewModel.genreModel.name" class="form-control" placeholder="Enter category" required />
-                            <div class="invalid-feedback">Category is required.</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="bookViewModel.book.title" class="form-label">Title:</label>
-                            <input type="text" name="bookViewModel.book.title" class="form-control" placeholder="Enter title" required />
-                            <div class="invalid-feedback">Title is required.</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="bookViewModel.book.borrowPrice" class="form-label">Borrow Price ($):</label>
-                            <input type="text" name="bookViewModel.book.borrowPrice" class="form-control" placeholder="Enter borrow price" required />
-                            <div class="invalid-feedback">Borrow Price is required.</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="bookViewModel.book.buyingPrice" class="form-label">Buy Price ($):</label>
-                            <input type="text" name="bookViewModel.book.buyingPrice" class="form-control" placeholder="Enter buy price" required />
-                            <div class="invalid-feedback">Buy Price is required.</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="bookViewModel.book.pubDate" class="form-label">Publish Date:</label>
-                            <input type="date" name="bookViewModel.book.pubDate" class="form-control" required />
-                            <div class="invalid-feedback">Publish Date is required.</div>
-                        </div>
-                        <div class="mb-3">
-                            <label for="bookViewModel.book.ageLimit" class="form-label">Age Limit:</label>
-                            <input type="text" name="bookViewModel.book.ageLimit" class="form-control" placeholder="Enter age limit" required />
-                            <div class="invalid-feedback">Age Limit is required.</div>
-                        </div>
-                        <div class="form-check mb-3">
-                            <input type="checkbox" name="bookViewModel.book.canBorrow" class="form-check-input" id="canBorrow" />
-                            <label class="form-check-label" for="canBorrow">Borrowable</label>
-                        </div>
-                    </fieldset>
-                    <hr>
-                    <fieldset>
-                        <legend class="h5 text-secondary">Publisher Info</legend>
-                        <div class="mb-3">
-                            <label for="bookViewModel.publisherModel.name" class="form-label">Publisher:</label>
-                            <input type="text" name="bookViewModel.publisherModel.name" class="form-control" placeholder="Enter publisher name" required />
-                            <div class="invalid-feedback">Publisher name is required.</div>
-                        </div>
-                    </fieldset>
-                    <hr>
-                    <fieldset>
-                        <legend class="h5 text-secondary">Author Info</legend>
-                        <div class="mb-3">
-                            <label for="bookViewModel.authorModel.name" class="form-label">Author Name:</label>
-                            <input type="text" name="bookViewModel.authorModel.name" class="form-control" placeholder="Enter author name" required />
-                            <div class="invalid-feedback">Author Name is required.</div>
-                        </div>
-                    </fieldset>
-                    <hr>
-                    <fieldset>
-                        <legend class="h5 text-secondary">Book Cover</legend>
-                        <div class="mb-3">
-                            <label for="coverImage" class="form-label">Upload Book Cover (JPG only):</label>
-                            <input type="file" id="coverImage" name="coverImage" class="form-control" accept=".jpg,.jpeg" required />
-                            <div class="invalid-feedback">Book cover is required.</div>
-                        </div>
-                    </fieldset>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-success">Upload Book</button>
-                    </div>
-                </form>
-            </div>
-        </div>
        <div class="container mt-5">
-    <div class="card shadow-sm">
-            <div class="card-header bg-danger text-white">
-                <h4 class="mb-0">Delete Book</h4>
-            </div>
-            <div class="card-body">
-                <p class="text-muted">Enter the title of the book you wish to delete and confirm the action.</p>
-                <form method="post" action="@Url.Action("DeleteBook", "User")" class="needs-validation" novalidate>
-                    <div class="mb-3">
-                        <label for="bookTitle" class="form-label">Book Title:</label>
-                        <input type="text" id="bookTitle" name="title" class="form-control" placeholder="Enter book title" required />
-                        <div class="invalid-feedback">Please provide a book title.</div>
+            <div class="card shadow-sm">
+                <div class="card-header bg-danger text-white">
+                    <h4 class="mb-0">Delete Book</h4>
+                </div>
+                <div class="card-body">
+                    <p class="text-muted">Enter the title of the book you wish to delete and confirm the action.</p>
+                    <form method="post" id="deleteBookForm" action="@Url.Action("DeleteBook", "User")" class="needs-validation" novalidate>
+                        <div class="mb-3">
+                            <label for="bookTitle" class="form-label">Book Title:</label>
+                            <input type="text" id="bookTitle" name="title" class="form-control" placeholder="Enter book title" required />
+                            <div class="invalid-feedback">Please provide a book title.</div>
+                        </div>
+                        <div class="d-grid">
+                            <button type="submit" class="btn btn-danger">Delete Book</button>
+                        </div>
+                    </form>
+                    <div class="container mt-3">
+                    @if (TempData["ErrorMessage1"] != null)
+                        {
+                            <div class="alert alert-danger" role="alert">
+                                @TempData["ErrorMessage1"]
+                            </div>
+                        }
+                        @if (TempData["SuccessMessage1"] != null)
+                        {
+                            <div class="alert alert-success" role="alert">
+                                @TempData["SuccessMessage1"]
+                            </div>
+                        }
                     </div>
-                    <div class="d-grid">
-                        <button type="submit" class="btn btn-danger">Delete Book</button>
-                    </div>
-                </form>
+                </div>
             </div>
         </div>
-    </div>
         
     </div>
     
@@ -227,7 +241,7 @@
             <h1>Create Discount</h1>
             <p class="text-muted">Fill in the details below to create a discount. Discount percentage must be a number between 0 and 1.</p>
 
-            <form method="post" asp-controller="User" asp-action="ApplyDiscount" class="needs-validation" novalidate>
+            <form method="post" id="discountForm" asp-controller="User" asp-action="ApplyDiscount" class="needs-validation" novalidate>
                 <fieldset>
                     <div class="mb-3">
                         <label for="title" class="form-label">Book Name:</label>
@@ -283,6 +297,15 @@
                 alert("Please provide a valid book title.");
                 titleInput.focus();
             }
+            const discountPercentageInput = document.getElementById("discountPercentage");
+                const discountPercentage = parseFloat(discountPercentageInput.value);
+
+                // Custom validation for discount percentage
+                if (discountPercentage < 0 || discountPercentage > 1 || isNaN(discountPercentage)) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                    discountPercentageInput.focus();
+                }
         });
     });
 
@@ -297,16 +320,7 @@
                     event.stopPropagation();
                 }
 
-                const discountPercentageInput = document.getElementById("discountPercentage");
-                const discountPercentage = parseFloat(discountPercentageInput.value);
-
-                // Custom validation for discount percentage
-                if (discountPercentage < 0 || discountPercentage > 1 || isNaN(discountPercentage)) {
-                    event.preventDefault();
-                    event.stopPropagation();
-                    alert("Discount percentage must be a number between 0 and 1.");
-                    discountPercentageInput.focus();
-                }
+                
 
                 form.classList.add("was-validated");
             });
@@ -328,41 +342,40 @@
     });
 
 
-
-
-
-
-
     //this functionType used for Validation ListOfUsers addbook
-    document.addEventListener("DOMContentLoaded", () => {
-        const forms = document.querySelectorAll(".needs-validation");
-
-        forms.forEach((form) => {
-            form.addEventListener("submit", (event) => {
-                if (!form.checkValidity()) {
+   document.addEventListener("DOMContentLoaded", () => {
+       
+        const createBookForm = document.getElementById("createBookForm");
+        if (createBookForm) {
+            createBookForm.addEventListener("submit", (event) => {
+                if (!createBookForm.checkValidity()) {
                     event.preventDefault();
                     event.stopPropagation();
                     alert("Please fill all the fields.");
-                    pubDateInput.focus();
+                }else{
+                    alert("Book Created.");
+
                 }
-                form.classList.add("was-validated");
+                createBookForm.classList.add("was-validated");
             });
-        });
-    });
+        }
 
-    document.addEventListener("DOMContentLoaded", () => {
-        const forms = document.querySelectorAll(".needs-validation");
-
-        forms.forEach((form) => {
-            form.addEventListener("submit", (event) => {
-                if (!form.checkValidity()) {
+        const deleteBookForm = document.querySelector("#deleteBookForm");
+        const bookTitleInput = document.querySelector("#bookTitle");
+        if (deleteBookForm) {
+            deleteBookForm.addEventListener("submit", (event) => {
+                if (!bookTitleInput.value.trim()) {
                     event.preventDefault();
                     event.stopPropagation();
+                    alert("Please provide a valid book title.");
+                    bookTitleInput.focus();
                 }
-                form.classList.add("was-validated");
+                
             });
-        });
+        }
     });
+
+   
 
 
     document.addEventListener("DOMContentLoaded", () => 
