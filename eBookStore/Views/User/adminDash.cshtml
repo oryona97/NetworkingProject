@@ -207,6 +207,7 @@
                         {
                             <li class="nav-item" style="margin-bottom: 10px;">
                                 <a href="#" class="nav-link" data-username="@user.username" 
+                                data-id="@user.id"
                                 data-password="@user.password"
                                 data-email="@user.email"
                                 data-firstname="@user.firstName" 
@@ -233,7 +234,22 @@
                     <p>Select a user from the list to view their details.</p>
                 </div>
             </div>
+            <div class="container mt-3">
+            @if (TempData["SuccessMessage2"] != null)
+            {
+                <div class="alert alert-success" role="alert">
+                    @TempData["SuccessMessage2"]
+                </div>
+            }
+            @if (TempData["ErrorMessage2"] != null)
+            {
+                <div class="alert alert-danger" role="alert">
+                    @TempData["ErrorMessage2"]
+                </div>
+            }
         </div>
+        </div>
+        
 
     
         <!-- Discount Form -->
@@ -277,7 +293,7 @@
             </div>
         </div>
        
-
+        
 
     </div>
 </div>
@@ -285,7 +301,10 @@
 <script>
 
     let data = @Json.Serialize(Model);
-
+    function editUser_(userId) {
+        console.log("User ID:", userId);
+        window.location.href = `/User/editUser?userId=${userId}`;
+    }
     //this used for discount
     document.addEventListener("DOMContentLoaded", () => {
         const discountForm = document.querySelector("form[action$='ApplyDiscount']");
@@ -499,6 +518,8 @@
                         event.preventDefault();
 
                         // Get user details from data attributes
+
+                        const id = link.getAttribute("data-id");
                         const password = link.getAttribute("data-password");
                         const username = link.getAttribute("data-username");
                         const email = link.getAttribute("data-email");
@@ -506,7 +527,7 @@
                         const lastName = link.getAttribute("data-lastname");
                         const phone = link.getAttribute("data-phone");
                         const type = link.getAttribute("data-type");
-
+                        
                         // Update the UserDetailsContent section
                         userDetailsContent.innerHTML = `
                             <div>
@@ -518,8 +539,7 @@
                                 <p><strong>Phone:</strong> ${phone}</p>
                                 <p><strong>Type:</strong> ${type}</p>
                             </div>
-                            <button class="btn btn-primary" onclick="editUser('${username}')">Edit User</button>
-                        `;
+                            <a href="/User/editUser?userId=${id}" class="btn btn-primary">Edit User</a>`;
                     });
                 });
             });
