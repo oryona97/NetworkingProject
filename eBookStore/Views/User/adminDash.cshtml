@@ -48,97 +48,114 @@
         <div class="GeneralInfoDisplay">
 
         </div>
-
-         <div class="MakeAdminDisplay" style="display: none;">
-                <p>asdsad</p>
-        </div>
-
+        <form method="post" action="@Url.Action("ToggleAdmin", "User")">
+            <div class="MakeAdminDisplay" style="display: none; background-color: black; color: #f9f9f9; ">
+                <div class="ListOfUsers2 col-4" style="background-color: black; color: white; padding: 10px; border-radius: 5px;">
+                    <h3>User List</h3>
+                    <ul style="list-style: none; padding: 0;">
+                        @if (Model.allUsers != null && Model.allUsers.Any())
+                        {
+                            @foreach (var user in Model.allUsers)
+                            {
+                                <li class="nav-item" style="margin-bottom: 10px;">
+                                    <button type="submit" name="userId" value="@user.id" class="btn btn-link" style="color: white; text-decoration: none;">
+                                        @user.username
+                                        <p>@user.type</p>
+                            </button>
+                                </li>
+                            }
+                        }
+                        
+                        else
+                        {
+                            <li>No users available.</li>
+                        }
+                    </ul>
+                </div>
+            </div>
+        </form>
 
 
         <!-- Manage Gallery -->
-        <div class="galleryManagerDisplay" style="display:none">
-            <h1>Add Book</h1>
-            <p>Fill all the req fields:</p>
-            <hr>
-
-            <form method="post" enctype="multipart/form-data" asp-action="CreateBook">
-                <fieldset>
-                    <h3>Book Info</h3>
-                    <div>
-                        <label for="bookViewModel.genreModel.name" class="col">Category:</label>
-                        <input type="text" name="bookViewModel.genreModel.name" />
+        <div class="galleryManagerDisplay container mt-5" style="display:none;">
+        <div class="card shadow-sm">
+            <div class="card-header bg-primary text-white">
+                <h1 class="h3">Add Book</h1>
+                <p>Fill all the required fields below to add a new book.</p>
+            </div>
+            <div class="card-body">
+                <form method="post" enctype="multipart/form-data" asp-action="CreateBook" class="needs-validation" novalidate>
+                    <fieldset>
+                        <legend class="h5 text-secondary">Book Info</legend>
+                        <div class="mb-3">
+                            <label for="bookViewModel.genreModel.name" class="form-label">Category:</label>
+                            <input type="text" name="bookViewModel.genreModel.name" class="form-control" placeholder="Enter category" required />
+                            <div class="invalid-feedback">Category is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bookViewModel.book.title" class="form-label">Title:</label>
+                            <input type="text" name="bookViewModel.book.title" class="form-control" placeholder="Enter title" required />
+                            <div class="invalid-feedback">Title is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bookViewModel.book.borrowPrice" class="form-label">Borrow Price ($):</label>
+                            <input type="text" name="bookViewModel.book.borrowPrice" class="form-control" placeholder="Enter borrow price" required />
+                            <div class="invalid-feedback">Borrow Price is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bookViewModel.book.buyingPrice" class="form-label">Buy Price ($):</label>
+                            <input type="text" name="bookViewModel.book.buyingPrice" class="form-control" placeholder="Enter buy price" required />
+                            <div class="invalid-feedback">Buy Price is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bookViewModel.book.pubDate" class="form-label">Publish Date:</label>
+                            <input type="date" name="bookViewModel.book.pubDate" class="form-control" required />
+                            <div class="invalid-feedback">Publish Date is required.</div>
+                        </div>
+                        <div class="mb-3">
+                            <label for="bookViewModel.book.ageLimit" class="form-label">Age Limit:</label>
+                            <input type="text" name="bookViewModel.book.ageLimit" class="form-control" placeholder="Enter age limit" required />
+                            <div class="invalid-feedback">Age Limit is required.</div>
+                        </div>
+                        <div class="form-check mb-3">
+                            <input type="checkbox" name="bookViewModel.book.canBorrow" class="form-check-input" id="canBorrow" />
+                            <label class="form-check-label" for="canBorrow">Borrowable</label>
+                        </div>
+                    </fieldset>
+                    <hr>
+                    <fieldset>
+                        <legend class="h5 text-secondary">Publisher Info</legend>
+                        <div class="mb-3">
+                            <label for="bookViewModel.publisherModel.name" class="form-label">Publisher:</label>
+                            <input type="text" name="bookViewModel.publisherModel.name" class="form-control" placeholder="Enter publisher name" required />
+                            <div class="invalid-feedback">Publisher name is required.</div>
+                        </div>
+                    </fieldset>
+                    <hr>
+                    <fieldset>
+                        <legend class="h5 text-secondary">Author Info</legend>
+                        <div class="mb-3">
+                            <label for="bookViewModel.authorModel.name" class="form-label">Author Name:</label>
+                            <input type="text" name="bookViewModel.authorModel.name" class="form-control" placeholder="Enter author name" required />
+                            <div class="invalid-feedback">Author Name is required.</div>
+                        </div>
+                    </fieldset>
+                    <hr>
+                    <fieldset>
+                        <legend class="h5 text-secondary">Book Cover</legend>
+                        <div class="mb-3">
+                            <label for="coverImage" class="form-label">Upload Book Cover (JPG only):</label>
+                            <input type="file" id="coverImage" name="coverImage" class="form-control" accept=".jpg,.jpeg" required />
+                            <div class="invalid-feedback">Book cover is required.</div>
+                        </div>
+                    </fieldset>
+                    <div class="d-grid">
+                        <button type="submit" class="btn btn-success">Upload Book</button>
                     </div>
-                    <br>
-                    <div>
-                        <label for="bookViewModel.book.title">Title:</label>
-                        <input type="text" name="bookViewModel.book.title" />
-                    </div>
-                    <br>
-                    <div>
-                        <label for="bookViewModel.book.borrowPrice">Borrow Price($):</label>
-                        <input type="text" name="bookViewModel.book.borrowPrice" />
-                    </div>
-                    <br>
-                    <div>
-                        <label for="bookViewModel.book.buyingPrice">Buy Price($):</label>
-                        <input type="text" name="bookViewModel.book.buyingPrice" />
-                    </div>
-                    <br>
-                    <div>
-                        <label for="bookViewModel.book.pubDate">Publish Date:</label>
-                        <input type="date" name="bookViewModel.book.pubDate" />
-                    </div>
-                    <br>
-                    <div>
-                        <label for="bookViewModel.book.ageLimit">Age Limit:</label>
-                        <input type="text" name="bookViewModel.book.ageLimit" />
-                    </div>
-                    <br>
-                    <div>
-                        <label for="bookViewModel.book.canBorrow">Borrowable:</label>
-                        <input type="checkbox" name="bookViewModel.book.canBorrow" />
-                    </div>
-                </fieldset>
-                <hr>
-                <fieldset>
-                    <h3>Publisher Info</h3>
-                    <div>
-                        <label for="bookViewModel.publisherModel.name">Publisher:</label>
-                        <input type="text" name="bookViewModel.publisherModel.name" />
-                    </div>
-                </fieldset>
-                <hr>
-                <fieldset>
-                    <h3>Author Info</h3>
-                    <div>
-                        <label for="bookViewModel.authorModel.name">Author Name:</label>
-                        <input type="text" name="bookViewModel.authorModel.name" />
-                    </div>
-                </fieldset>
-                <hr>
-                <fieldset>
-                    <h3>Book Cover</h3>
-                    <div>
-                        <label for="coverImage">Upload Book Cover (JPG only):</label>
-                        <input type="file" id="coverImage" name="coverImage" accept=".jpg,.jpeg" />
-                    </div>
-                </fieldset>
-                <button type="submit" class="upload-butt btn btn-primary">Upload</button>
-            </form>
-            <hr>
-            <!-- Delete Book Form -->
-            <form method="post" asp-action="DeleteBook">
-                <fieldset>
-                    <h3>Delete Book</h3>
-                    <div>
-                        <label for="bookIdToDelete">Book name:</label>
-                        <input type="text" id="bookIdToDelete" name="title" required />
-                    </div>
-                </fieldset>
-                <button type="submit" class="btn btn-danger">Delete Book</button>
-            </form>
-
+                </form>
+            </div>
         </div>
+    </div>
 
         <!-- Manage users§-->
 
@@ -218,7 +235,19 @@
 <script>
 
     let data = @Json.Serialize(Model);
-    
+    document.addEventListener("DOMContentLoaded", () => {
+    const forms = document.querySelectorAll(".needs-validation");
+
+        forms.forEach((form) => {
+            form.addEventListener("submit", (event) => {
+                if (!form.checkValidity()) {
+                    event.preventDefault();
+                    event.stopPropagation();
+                }
+                form.classList.add("was-validated");
+            });
+        });
+    });
 
     document.addEventListener("DOMContentLoaded", () => 
         {
@@ -232,6 +261,27 @@
             discount: document.querySelector(".discount"),
             MakeAdminDisplay: document.querySelector(".MakeAdminDisplay")
         };
+        const userLinks2 = document.querySelectorAll(".ListOfUsers2 a");
+
+        userLinks2.forEach(link => {
+            link.addEventListener("click", (event) => {
+                event.preventDefault();
+
+                const username = link.getAttribute("data-username");
+                const type = link.getAttribute("data-type");
+
+                
+                const isConfirmed = confirm(`Are you sure you want to make the user "${username}" an admin?`);
+                if (isConfirmed) {
+                    const user = data.allUsers.find(u => u.username === username);
+                    if (user) {
+                        alert(`User: ${user.username} is now an admin.`);
+                    }
+                } else {
+                    alert(`Action canceled. ${username} remains unchanged.`);
+                }
+            });
+        });
 
         sidebarLinks.forEach(link => {
             link.addEventListener("click", (event) => {
