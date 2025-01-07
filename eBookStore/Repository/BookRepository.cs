@@ -88,6 +88,19 @@ public class BookRepository
             createdAt = DateTime.Now
         };
 
+        int? authorId = getAuthorIDByName(bookViewModel.authorModel.name);
+        if (authorId == 0)
+        {
+            if (bookViewModel.authorModel != null)
+            bookViewModel.authorModel.bookId=bookId;
+                AddAuthorModel(bookViewModel.authorModel);
+
+        }
+        bookViewModel.authorModel = getAuthorModelById(bookId);
+
+        
+
+
 
         AddCoverModel(bookViewModel.coverModel);
     }
@@ -1070,6 +1083,44 @@ public class BookRepository
 
         return null;
     }
+
+    public int? getAuthorIDByName(string authorName)
+    {
+        try
+        {
+            using (SqlConnection connection = new SqlConnection(connectionString))
+            {
+                connection.Open();
+                string query = "SELECT * FROM Auther WHERE name = @authorName;";
+
+                using (SqlCommand command = new SqlCommand(query, connection))
+                {
+
+                    command.Parameters.AddWithValue("@authorName", authorName);
+
+                    using (SqlDataReader reader = command.ExecuteReader())
+                    {
+                        var id=0;
+                        if (reader.Read())
+                        {
+                                id = Convert.ToInt32(reader["id"]);
+                            };
+
+                            return id;
+                        }
+                    }
+                }
+            }
+        
+            catch (SqlException ex)
+            {
+                Console.WriteLine($"Database error during fetching Author ${ex}");
+                throw;
+            }
+
+        return null;
+    }
+    
 
     public BookDiscountModel? getBookDiscountModelById(int bookId)
     {

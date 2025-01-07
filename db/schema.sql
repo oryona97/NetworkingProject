@@ -452,7 +452,7 @@ SET IDENTITY_INSERT [Cover] ON;
 INSERT INTO [Cover] ([id], [imgName], [bookId], [createdAt])
 VALUES 
 (1, 'great_adventure_cover.jpg', 1, GETDATE()),
-(2, 'starship_chronicles_cover.png', 2, GETDATE()),
+(2, 'starship_chronicles_cover.jpg', 2, GETDATE()),
 (3, 'murder_library_cover.jpg', 3, GETDATE()),
 (4, 'love_continents_cover.jpg', 4, GETDATE()),
 (5, 'tech_rise_cover.jpg', 5, GETDATE());
