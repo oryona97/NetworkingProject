@@ -23,13 +23,7 @@
         <input type="text" id="phone" name="phoneNumber" value="@Model.phoneNumber" class="form-control" required />
     </div>
 
-    <div class="mb-3">
-        <label for="type" class="form-label">User Type:</label>
-        <select id="type" name="type" class="form-select">
-            <option value="admin" @(Model.type == "admin" ? "selected" : "")>Admin</option>
-            <option value="user" @(Model.type == "user" ? "selected" : "")>User</option>
-        </select>
-    </div>
+    
 
     <button type="submit" class="btn btn-success">Save Changes</button>
     <a href="@Url.Action("adminDash", "User")" class="btn btn-secondary">Cancel</a>
