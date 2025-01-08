@@ -49,16 +49,16 @@
 
 
                 <div class="dropdown show mt-2" >
-                    <a class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" id="dropdownMenuLink" aria-haspopup="true" aria-expanded="false" >
+                    <a class="btn btn-secondary dropdown-toggle" data-bs-toggle="dropdown" href="#" role="button" id="dropdownMenuLink" aria-haspopup="true" aria-expanded="false">
                         Order-By
                     </a>
 
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="background-color: rgb(79, 79, 79);">
-                        <a class="dropdown-item" href="#">Price Increase</a>
-                        <a class="dropdown-item" href="#">Price Decrease</a>
-                        <a class="dropdown-item" href="#">Most Popular</a>
-                        <a class="dropdown-item" href="#">Genre</a>
-                        <a class="dropdown-item" href="#">Year of Publishing</a>
+                        <a id="orderByButt" class="dropdown-item" href="#">Price Increase</a>
+                        <a id="orderByButt" class="dropdown-item" href="#">Price Decrease</a>
+                        <a id="orderByButt" class="dropdown-item" href="#">Most Popular</a>
+                        <a id="orderByButt" class="dropdown-item" href="#">Genre</a>
+                        <a id="orderByButt" class="dropdown-item" href="#">Year of Publishing</a>
                     </div>
                 </div> 
                 
@@ -139,7 +139,7 @@
                                         </li>
                                     </div>
 
-                
+
                                 </div>
                             </div>
                         }   
@@ -238,7 +238,7 @@
     document.addEventListener('DOMContentLoaded', () => {
         const booksContainer = document.querySelector('.Books-Container');
         const books = Array.from(document.querySelectorAll('.book-item'));
-        const sortOptions = document.querySelectorAll('.dropdown-item');
+        const sortOptions = document.querySelectorAll('#orderByButt');
 
         sortOptions.forEach(option => {
             option.addEventListener('click', event => {
