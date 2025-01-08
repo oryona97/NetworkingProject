@@ -87,6 +87,16 @@
                                         {
                                             <p class="text-muted mb-2">by @bookVM.authorModel.name</p>
                                         }
+                                        <div class="form-group mb-0">
+                                            <select class="form-select form-select-sm" 
+                                                    style="width: auto;"
+                                                    data-book-id="@bookVM.book.id"
+                                                    onchange="updateFormat(this, @bookVM.book.id)">
+                                                <option value="pdf">PDF</option>
+                                                <option value="epub">EPUB</option>
+                                                <option value="mobi">MOBI</option>
+                                            </select>
+                                        </div>
                                         <span class="text-primary">$@bookVM.book.buyingPrice.ToString("0.00")</span>
                                     </div>
                                     <div class="col-md-3 text-end">
@@ -122,7 +132,7 @@
                     <button type="button" id="checkout-button" class="btn btn-primary w-100 mb-3 checkout-btn">
                         Checkout
                     </button>
-                    <a href="@Url.Action("Index", "Book")" 
+                    <a href="@Url.Action("landingPage", "Home")" 
                        class="btn btn-outline-secondary w-100 continue-btn">
                         Continue Shopping
                     </a>
@@ -138,6 +148,12 @@
         // Initialize Stripe with your publishable key
         var stripe = Stripe('@Configuration["Stripe:PublicKey"]');
 
+        function updateFormat(selectElement, bookId) {
+            const selectedFormat = selectElement.value;
+            window.selectedFormats = window.selectedFormats || {};
+            window.selectedFormats[bookId] = selectedFormat;
+        }
+
         document.getElementById('checkout-button').addEventListener('click', async function(e) {
             e.preventDefault();
             // Prepare the cart data
@@ -145,12 +161,21 @@
                 items: [@Html.Raw(string.Join(",", 
                     Model.Where(b => b?.book != null).Select(b => new
                     {
+						id = b.book.id,
                         productName = b.book.title,
                         productDescription = b.authorModel?.name != null ? $"by {b.authorModel.name}" : "",
                         amount = (int)(b.book.buyingPrice * 100), // Convert to cents
-                        currency = "usd"
+                        currency = "usd",
+                        pormat = "pdf" 
                     }).Select(item => System.Text.Json.JsonSerializer.Serialize(item))))]
             };
+
+            // Update formats based on selections
+            cartData.items = cartData.items.map(item => {
+                const parsed = JSON.parse(item);
+                parsed.format = window.selectedFormats[parsed.id] || 'pdf';
+                return JSON.stringify(parsed);
+            });
 
             // Create checkout session
             fetch('/checkout/create-checkout-session', {
