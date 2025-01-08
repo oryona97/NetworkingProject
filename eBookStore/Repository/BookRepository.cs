@@ -56,17 +56,7 @@ public class BookRepository
         }
         bookViewModel.book.genreId = genreId;
 
-        // בצע את אותה בדיקה ל-Publisher
-        foreach (var publisher in bookViewModel.publishers)
-        {
-            int publisherId = gettingPublisherIdByName(publisher.name ?? "");
-            if (publisherId == 0)
-            {
-                AddPublisherModel(publisher);
-                publisherId = gettingPublisherIdByName(publisher.name ?? "");
-            }
-            bookViewModel.book.publisherId = publisherId;
-        }
+
 
         // הגדר ערכי ברירת מחדל לספר
         bookViewModel.book.onSale = false;
@@ -98,6 +88,19 @@ public class BookRepository
         }
         bookViewModel.authorModel = getAuthorModelById(bookId);
 
+        // בצע את אותה בדיקה ל-Publisher
+        foreach (var publisher in bookViewModel.publishers)
+        {
+            publisher.bookId=bookId;
+            int publisherId = gettingPublisherIdByName(publisher.name ?? "");
+            if (publisherId == 0)
+            {
+                Console.WriteLine(publisher.name);
+                AddPublisherModel(publisher);
+                publisherId = gettingPublisherIdByName(publisher.name ?? "");
+            }
+            bookViewModel.book.publisherId = publisherId;
+        }
         
 
 
@@ -218,6 +221,7 @@ public class BookRepository
             throw;
         }
     }
+
     //this func to add bookModelto the database 
     public void AddBook(BookModel book)
     {
@@ -263,13 +267,13 @@ public class BookRepository
             using (var connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                string query = "INSERT INTO Publisher (name, createdAt) VALUES (@name, @createdAt);";
+                string query = "INSERT INTO Publisher (bookId, name) VALUES (@bookId, @name);";
 
                 using (var command = new SqlCommand(query, connection))
                 {
 
+                    command.Parameters.AddWithValue("@bookId", pubModel.bookId);
                     command.Parameters.AddWithValue("@name", pubModel.name);
-                    command.Parameters.AddWithValue("@createdAt", pubModel.createdAt);
 
                     command.ExecuteNonQuery();
                 }
