@@ -78,9 +78,9 @@
 
         <!-- Manage Gallery -->
         <div class="galleryManagerDisplay container mt-5" style="display:none;">
-            <div class="update-book-price" style="padding: 15px;">
+            <div class="update-book-price" style="padding: 15px">
                 <h3>Change Book Price</h3>
-                <a href="@Url.Action("ChangePriceForm", "User")" class="btn btn-primary">Change Book Price</a>
+                <a href="@Url.Action("ChangePriceForm", "User")" class="btn btn-primary" style="color: #f9f9f9;" >Change Book Price </a>
             </div>
             <div class="card shadow-sm">
                 <div class="card-header bg-primary text-white">
@@ -545,8 +545,8 @@
                                 <p><strong>Phone:</strong> ${phone}</p>
                                 <p><strong>Type:</strong> ${type}</p>
                             </div>
-                            <a href="/User/editUser?userId=${id}" class="btn btn-primary">Edit User</a>
-                            <a href="/User/deleteUser?userId=${id}" class="btn btn-primary">delete user</a>`;
+                            <a href="/User/editUser?userId=${id}" class="btn btn-primary"; style="color: #f9f9f9;">Edit User</a>
+                            <a href="/User/deleteUser?userId=${id}" class="btn btn-primary"; style="color: #f9f9f9;">delete user</a>`;
                     });
                 });
             });
