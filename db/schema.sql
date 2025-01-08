@@ -1,5 +1,5 @@
 -- Create Database
-USE master;
+USE eBook;
 GO
 
 IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'eBook')
@@ -239,7 +239,7 @@ GO
             -- this constraint is to ensure that the borrow price is less than the buying price
 ALTER TABLE [Book] ADD CONSTRAINT CHK_Book_BorrowPrice_LessThan_BuyingPrice CHECK (borrowPrice < buyingPrice);
 GO
-ALTER TABLE [Publisher] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE NO ACTION;
+ALTER TABLE [Publisher] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
 GO
 ALTER TABLE [HistoryBookPrice] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
 GO
