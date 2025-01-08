@@ -58,11 +58,11 @@
                     </input>
 
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="background-color: rgb(79, 79, 79);">
-                        <a id="orderByButt" class="dropdown-item" href="#">Price Increase</a>
-                        <a id="orderByButt" class="dropdown-item" href="#">Price Decrease</a>
-                        <a id="orderByButt" class="dropdown-item" href="#">Most Popular</a>
-                        <a id="orderByButt" class="dropdown-item" href="#">Genre</a>
-                        <a id="orderByButt" class="dropdown-item" href="#">Year of Publishing</a>
+                        <a id="orderByButt" class="dropdown-item" style="color: aliceblue;" href="#">Price Increase</a>
+                        <a id="orderByButt" class="dropdown-item" style="color: aliceblue;" href="#">Price Decrease</a>
+                        <a id="orderByButt" class="dropdown-item" style="color: aliceblue;" href="#">Most Popular</a>
+                        <a id="orderByButt" class="dropdown-item" style="color: aliceblue;" href="#">Genre</a>
+                        <a id="orderByButt" class="dropdown-item" style="color: aliceblue;" href="#">Year of Publishing</a>
                     </div>
                 </div> 
                 
@@ -75,25 +75,25 @@
         
 
         <!--Books Gallery-->
-        <div class="Books-Container row" style="row-gap: 10px; column-gap: 10px;">
+        <div class="Books-Container row" style="position: relative; row-gap: 60px; column-gap: 10px; z-index: 9999;">
 
             @foreach(var book in Model.allBooks)
             {
                 <div class="card book-item h-100" 
                 data-genre="@book?.genreModel?.name.Replace(" ", "-")" 
-                style="width: 18rem; padding-left: 0px; padding-right: 0px;"
+                style="width: 18rem; padding-left: 0px; padding-right: 0px;  "
                 data-price="@book.book.buyingPrice"
                 data-year="@book.book.pubDate.Year"
                 data-onSale="@book.book.onSale">
                     
                     
-                    <div class="imageWrapp">
+                    <div class="imageWrapp" >
                         <a href="@Url.Action("Index", "Book")/@book?.book?.id">
                             <img src="\images\bookCovers\@book.coverModel.imgName" class="card-img-top" alt="@book.coverModel.imgName">
                         </a>
                     </div>
                     
-                    <div class="card-body d-grid">
+                    <div class="card-body d-grid" ;">
                         <h5 class="card-title">@book.book.title</h5>
                         @if(book.book.onSale)
                         {
@@ -125,20 +125,20 @@
 
                         @if(book.book.canBorrow)
                         {
-                            <div class="price-container card-footer" style="background-color:white">
+                            <div class="price-container card-footer" style="background-color:white; z-index: 9999;">
                                 <div class="row">
 
-                                    <div class="col" style="background-color: rgb(255, 255, 255);" id="Buy-Button">
+                                    <div class="col" style=" background-color: rgb(255, 255, 255);" id="Buy-Button">
                                         <a href="#" class="Buy-button text-black">Buy-Now</a>
                                     </div>
                                     
                                     <div class="dropdown col">
                                         <a href="#" class="dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">Add to Cart</a>
                                         
-                                        <li class="dropdown-menu col" style="background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
+                                        <li class="dropdown-menu col" style="z-index: 9999; background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
                                             <div class="addToCart-menu-content">
-                                                <a class="dropdown-item" asp-controller="ShoppingCart" asp-action="AddToShoppingCart">Buy</a>
-                                                <a class="dropdown-item" asp-controller="ShoppingCart" asp-action="AddToShoppingCart">Borrow</a>
+                                                <a class="dropdown-item" style="color: aliceblue;" asp-controller="ShoppingCart" asp-action="AddToShoppingCart">Buy</a>
+                                                <a class="dropdown-item" style="color: aliceblue;" asp-controller="ShoppingCart" asp-action="AddToShoppingCart">Borrow</a>
                                             </div>
                                         </li>
                                     </div>
@@ -149,18 +149,18 @@
                         }   
                         else
                         {
-                            <div class="price-container card-footer" style="background-color:white">
+                            <div class="price-container card-footer" style="background-color:white;  z-index: 9999;">
                                 <div class="row" style="column-gap: 5px;">
                                     <div class="col" style="background-color: rgb(255, 255, 255);" id="Buy-Button">
                                         <a href="#" class="Buy-button text-black">Buy-Now</a>
                                     </div>
 
-                                    <div class="dropdown col">
+                                    <div class="dropdown col" style="position: relative; ">
                                         <a href="#" class="dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">Add to Cart</a>
                                         
-                                        <li class="dropdown-menu col" style="background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
+                                        <li class="dropdown-menu col" style="z-index: 9999; background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
                                             <div class="addToCart-menu-content">
-                                                <a class="dropdown-item" asp-controller="ShoppingCart" asp-action="AddToShoppingCart">Buy</a>
+                                                <a class="dropdown-item" style="color: aliceblue;" asp-controller="ShoppingCart" asp-action="AddToShoppingCart">Buy</a>
                                             </div>
                                         </li>
                                     </div>
@@ -199,13 +199,13 @@
 
     var categoryList = galleryModel.listOfCategorys;
     console.log(categoryList);
-
-
+   
 
 
     document.addEventListener('DOMContentLoaded', () => {
         const categoryLinks = document.querySelectorAll('.categorysList .nav-link');
         const books = document.querySelectorAll('.book-item');
+       
 
         categoryLinks.forEach(link => 
         {
