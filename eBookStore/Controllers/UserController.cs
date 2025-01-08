@@ -407,6 +407,28 @@ public class UserController : Controller
         return View(BookList);
     }
 
+    public IActionResult deleteUser(int userId)
+    {
+        try
+        {
+            var seissionUserId =  HttpContext.Session.GetInt32("userId");
+            if(userId == seissionUserId)
+            {
+                return RedirectToAction("adminDash");
+            }
+            _UserRepository = new UserRepository(connectionString ,_loggerUserRepo);
+            _UserRepository.deleteUserById(userId);
+
+        }catch(Exception ex)
+        {
+            _logger.LogError(ex, "Error deleting user with ID: {UserId}", userId);
+            return RedirectToAction("adminDash");
+        }
+        return RedirectToAction("adminDash");
+
+    }
+    
+
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]
     public IActionResult Error()
