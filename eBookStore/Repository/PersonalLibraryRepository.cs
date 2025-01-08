@@ -10,7 +10,7 @@ public class PersonalLibraryRepository
     private readonly ILogger<PersonalLibraryRepository> _logger;
     private readonly BookRepository _bookRepository;
 
-    public PersonalLibraryRepository(string? connectionString, ILogger<PersonalLibraryRepository> logger)
+    public PersonalLibraryRepository(string? connectionString, ILogger<PersonalLibraryRepository>? logger)
     {
         _connectionString = connectionString ?? throw new ArgumentNullException(nameof(connectionString));
         _logger = logger ?? throw new ArgumentNullException(nameof(logger));

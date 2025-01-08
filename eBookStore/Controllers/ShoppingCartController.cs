@@ -28,6 +28,7 @@ public class ShoppingCartController : Controller
     //this method is used to show the shopping cart
     public IActionResult Index()
     {
+        ViewData["StripePublicKey"] = _configuration["Stripe:PublicKey"];
         try
         {
             int? nullableUserId = HttpContext.Session.GetInt32("userId");

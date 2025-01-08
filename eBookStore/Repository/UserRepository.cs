@@ -366,7 +366,7 @@ namespace eBookStore.Repository
 	}
 	//this is the code for sending email ----  JTSA8CEGTD1189NX7D3DCXNQ
 	// Function to send an email with the new password
-		private void SendEmail(string toEmail, string subject, string body)
+		public void SendEmail(string toEmail, string subject, string body)
 		{	
 			try{
 				var smtpClient = new SmtpClient("smtp.gmail.com") 
