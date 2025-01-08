@@ -57,7 +57,7 @@
             <i class="bi bi-cart text-muted" style="font-size: 2.5rem;"></i>
             <h4 class="mt-4 mb-3">Your cart is empty</h4>
             <p class="text-muted">Looking for something to read?</p>
-            <a href="@Url.Action("Index", "Gallery")" class="btn btn-primary continue-btn">
+            <a href="@Url.Action("landingPage", "Home")" class="btn btn-primary continue-btn">
                 Browse Books
             </a>
         </div>
@@ -147,11 +147,11 @@
     <script>
         // Initialize Stripe with your publishable key
         var stripe = Stripe('@Configuration["Stripe:PublicKey"]');
+        const selectedFormats = {};
 
         function updateFormat(selectElement, bookId) {
             const selectedFormat = selectElement.value;
-            window.selectedFormats = window.selectedFormats || {};
-            window.selectedFormats[bookId] = selectedFormat;
+            selectedFormats[bookId] = selectedFormat;
         }
 
         document.getElementById('checkout-button').addEventListener('click', async function(e) {
@@ -164,20 +164,11 @@
 						id = b.book.id,
                         productName = b.book.title,
                         productDescription = b.authorModel?.name != null ? $"by {b.authorModel.name}" : "",
-                        amount = (int)(b.book.buyingPrice * 100), // Convert to cents
+                        amount = (int)(b.book.buyingPrice * 100), 
                         currency = "usd",
-                        pormat = "pdf" 
+                        pormat = "pdf"
                     }).Select(item => System.Text.Json.JsonSerializer.Serialize(item))))]
             };
-
-            console.log(cartData);
-            // Update formats based on selections
-            cartData.items = cartData.items.map(item => {
-                const parsed = JSON.parse(item);
-                parsed.format = window.selectedFormats[parsed.id] || 'pdf';
-                return JSON.stringify(parsed);
-            });
-
 
             // Create checkout session
             fetch('/checkout/create-checkout-session', {

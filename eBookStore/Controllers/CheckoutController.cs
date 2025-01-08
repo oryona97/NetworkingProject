@@ -4,6 +4,7 @@ using eBookStore.Models;
 using Stripe;
 using System.Text;
 using Stripe.Checkout;
+using System.Text.Json;
 
 [Route("[controller]")]
 [ApiController]
@@ -33,9 +34,12 @@ public class CheckoutController : Controller
     [Route("create-checkout-session")]
     public async Task<IActionResult> CreateCheckoutSession([FromBody] CartData cartData)
     {
+        HttpContext.Session.SetString("cart", JsonSerializer.Serialize(cartData));
         try
         {
             var lineItems = new List<SessionLineItemOptions>();
+            _books = cartData;
+            Console.WriteLine(cartData);
 
             foreach (var item in cartData.Items)
             {
@@ -66,7 +70,6 @@ public class CheckoutController : Controller
 
             var service = new SessionService();
             var session = await service.CreateAsync(options);
-            _books = cartData;
 
             return Json(new { sessionId = session.Id });
         }
@@ -83,18 +86,23 @@ public class CheckoutController : Controller
         var currentUserId = HttpContext.Session.GetInt32("userId");
         if (currentUserId == null)
         {
-          return RedirectToAction("Login", "Account"); 
+            return RedirectToAction("Login", "Account");
         }
+        var cartJson = HttpContext.Session.GetString("cart");
+        var cart = JsonSerializer.Deserialize<CartData>(cartJson);
+        if (cart.Items == null) return RedirectToAction("landingPage", "Home");
 
         var bookRepo = new BookRepository(_connectionString);
         var receipt = new List<RecieptModel>();
-        var libRepo = new PersonalLibraryRepository(_connectionString, null);
+        var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+        var repoLogger = loggerFactory.CreateLogger<PersonalLibraryRepository>();
+        var libRepo = new PersonalLibraryRepository(_connectionString, repoLogger);
 
         // Get user details including email
         var user = bookRepo.getUserModelById(currentUserId.Value);
         if (user == null)
         {
-              return BadRequest("User not found");
+            return BadRequest("User not found");
         }
 
         // Build email body with purchase details
@@ -104,7 +112,7 @@ public class CheckoutController : Controller
         emailBody.AppendLine("---------------");
 
         decimal total = 0;
-        foreach (var item in _books!.Items)
+        foreach (var item in cart.Items)
         {
             // Add to personal library and remove from cart
             libRepo.AddBookToLibrary(currentUserId.Value, item.id);
@@ -113,8 +121,8 @@ public class CheckoutController : Controller
             // Add to receipt list
             receipt.Add(new RecieptModel
             {
-              bookId = item.id,
-              userId = currentUserId.Value,
+                bookId = item.id,
+                userId = currentUserId.Value,
             });
 
             // Add item details to email
@@ -133,11 +141,11 @@ public class CheckoutController : Controller
         // Send email receipt
         try
         {
-          _userRepo.SendEmail(
-                user.email,
-              "Your eBookStore Purchase Receipt",
-                emailBody.ToString()
-          );
+            _userRepo.SendEmail(
+                  user.email,
+                "Your eBookStore Purchase Receipt",
+                  emailBody.ToString()
+            );
         }
         catch (Exception ex)
         {
