@@ -1,0 +1,41 @@
+@model List<eBookStore.Models.ViewModels.BookViewModel>
+
+<div class="container mt-5">
+    <h2>Change Book Price</h2>
+    <form method="post" action="@Url.Action("changeBuingPriceAndUpdateBookAndHistoryBuingPrice", "User")" class="needs-validation" novalidate>
+        <div class="mb-3">
+            <label for="bookId" class="form-label">Select Book:</label>
+            <select id="bookId" name="bookId" class="form-select" required>
+                <option value="" disabled selected>Select a book</option>
+                @foreach (var book in Model)
+                {
+                    <option value="@book.book.id">@book.book.title</option>
+                }
+            </select>
+            <div class="invalid-feedback">Please select a book.</div>
+        </div>
+
+        <div class="mb-3">
+            <label for="newPrice" class="form-label">New Price:</label>
+            <input type="number" id="newPrice" name="newPrice" class="form-control" step="0.01" required />
+            <div class="invalid-feedback">Please enter a valid price.</div>
+        </div>
+
+        <button type="submit" class="btn btn-success">Change Price</button>
+        <a href="@Url.Action("adminDash", "User")" class="btn btn-secondary">Cancel</a>
+    </form>
+</div>
+
+<script>
+    // Client-side validation
+    document.addEventListener("DOMContentLoaded", () => {
+        const form = document.querySelector("form");
+        form.addEventListener("submit", (event) => {
+            if (!form.checkValidity()) {
+                event.preventDefault();
+                event.stopPropagation();
+            }
+            form.classList.add("was-validated");
+        });
+    });
+</script>
