@@ -39,8 +39,6 @@ public class CheckoutController : Controller
         {
             var lineItems = new List<SessionLineItemOptions>();
             _books = cartData;
-            Console.WriteLine(cartData);
-
             foreach (var item in cartData.Items)
             {
                 lineItems.Add(new SessionLineItemOptions
@@ -70,7 +68,6 @@ public class CheckoutController : Controller
 
             var service = new SessionService();
             var session = await service.CreateAsync(options);
-
             return Json(new { sessionId = session.Id });
         }
         catch (Exception ex)
@@ -141,11 +138,11 @@ public class CheckoutController : Controller
         // Send email receipt
         try
         {
-            _userRepo.SendEmail(
-                  user.email,
-                "Your eBookStore Purchase Receipt",
-                  emailBody.ToString()
-            );
+          _userRepo.SendEmail(
+                user.email,
+              "Your eBookStore Purchase Receipt",
+                emailBody.ToString()
+          );
         }
         catch (Exception ex)
         {
