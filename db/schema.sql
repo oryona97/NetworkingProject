@@ -1,5 +1,5 @@
 -- Create Database
-USE master;
+USE eBook;
 GO
 
 IF NOT EXISTS (SELECT name FROM sys.databases WHERE name = 'eBook')
