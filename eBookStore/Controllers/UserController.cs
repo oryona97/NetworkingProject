@@ -27,9 +27,21 @@ public class UserController : Controller
 
     public IActionResult changeBuingPriceAndUpdateBookAndHistoryBuingPrice(int bookId, float newPrice)
     {
-        BookRepository bookRepo = new BookRepository(connectionString);
-        bookRepo.addHistoryBookPriceModel(bookId, newPrice);
-        return RedirectToAction("showBook", "Home");
+        try{
+            if (newPrice <= 0)
+            {
+                TempData["ErrorMessage"] = "Price must be greater than zero.";
+                return RedirectToAction("adminDash");
+            }
+            BookRepository bookRepo = new BookRepository(connectionString);
+            bookRepo.addHistoryBookPriceModel(bookId, newPrice);
+            return RedirectToAction("showBook", "Home");
+        }catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error change buying price for bookId {bookId}", bookId);
+            Console.WriteLine($"Error: {ex.Message}");
+            return Json(new { error = ex.Message });
+        }
     }
 
 
@@ -386,6 +398,14 @@ public class UserController : Controller
         }
     }
 
+
+    public IActionResult ChangePriceForm()
+    {
+        
+        var BookList = _bookRepo.getAllBooks(); 
+       
+        return View(BookList);
+    }
 
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

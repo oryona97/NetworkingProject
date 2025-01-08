@@ -100,11 +100,11 @@ CREATE TABLE [Genre] (
 GO
 
 CREATE TABLE [Publisher] (
-    [id] int IDENTITY(50,1) PRIMARY KEY,
-    [bookId] int,
-    [name] nvarchar(100) UNIQUE,
-    [createdAt] datetime DEFAULT GETDATE(),
-    CONSTRAINT PK_Publisher UNIQUE ([id], [bookId])
+  [id] int IDENTITY(50,1) PRIMARY KEY,
+  [bookId] int,
+  [name] nvarchar(100) UNIQUE,
+  [createdAt] datetime DEFAULT GETDATE(),
+  CONSTRAINT PK_Publisher UNIQUE ([id], [bookId])
 )
 GO
 
