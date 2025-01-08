@@ -1,6 +1,8 @@
 @model eBookStore.Models.UserModel
 @{
     ViewData["Title"] = "User-Profile";
+    var userId = Context.Session.GetInt32("userId");
+
 }
 
 <div class="Profile-container">
@@ -44,7 +46,8 @@
                     </tr>
                 </tbody>
             </table>
-
+            
+            <a href="@Url.Action("editUser", "User", new { userId = Model.id })" class="btn btn-primary">Edit User</a>
         </div>
 
 
