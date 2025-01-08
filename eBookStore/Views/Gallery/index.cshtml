@@ -53,6 +53,10 @@
                         Order-By
                     </a>
 
+                    <input type="checkbox" id="filterOnSale">
+                        On-Sale
+                    </input>
+
                     <div class="dropdown-menu" aria-labelledby="dropdownMenuLink" style="background-color: rgb(79, 79, 79);">
                         <a id="orderByButt" class="dropdown-item" href="#">Price Increase</a>
                         <a id="orderByButt" class="dropdown-item" href="#">Price Decrease</a>
@@ -79,7 +83,8 @@
                 data-genre="@book?.genreModel?.name.Replace(" ", "-")" 
                 style="width: 18rem; padding-left: 0px; padding-right: 0px;"
                 data-price="@book.book.buyingPrice"
-                data-year="@book.book.pubDate.Year">
+                data-year="@book.book.pubDate.Year"
+                data-onSale="@book.book.onSale">
                     
                     
                     <div class="imageWrapp">
@@ -90,7 +95,6 @@
                     
                     <div class="card-body d-grid">
                         <h5 class="card-title">@book.book.title</h5>
-                        <!-- Need to Fix onSale logic + Price history-->
                         @if(book.book.onSale)
                         {
                             <p class="card-text">
@@ -203,10 +207,12 @@
         const categoryLinks = document.querySelectorAll('.categorysList .nav-link');
         const books = document.querySelectorAll('.book-item');
 
-        categoryLinks.forEach(link => {
+        categoryLinks.forEach(link => 
+        {
 
 
-            link.addEventListener('click', (e) => {
+            link.addEventListener('click', (e) => 
+            {
                 e.preventDefault();
                 const genre = e.target.closest('a').getAttribute('data-genre');
 
@@ -215,7 +221,8 @@
                 e.target.closest('a').classList.add('active');
 
                 // Filter books
-                books.forEach(book => {
+                books.forEach(book => 
+                {
                     if (genre === 'all' || book.getAttribute('data-genre') === genre) {
                         book.style.display = 'block';
                     } else {
@@ -223,8 +230,27 @@
                     }
                 });
             });
+        });
 
+        const onSaleCheckBox = document.querySelector('#filterOnSale');
 
+        onSaleCheckBox.addEventListener('change', (e) => {
+            books.forEach(book => {
+                // Get the sale status from the book's data-onSale attribute
+                const bookOnSale = book.getAttribute('data-onSale') === 'True';
+
+                if (onSaleCheckBox.checked) {
+                    // Show only books on sale
+                    if (bookOnSale) {
+                        book.style.display = 'block';
+                    } else {
+                        book.style.display = 'none';
+                    }
+                } else {
+                    // Show all books when the checkbox is unchecked
+                    book.style.display = 'block';
+                }
+            });
         });
     });
 
