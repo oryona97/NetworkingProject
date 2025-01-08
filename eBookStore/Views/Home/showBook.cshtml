@@ -27,7 +27,7 @@
                                 <a><strong>Published by:</strong> @string.Join(", ", book.publishers.Select(p => p.name))</a><br>
                                 <a><strong>Genre:</strong> @book.genreModel.name</a><br>
                                 <a><strong>Age limit:</strong> @book.book.ageLimit</a><br>
-                                <a><strong>Publish date:</strong> @book.book.pubDate</a><br>
+                                <a><strong>Publish date:</strong> @book.book.pubDate.ToString("yyyy-MM-dd")</a><br>
                                 <a><strong>Rating:</strong> @book.book.starRate</a><br>
                                 <a class="text-muted text-decoration-line-through"><strong>Original Price:</strong> @book.book.buyingPrice$</a><br>
                                 <a><strong>Sale Price:</strong> @(book.book.buyingPrice * book.bookDiscountModel.discountPrecentage)$</a>
@@ -41,7 +41,7 @@
                             <a><strong>Published by:</strong> @string.Join(", ", book.publishers.Select(p => p.name))</a><br>
                             <a><strong>Genre:</strong> @book.genreModel.name</a><br>
                             <a><strong>Age limit:</strong> @book.book.ageLimit</a><br>
-                            <a><strong>Publish date:</strong> @book.book.pubDate</a><br>
+                            <a><strong>Publish date:</strong> @book.book.pubDate.ToString("yyyy-MM-dd")</a><br>
                             <a><strong>Rating:</strong> @book.book.starRate</a><br>
                             <a><strong>Price:</strong> @book.book.buyingPrice$</a><br>
                         </p>
