@@ -45,8 +45,6 @@
             </div>
             
 
-            
-
             <div class="col d-flex justify-content-end" >
 
 
@@ -77,7 +75,11 @@
 
             @foreach(var book in Model.allBooks)
             {
-                <div class="card book-item h-100" data-genre="@book?.genreModel?.name.Replace(" ", "-")" style="width: 18rem; padding-left: 0px; padding-right: 0px;">
+                <div class="card book-item h-100" 
+                data-genre="@book?.genreModel?.name.Replace(" ", "-")" 
+                style="width: 18rem; padding-left: 0px; padding-right: 0px;"
+                data-price="@book.book.buyingPrice"
+                data-year="@book.book.pubDate.Year">
                     
                     
                     <div class="imageWrapp">
@@ -227,13 +229,50 @@
     });
 
     document.querySelectorAll('.dropdown-item').forEach(item => {
-    item.addEventListener('click', event => {
-        console.log(event.target.textContent); // Log the selected item
-        // Add sorting/filtering logic here
+        item.addEventListener('click', event => {
+            console.log(event.target.textContent); // Log the selected item
+            // Add sorting/filtering logic here
+        });
     });
-});
 
+    document.addEventListener('DOMContentLoaded', () => {
+        const booksContainer = document.querySelector('.Books-Container');
+        const books = Array.from(document.querySelectorAll('.book-item'));
+        const sortOptions = document.querySelectorAll('.dropdown-item');
 
+        sortOptions.forEach(option => {
+            option.addEventListener('click', event => {
+                event.preventDefault();
+
+                const sortBy = event.target.textContent.trim();
+                let sortedBooks;
+
+                switch (sortBy) {
+                    case 'Price Increase':
+                        sortedBooks = books.sort((a, b) => 
+                            parseFloat(a.getAttribute('data-price')) - parseFloat(b.getAttribute('data-price'))
+                        );
+                        break;
+                    case 'Price Decrease':
+                        sortedBooks = books.sort((a, b) => 
+                            parseFloat(b.getAttribute('data-price')) - parseFloat(a.getAttribute('data-price'))
+                        );
+                        break;
+                    case 'Year of Publishing':
+                        sortedBooks = books.sort((a, b) => 
+                            parseInt(b.getAttribute('data-year')) - parseInt(a.getAttribute('data-year'))
+                        );
+                        break;
+                    default:
+                        sortedBooks = books; // Default order
+                }
+
+                // Clear the container and re-append sorted books
+                booksContainer.innerHTML = '';
+                sortedBooks.forEach(book => booksContainer.appendChild(book));
+            });
+        });
+    });
 
 </script>
 
