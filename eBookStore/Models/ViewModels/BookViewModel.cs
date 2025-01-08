@@ -8,7 +8,8 @@ public class BookViewModel
         book = new BookModel();
         rating = new RatingModel();
         feedbackModel = new List<FeedbackModel>();
-        publishers = [];
+        publishers = new List<PublisherModel>();
+        publishers.Add(new PublisherModel());
         coverModel = new CoverModel();
         genreModel = new GenreModel();
         authorModel = new AuthorModel();
