@@ -345,7 +345,7 @@ public class UserController : Controller
     {
         try
         {
-            
+            var seissionUserId =  HttpContext.Session.GetInt32("userId");
             var user = _bookRepo.getUserModelById(userId);
             if (user == null)
             {
@@ -373,6 +373,9 @@ public class UserController : Controller
             }
 
             TempData["SuccessMessage2"] = "User updated successfully!";
+            if(userId == seissionUserId)
+                return RedirectToAction("profile", "Home");
+            
             return RedirectToAction("adminDash");
         }
         catch (Exception ex)
