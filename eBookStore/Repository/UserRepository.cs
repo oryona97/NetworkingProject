@@ -602,6 +602,35 @@ namespace eBookStore.Repository
 		}
 
 
+		//this func to delete user by id
+
+		public void deleteUserById(int userId)
+		{
+			try
+			{
+			using (var connection = new SqlConnection(_connectionString))
+				{
+					connection.Open();
+
+					const string query = @"
+						Delete from [User]
+						WHERE id = @userId;
+					";
+
+					using (var command = new SqlCommand(query, connection))
+					{
+						command.Parameters.AddWithValue("@userId", userId);
+
+						command.ExecuteNonQuery();
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error Delete user: {UserId}", userId);
+				throw;
+			}
+		}
 	}
 	
 	
