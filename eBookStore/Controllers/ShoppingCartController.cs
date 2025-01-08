@@ -63,15 +63,16 @@ public class ShoppingCartController : Controller
     }
 
     //this method is used to add a book to the shopping cart
-    public IActionResult AddToShoppingCart(int? userId, int? bookId, string? format, bool isBorrowed)
+    public IActionResult AddToShoppingCart(int? userId, int bookId, string? format, bool isBorrowed)
     {
         try
         {
             int? nullableUserId = HttpContext.Session.GetInt32("userId");
             if (nullableUserId.HasValue)
             {
-                //shoppingCartRepo.AddToShoppingCart(nullableUserId.Value, bookId, format);
-                _shoppingCartRepo.AddToShoppingCart(nullableUserId.Value, 2, "PDF");
+                Console.WriteLine(bookId);
+                _shoppingCartRepo.AddToShoppingCart(nullableUserId.Value, bookId, format);
+                //_shoppingCartRepo.AddToShoppingCart(nullableUserId.Value, 2, "PDF");
                 return View("ShowShoppingCart", _shoppingCartRepo.GetShoppingCart(nullableUserId.Value));
             }
             else
@@ -87,7 +88,7 @@ public class ShoppingCartController : Controller
     }
 
     //this method is used to remove a book from the shopping cart
-    public IActionResult RemoveFromShoppingCart(int? userId, int? bookId)
+    public IActionResult RemoveFromShoppingCart(int? userId, int bookId)
     {
         try
         {
@@ -96,10 +97,10 @@ public class ShoppingCartController : Controller
             {
 
                 //this line is for production
-                //shoppingCartRepo.RemoveOneFromShoppingCart(nullableUserId.Value, bookId);
+                _shoppingCartRepo.RemoveOneFromShoppingCart(nullableUserId.Value, bookId);
 
                 //this line is for testing
-                _shoppingCartRepo.RemoveOneFromShoppingCart(nullableUserId.Value, 4);
+                //_shoppingCartRepo.RemoveOneFromShoppingCart(nullableUserId.Value, 4);
                 return View("ShowShoppingCart", _shoppingCartRepo.GetShoppingCart(nullableUserId.Value));
             }
             else
