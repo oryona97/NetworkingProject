@@ -53,26 +53,18 @@
                                         <a>
                                             <strong>Published by:</strong> @string.Join(", ", @Model.allBooks[0].publishers.Select(p => p.name))
                                         </a><br>
-                                        <a><strong>Genre:</strong> @Model.allBooks[0].genreModel.name</a><br>
-                                        <a><strong>Age limit:</strong> @Model.allBooks[0].book.ageLimit</a><br>
-                                        <a><strong>Publish date:</strong> @Model.allBooks[0].book.pubDate.ToString("yyyy-MM-dd")</a><br>
-                                        <a><strong>Rating:</strong> @Model.allBooks[0].book.starRate</a><br>
-                                        @if(Model.allBooks[0].book.canBorrow)
-                                            {<a><strong>Borrow Price:</strong> @Model.allBooks[0].book.borrowPrice$</a><br>}
-
-                                        @if(Model.allBooks[3].book.onSale)
-                                        {
-                                            <a class="text-muted text-decoration-line-through"><strong>Price:</strong>@Model.allBooks[0].book.buyingPrice</a><br>
-                                            <a><strong>Sale Price:</strong> @(Model.allBooks[0].book.buyingPrice * Model.allBooks[0].bookDiscountModel.discountPrecentage)$</a>
-
-                                        }
-                                        else{
-                                            <a><strong>Price:</strong> @Model.allBooks[0].book.buyingPrice$</a>
-                                        }   
+                                        <a><strong>Genre:</strong> @Model.SpecialSales[0].genreModel.name</a><br>
+                                        <a><strong>Age limit:</strong> @Model.SpecialSales[0].book.ageLimit</a><br>
+                                        <a><strong>Publish date:</strong> @Model.SpecialSales[0].book.pubDate</a><br>
+                                        <a><strong>Rating:</strong> @Model.SpecialSales[0].book.starRate</a><br>
+                                        @if(Model.SpecialSales[0].book.canBorrow)
+                                            {<a><strong>Borrow Price:</strong> @Model.SpecialSales[0].book.borrowPrice$</a><br>}
+                                        <a class="text-muted text-decoration-line-through"><strong>Original Price:</strong> need fix$</a><br>
+                                        <a><strong>OnSale:</strong> @Model.SpecialSales[0].book.buyingPrice$</a>
 
                                     </p>
 
-                                    @if(Model.allBooks[0].book.canBorrow)
+                                    @if(Model.SpecialSales[0].book.canBorrow)
                                     {
                                         <div class="price-container card-footer" style="background-color:white">
                                             <div class="row">
@@ -86,20 +78,8 @@
                                                     
                                                     <li class="dropdown-menu col" style="background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
                                                         <div class="addToCart-menu-content">
-                                                            <a class="dropdown-item" 
-                                                                asp-controller="ShoppingCart" 
-                                                                asp-action="AddToShoppingCart"
-                                                                asp-route-bookId="@Model.allBooks[0].book.id"
-                                                                asp-route-format="pdf" 
-                                                                asp-route-isBorrowed="false">
-                                                                Buy</a>
-                                                            <a class="dropdown-item" 
-                                                                asp-controller="ShoppingCart" 
-                                                                asp-action="AddToShoppingCart"
-                                                                asp-route-bookId="@Model.allBooks[0].book.id"
-                                                                asp-route-format="pdf" 
-                                                                asp-route-isBorrowed="true">
-                                                                Borrow</a>
+                                                            <a class="dropdown-item" asp-controller="ShoppingCart" asp-action="AddToShoppingCart">Buy</a>
+                                                            <a class="dropdown-item" asp-controller="ShoppingCart" asp-action="AddToShoppingCart">Borrow</a>
                                                         </div>
                                                     </li>
                                                 </div>
@@ -121,13 +101,7 @@
                                                     
                                                     <li class="dropdown-menu col" style="background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
                                                         <div class="addToCart-menu-content">
-                                                            <a class="dropdown-item" 
-                                                                asp-controller="ShoppingCart" 
-                                                                asp-action="AddToShoppingCart"
-                                                                asp-route-bookId="@Model.allBooks[0].book.id"
-                                                                asp-route-format="pdf" 
-                                                                asp-route-isBorrowed="false">
-                                                                Buy</a>
+                                                            <a class="dropdown-item" asp-controller="ShoppingCart" asp-action="AddToShoppingCart">Buy</a>
                                                         </div>
                                                     </li>
                                                 </div>
@@ -152,25 +126,18 @@
                                         <a>
                                             <strong>Published by:</strong> @string.Join(", ", @Model.allBooks[3].publishers.Select(p => p.name))
                                         </a><br>
-                                        <a><strong>Genre:</strong> @Model.allBooks[3].genreModel.name</a><br>
-                                        <a><strong>Age limit:</strong> @Model.allBooks[3].book.ageLimit</a><br>
-                                        <a><strong>Publish date:</strong> @Model.allBooks[3].book.pubDate.ToString("yyyy-MM-dd")</a><br>
-                                        <a><strong>Rating:</strong> @Model.allBooks[3].book.starRate</a><br>
-                                        @if(Model.allBooks[3].book.canBorrow)
-                                        {<a><strong>Borrow Price:</strong> @Model.allBooks[3].book.borrowPrice$</a><br>}
-                                        @if(Model.allBooks[3].book.onSale)
-                                        {
-                                            <a class="text-muted text-decoration-line-through"><strong>Price:</strong>@Model.allBooks[3].book.buyingPrice</a><br>
-                                            <a><strong>Sale Price:</strong> @(Model.allBooks[3].book.buyingPrice * Model.allBooks[3].bookDiscountModel.discountPrecentage)$</a>
-
-                                        }
-                                        else{
-                                            <a><strong>Price:</strong> @Model.allBooks[3].book.buyingPrice$</a>
-                                        }
+                                        <a><strong>Genre:</strong> @Model.SpecialSales[3].genreModel.name</a><br>
+                                        <a><strong>Age limit:</strong> @Model.SpecialSales[3].book.ageLimit</a><br>
+                                        <a><strong>Publish date:</strong> @Model.SpecialSales[3].book.pubDate</a><br>
+                                        <a><strong>Rating:</strong> @Model.SpecialSales[3].book.starRate</a><br>
+                                        @if(Model.SpecialSales[3].book.canBorrow)
+                                        {<a><strong>Borrow Price:</strong> @Model.SpecialSales[3].book.borrowPrice$</a><br>}
+                                        <a class="text-muted text-decoration-line-through"><strong>Original Price:</strong>need fix$</a><br>
+                                        <a><strong>OnSale:</strong> @Model.SpecialSales[3].book.buyingPrice$</a>
 
                                     </p>
 
-                                    @if(Model.allBooks[3].book.canBorrow)
+                                    @if(Model.SpecialSales[3].book.canBorrow)
                                     {
                                         <div class="price-container card-footer" style="background-color:white">
                                             <div class="row">
@@ -184,20 +151,8 @@
                                                     
                                                     <li class="dropdown-menu col" style="background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
                                                         <div class="addToCart-menu-content">
-                                                            <a class="dropdown-item" 
-                                                                asp-controller="ShoppingCart" 
-                                                                asp-action="AddToShoppingCart"
-                                                                asp-route-bookId="@Model.allBooks[3].book.id"
-                                                                asp-route-format="pdf" 
-                                                                asp-route-isBorrowed="false">
-                                                                Buy</a>
-                                                            <a class="dropdown-item" 
-                                                                asp-controller="ShoppingCart" 
-                                                                asp-action="AddToShoppingCart"
-                                                                asp-route-bookId="@Model.allBooks[3].book.id"
-                                                                asp-route-format="pdf" 
-                                                                asp-route-isBorrowed="true">
-                                                                Borrow</a>
+                                                            <a class="dropdown-item" asp-controller="ShoppingCart" asp-action="AddToShoppingCart">Buy</a>
+                                                            <a class="dropdown-item" asp-controller="ShoppingCart" asp-action="AddToShoppingCart">Borrow</a>
                                                         </div>
                                                     </li>
                                                 </div>
@@ -219,13 +174,7 @@
                                                     
                                                     <li class="dropdown-menu col" style="background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
                                                         <div class="addToCart-menu-content">
-                                                            <a class="dropdown-item" 
-                                                                asp-controller="ShoppingCart" 
-                                                                asp-action="AddToShoppingCart"
-                                                                asp-route-bookId="@Model.allBooks[3].book.id"
-                                                                asp-route-format="pdf" 
-                                                                asp-route-isBorrowed="false">
-                                                                Buy</a>
+                                                            <a class="dropdown-item" asp-controller="ShoppingCart" asp-action="AddToShoppingCart">Buy</a>
                                                         </div>
                                                     </li>
                                                 </div>
