@@ -10,17 +10,17 @@ public class ShoppingCartController : Controller
 {
     private readonly ILogger<ShoppingCartController> _logger;
     private readonly IConfiguration _configuration;
-    private string? connectionString;
+    private string? _connectionString;
     private ShoppingCartRepository _shoppingCartRepo;
     private BookRepository _booksRepo;
 
     public ShoppingCartController(IConfiguration configuration, ILogger<ShoppingCartController> logger)
     {
         _configuration = configuration;
-        connectionString = _configuration.GetConnectionString("DefaultConnection");
+        _connectionString = _configuration.GetConnectionString("DefaultConnection");
         _logger = logger;
-        _shoppingCartRepo = new ShoppingCartRepository(connectionString);
-        _booksRepo = new BookRepository(connectionString);
+        _shoppingCartRepo = new ShoppingCartRepository(_connectionString);
+        _booksRepo = new BookRepository(_connectionString);
     }
 
     [Route("cart")]
@@ -73,7 +73,27 @@ public class ShoppingCartController : Controller
             {
                 return Json(new { success = false, message = "Please log in to continue" });
             }
+            //Check if the book is already in the user's cart
+            var cart = _shoppingCartRepo.GetShoppingCart(currentUser.Value);
+            foreach (var book in cart.shoppingCart.Books)
+            {
+                if (model.BookId == book.bookId)
+                    return Json(new { success = false, message = "Book is already in your cart." });
+            }
 
+            var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            var repoLogger = loggerFactory.CreateLogger<PersonalLibraryRepository>();
+            var libRepo = new PersonalLibraryRepository(_connectionString, repoLogger);
+
+            var books = libRepo.GetUserBooks(currentUser.Value);
+            foreach (var book in books)
+            {
+                if (book.book.id == model.BookId){
+                    return Json(new { success = false, message = "Book is already in your library." });
+                }
+            }
+
+            var userBooks = libRepo.GetUserBooks(currentUser.Value);
             _shoppingCartRepo.AddToShoppingCart(
                 currentUser.Value,
                 model.BookId,
@@ -98,30 +118,47 @@ public class ShoppingCartController : Controller
     }
 
     //this method is used to remove a book from the shopping cart
-    public IActionResult RemoveFromShoppingCart(int? userId, int bookId)
+    [HttpPost]
+    public IActionResult RemoveFromShoppingCart([FromBody] RemoveFromCartModel model)
     {
         try
         {
-            int? nullableUserId = HttpContext.Session.GetInt32("userId");
-            if (nullableUserId.HasValue)
+            int? currentUser = HttpContext.Session.GetInt32("userId");
+            if (!currentUser.HasValue)
             {
-
-                //this line is for production
-                _shoppingCartRepo.RemoveOneFromShoppingCart(nullableUserId.Value, bookId);
-
-                //this line is for testing
-                //_shoppingCartRepo.RemoveOneFromShoppingCart(nullableUserId.Value, 4);
-                return View("ShowShoppingCart", _shoppingCartRepo.GetShoppingCart(nullableUserId.Value));
+                return Json(new { success = false, message = "Please log in to continue" });
             }
-            else
+            var cart = _shoppingCartRepo.GetShoppingCart(currentUser.Value);
+            bool found = false;
+            foreach (var book in cart.shoppingCart.Books)
             {
-                return RedirectToAction("auth/login");
+                if (model.BookId == book.bookId)
+                    found = true;
             }
+            if (!found)
+            {
+                return Json(new { success = false, message = "Book does not exist in your cart buddy." });
+            }
+
+            _shoppingCartRepo.RemoveOneFromShoppingCart(
+                currentUser.Value,
+                model.BookId
+            );
+
+            return Json(new
+            {
+                success = true,
+                message = $"Item removed from cart successfully"
+            });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to remove from shopping cart");
-            return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return Json(new
+            {
+                success = false,
+                message = "Failed to remove item from cart"
+            });
         }
     }
 
@@ -153,6 +190,11 @@ public class ShoppingCartController : Controller
         public int BookId { get; set; }
         public string Format { get; set; } = "pdf";
         public bool IsBorrowed { get; set; }
+    }
+
+    public class RemoveFromCartModel
+    {
+        public int BookId { get; set; }
     }
 
 }
