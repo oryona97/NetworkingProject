@@ -164,6 +164,18 @@ public class ShoppingCartController : Controller
             return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
+<<<<<<< HEAD
+=======
+
+    public class AddToCartModel
+    {
+        public int BookId { get; set; }
+        public string Format { get; set; } = "pdf";
+        public bool IsBorrowed { get; set; }
+    }
+
+}
+>>>>>>> c487034 (fixed: adding to shopping cart in controller and gallery view)
 
     public class AddToCartModel
     {
