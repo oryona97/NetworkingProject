@@ -63,28 +63,37 @@ public class ShoppingCartController : Controller
         }
     }
 
-    //this method is used to add a book to the shopping cart
-    public IActionResult AddToShoppingCart(int? userId, int bookId, string? format, bool isBorrowed)
+    [HttpPost]
+    public IActionResult AddToShoppingCart([FromBody] AddToCartModel model)
     {
         try
         {
-            int? nullableUserId = HttpContext.Session.GetInt32("userId");
-            if (nullableUserId.HasValue)
+            int? currentUser = HttpContext.Session.GetInt32("userId");
+            if (!currentUser.HasValue)
             {
-                Console.WriteLine(bookId);
-                _shoppingCartRepo.AddToShoppingCart(nullableUserId.Value, bookId, format);
-                //_shoppingCartRepo.AddToShoppingCart(nullableUserId.Value, 2, "PDF");
-                return View("ShowShoppingCart", _shoppingCartRepo.GetShoppingCart(nullableUserId.Value));
+                return Json(new { success = false, message = "Please log in to continue" });
             }
-            else
+
+            _shoppingCartRepo.AddToShoppingCart(
+                currentUser.Value,
+                model.BookId,
+                model.Format
+            );
+
+            return Json(new
             {
-                return RedirectToAction("login","auth");
-            }
+                success = true,
+                message = $"Item added to cart successfully"
+            });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to add to shopping cart");
-            return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
+            return Json(new
+            {
+                success = false,
+                message = "Failed to add item to cart"
+            });
         }
     }
 
@@ -138,5 +147,13 @@ public class ShoppingCartController : Controller
             return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
+
+    public class AddToCartModel
+    {
+        public int BookId { get; set; }
+        public string Format { get; set; } = "pdf";
+        public bool IsBorrowed { get; set; }
+    }
+
 }
 

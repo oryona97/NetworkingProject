@@ -138,11 +138,11 @@ public class CheckoutController : Controller
         // Send email receipt
         try
         {
-          _userRepo.SendEmail(
-                user.email,
-              "Your eBookStore Purchase Receipt",
-                emailBody.ToString()
-          );
+            _userRepo.SendEmail(
+                  user.email,
+                "Your eBookStore Purchase Receipt",
+                  emailBody.ToString()
+            );
         }
         catch (Exception ex)
         {
