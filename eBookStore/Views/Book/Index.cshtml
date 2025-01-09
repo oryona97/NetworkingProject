@@ -54,6 +54,7 @@
                             asp-controller="ShoppingCart" 
                             asp-action="AddToShoppingCart"
                             asp-route-bookId="@Model.book.id"
+                            asp-route-userId="@currentUserId"
                             asp-route-format="pdf" 
                             asp-route-isBorrowed="true">
                                 <button>Borrow: @Model.book.borrowPrice$</button>
