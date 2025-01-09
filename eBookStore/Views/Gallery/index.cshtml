@@ -105,7 +105,7 @@
                                     <a><strong>Publish date:</strong> @book.book.pubDate.ToString("yyyy-MM-dd")</a><br>
                                     <a><strong>Rating:</strong> @book.book.starRate</a><br>
                                     @if(book.book.canBorrow)
-                                    {<a><strong>Borrow Price:</strong> @book.book.borrowPrice$</a><br>}
+                                        {<a><strong>Borrow Price:</strong> @book.book.borrowPrice$</a><br>}
                                     <a class="text-muted text-decoration-line-through"><strong>Original Price:</strong> @book.book.buyingPrice$</a><br>
                                     <a><strong>Sale Price:</strong> @(book.book.buyingPrice * book.bookDiscountModel.discountPrecentage)$</a>
 
@@ -121,7 +121,7 @@
                                 <a><strong>Publish date:</strong> @book.book.pubDate.ToString("yyyy-MM-dd")</a><br>
                                 <a><strong>Rating:</strong> @book.book.starRate</a><br>
                                 @if(book.book.canBorrow) 
-                                {<a><strong>Borrow Price:</strong> @book.book.borrowPrice$</a><br>}
+                                    {<a><strong>Borrow Price:</strong> @book.book.borrowPrice$</a><br>}
                                 <a><strong>Buy Price:</strong> @book.book.buyingPrice$</a><br>
                             </p>
 
@@ -182,8 +182,6 @@
                                             </div>
                                         </li>
                                     </div>
-
-                                    
 
                                 </div>
                             </div>
