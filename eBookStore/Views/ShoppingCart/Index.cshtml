@@ -100,12 +100,12 @@
                                         <span class="text-primary">$@bookVM.book.buyingPrice.ToString("0.00")</span>
                                     </div>
                                     <div class="col-md-3 text-end">
-                                        <form asp-controller="Cart" asp-action="RemoveFromCart" method="post">
-                                            <input type="hidden" name="bookId" value="@bookVM.book.id" />
-                                            <button type="submit" class="remove-btn">
-                                                Remove
-                                            </button>
-                                        </form>
+                                        <button type="button" 
+                                                class="remove-btn" 
+                                                data-book-id="@bookVM.book.id" 
+                                                onclick="removeFromCart(@bookVM.book.id)">
+                                            Remove
+                                        </button>
                                     </div>
                                 </div>
                             </div>
@@ -149,7 +149,7 @@
         var stripe = Stripe('@Configuration["Stripe:PublicKey"]');
         const selectedFormats = {};
 
-        function updateFormat(selectElement, bookId) {
+        const updateFormat = (selectElement, bookId) => {
             const selectedFormat = selectElement.value;
             selectedFormats[bookId] = selectedFormat;
         }
@@ -193,5 +193,67 @@
                 console.error('Error:', error);
             });
         });
+
+        const removeFromCart = bookId => {
+            if (!confirm('Are you sure you want to remove this item from your cart?')) {
+                return;
+            }
+
+            fetch('/ShoppingCart/RemoveFromShoppingCart', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify({
+                    bookId: bookId,
+                    isBorrowed: false
+                })
+            })
+            .then(response => response.json())
+            .then(result => {
+                if (result.success) {
+                    // Remove the item from DOM
+                    const cartItem = document.querySelector(`.cart-item button[data-book-id="${bookId}"]`).closest('.cart-item');
+                    cartItem.remove();
+
+                    // Update cart count in title
+                    const remainingItems = document.querySelectorAll('.cart-item').length;
+                    const cartTitle = document.querySelector('h4.mb-4');
+                    if (cartTitle) {
+                        cartTitle.textContent = `Shopping Cart (${remainingItems} items)`;
+                    }
+
+                    updateCartTotal();
+
+                    // If cart is empty, reload the page to show empty cart message
+                    if (remainingItems === 0) {
+                        window.location.reload();
+                    }
+
+                } else {
+                    alert(result.message || 'Failed to remove item from cart');
+                }
+            })
+            .catch(error => {
+                console.error('Error:', error);
+                alert('Error removing item from cart');
+            });
+        }
+
+        const updateCartTotal = () => {
+            const cartItems = document.querySelectorAll('.cart-item');
+            let total = 0;
+
+            cartItems.forEach(item => {
+                const priceText = item.querySelector('.text-primary').textContent;
+                const price = parseFloat(priceText.replace('$', ''));
+                total += price;
+            });
+
+            const totalElement = document.querySelector('.summary-card .h5');
+            if (totalElement) {
+                totalElement.textContent = `$${total.toFixed(2)}`;
+            }
+        }
     </script>
 }
