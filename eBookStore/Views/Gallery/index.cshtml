@@ -146,14 +146,14 @@
                                                     asp-action="AddToShoppingCart"
                                                     asp-route-bookId="@book.book.id"
                                                     asp-route-format="pdf" 
-                                                    asp-route-isBorrowed="@book.book.canBorrow">
+                                                    asp-route-isBorrowed="false">
                                                     Buy</a>
                                                 <a class="dropdown-item" 
                                                     asp-controller="ShoppingCart" 
                                                     asp-action="AddToShoppingCart"
                                                     asp-route-bookId="@book.book.id"
                                                     asp-route-format="pdf" 
-                                                    asp-route-isBorrowed="@book.book.canBorrow">
+                                                    asp-route-isBorrowed="true">
                                                     Borrow</a>
                                             </div>
                                         </li>
@@ -195,7 +195,7 @@
                                                     asp-action="AddToShoppingCart"
                                                     asp-route-bookId="@book.book.id"
                                                     asp-route-format="pdf" 
-                                                    asp-route-isBorrowed="@book.book.canBorrow">
+                                                    asp-route-isBorrowed="false">
                                                     Buy</a>
                                             </div>
                                         </li>
