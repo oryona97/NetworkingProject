@@ -73,28 +73,7 @@ public class ShoppingCartController : Controller
             {
                 return Json(new { success = false, message = "Please log in to continue" });
             }
-            //Check if the book is already in the user's cart
-            var cart = _shoppingCartRepo.GetShoppingCart(currentUser.Value);
-            foreach (var book in cart.shoppingCart.Books)
-            {
-                if (model.BookId == book.bookId)
-                    return Json(new { success = false, message = "Book is already in your cart." });
-            }
 
-            var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-            var repoLogger = loggerFactory.CreateLogger<PersonalLibraryRepository>();
-            var libRepo = new PersonalLibraryRepository(_connectionString, repoLogger);
-
-            var books = libRepo.GetUserBooks(currentUser.Value);
-            foreach (var book in books)
-            {
-                if (book.book.id == model.BookId)
-                {
-                    return Json(new { success = false, message = "Book is already in your library." });
-                }
-            }
-
-            var userBooks = libRepo.GetUserBooks(currentUser.Value);
             _shoppingCartRepo.AddToShoppingCart(
                 currentUser.Value,
                 model.BookId,
@@ -185,6 +164,15 @@ public class ShoppingCartController : Controller
             return View("Error", new ErrorViewModel { RequestId = Activity.Current?.Id ?? HttpContext.TraceIdentifier });
         }
     }
+
+    public class AddToCartModel
+    {
+        public int BookId { get; set; }
+        public string Format { get; set; } = "pdf";
+        public bool IsBorrowed { get; set; }
+    }
+
+}
 
     public class AddToCartModel
     {
