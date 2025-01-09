@@ -1,4 +1,9 @@
 @model List<eBookStore.Models.ViewModels.BookViewModel>
+@{
+    ViewData["Title"] = "SearchedBooks";
+    var currentUserId = Context.Session.GetInt32("userId") ?? 0;
+
+}
 
 <div class="row" style="row-gap: 10px; column-gap: 10px;">
     <h1 class="text-center mb-4">Books List</h1>
@@ -8,7 +13,12 @@
     {
         @foreach(var book in Model)
         {
-            <div class="card book-item h-100" data-genre="@book?.genreModel?.name.Replace(" ", "-")" style="width: 18rem; padding-left: 0px; padding-right: 0px;">
+            <div class="card book-item h-100" 
+            data-genre="@book?.genreModel?.name.Replace(" ", "-")" 
+            style="width: 18rem; padding-left: 0px; padding-right: 0px;"
+            data-price="@book.book.buyingPrice"
+            data-year="@book.book.pubDate.Year"
+            data-onSale="@book.book.onSale">
                 
                 
                 <div class="imageWrapp">
@@ -19,19 +29,19 @@
                 
                 <div class="card-body d-grid">
                     <h5 class="card-title">@book.book.title</h5>
-                    <!-- Need to Fix onSale logic + Price history-->
                     @if(book.book.onSale)
                     {
                         <p class="card-text">
-                                <a><strong>Author:</strong> @book.authorModel.name </a><br> 
+                                <a><strong>Author:</strong> @book.authorModel.name </a><br>
                                 <a><strong>Published by:</strong> @string.Join(", ", book.publishers.Select(p => p.name))</a><br>
                                 <a><strong>Genre:</strong> @book.genreModel.name</a><br>
                                 <a><strong>Age limit:</strong> @book.book.ageLimit</a><br>
                                 <a><strong>Publish date:</strong> @book.book.pubDate.ToString("yyyy-MM-dd")</a><br>
                                 <a><strong>Rating:</strong> @book.book.starRate</a><br>
+                                @if(book.book.canBorrow)
+                                    {<a><strong>Borrow Price:</strong> @book.book.borrowPrice$</a><br>}
                                 <a class="text-muted text-decoration-line-through"><strong>Original Price:</strong> @book.book.buyingPrice$</a><br>
                                 <a><strong>Sale Price:</strong> @(book.book.buyingPrice * book.bookDiscountModel.discountPrecentage)$</a>
-
                         </p>
                     }
                     else
@@ -43,7 +53,9 @@
                             <a><strong>Age limit:</strong> @book.book.ageLimit</a><br>
                             <a><strong>Publish date:</strong> @book.book.pubDate.ToString("yyyy-MM-dd")</a><br>
                             <a><strong>Rating:</strong> @book.book.starRate</a><br>
-                            <a><strong>Price:</strong> @book.book.buyingPrice$</a><br>
+                            @if(book.book.canBorrow) 
+                                {<a><strong>Borrow Price:</strong> @book.book.borrowPrice$</a><br>}
+                            <a><strong>Buy Price:</strong> @book.book.buyingPrice$</a><br>
                         </p>
 
                     }
@@ -62,13 +74,27 @@
                                     
                                     <li class="dropdown-menu col" style="background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
                                         <div class="addToCart-menu-content">
-                                            <a class="dropdown-item" asp-controller="ShoppingCart" asp-action="AddToShoppingCart">Buy</a>
-                                            <a class="dropdown-item" asp-controller="ShoppingCart" asp-action="AddToShoppingCart">Borrow</a>
+                                            <a class="dropdown-item" 
+                                                asp-controller="ShoppingCart" 
+                                                asp-action="AddToShoppingCart"
+                                                asp-route-bookId="@book.book.id"
+                                                asp-route-userId="@currentUserId"
+                                                asp-route-format="pdf" 
+                                                asp-route-isBorrowed="false">
+                                                Buy</a>
+                                            <a class="dropdown-item" 
+                                                asp-controller="ShoppingCart" 
+                                                asp-action="AddToShoppingCart"
+                                                asp-route-bookId="@book.book.id"
+                                                asp-route-userId="@currentUserId"
+                                                asp-route-format="pdf" 
+                                                asp-route-isBorrowed="true">
+                                                Borrow</a>
                                         </div>
                                     </li>
                                 </div>
 
-            
+
                             </div>
                         </div>
                     }   
@@ -85,12 +111,16 @@
                                     
                                     <li class="dropdown-menu col" style="background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
                                         <div class="addToCart-menu-content">
-                                            <a class="dropdown-item" asp-controller="ShoppingCart" asp-action="AddToShoppingCart">Buy</a>
+                                            <a class="dropdown-item" 
+                                                asp-controller="ShoppingCart" 
+                                                asp-action="AddToShoppingCart"
+                                                asp-route-bookId="@book.book.id"
+                                                asp-route-format="pdf" 
+                                                asp-route-isBorrowed="false">
+                                                Buy</a>
                                         </div>
                                     </li>
                                 </div>
-
-                                
 
                             </div>
                         </div>

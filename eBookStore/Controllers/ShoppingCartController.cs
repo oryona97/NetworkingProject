@@ -78,7 +78,7 @@ public class ShoppingCartController : Controller
             }
             else
             {
-                return RedirectToAction("auth/login");
+                return RedirectToAction("login","auth");
             }
         }
         catch (Exception ex)
