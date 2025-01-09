@@ -15,27 +15,50 @@
                 <div class="info-container w-50 p-1">
                     <h2 class="Title-container">@Model.book.title</h2>
 
-                    <a>Author: @Model.authorModel.name</a><br> 
-                    <a>Published by: @string.Join(", ", @Model.publishers.Select(p => p.name))</a><br>
-                    <a>Genre: @Model.genreModel.name</a><br>
-                    <a>Age limit: @Model.book.ageLimit</a><br>
-                    <a>Publish date: @Model.book.pubDate</a><br>
-                    <a>Rating: @Model.book.starRate</a>
-
+                    <a><strong>Author:</strong> @Model.authorModel.name </a><br>
+                    <a><strong>Published by:</strong> @string.Join(", ", Model.publishers.Select(p => p.name))</a><br>
+                    <a><strong>Genre:</strong> @Model.genreModel.name</a><br>
+                    <a><strong>Age limit:</strong> @Model.book.ageLimit</a><br>
+                    <a><strong>Publish date:</strong> @Model.book.pubDate.ToString("yyyy-MM-dd")</a><br>
+                    <a><strong>Rating:</strong> @Model.book.starRate</a><br>
+                    
                     <div class="buyBorrowButtons">
                         @if(Model.book.onSale)
                         {
                             <a class="text-decoration-line-through">Old price: @Model.book.buyingPrice$</a><br>
-                            <button>New price: @(Model.book.buyingPrice * Model.bookDiscountModel.discountPrecentage)$</button>
+                            <a
+                            asp-controller="ShoppingCart" 
+                            asp-action="AddToShoppingCart"
+                            asp-route-bookId="@Model.book.id"
+                            asp-route-userId="@currentUserId"
+                            asp-route-format="pdf" 
+                            asp-route-isBorrowed="false"
+                            ><strong>Sale Price:</strong> @(Model.book.buyingPrice * Model.bookDiscountModel.discountPrecentage)$</a>
                         }
                         else
                         {
-                            <button>Buy-Now for @Model.book.buyingPrice$</button>
+                            <a
+                            asp-controller="ShoppingCart" 
+                            asp-action="AddToShoppingCart"
+                            asp-route-bookId="@Model.book.id"
+                            asp-route-userId="@currentUserId"
+                            asp-route-format="pdf" 
+                            asp-route-isBorrowed="false">
+                                <button>Buy: @Model.book.buyingPrice$</button>
+                            </a>
                         }
                         
                         @if(Model.book.canBorrow)
                         {
-                        <button>Borrow-Now for @Model.book.borrowPrice$</button>
+                            <a
+                            asp-controller="ShoppingCart" 
+                            asp-action="AddToShoppingCart"
+                            asp-route-bookId="@Model.book.id"
+                            asp-route-userId="@currentUserId"
+                            asp-route-format="pdf" 
+                            asp-route-isBorrowed="true">
+                                <button>Borrow: @Model.book.borrowPrice$</button>
+                            </a>
                         }
 
                         
