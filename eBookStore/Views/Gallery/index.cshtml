@@ -97,70 +97,27 @@
                     
                     <div class="card-body d-grid">
                         <h5 class="card-title">@book.book.title</h5>
-                        @if(book.book.onSale)
-                        {
-                            <p class="card-text">
-                                    <a><strong>Author:</strong> @book.authorModel.name </a><br>
-                                    <a><strong>Published by:</strong> @string.Join(", ", book.publishers.Select(p => p.name))</a><br>
-                                    <a><strong>Genre:</strong> @book.genreModel.name</a><br>
-                                    <a><strong>Age limit:</strong> @book.book.ageLimit</a><br>
-                                    <a><strong>Publish date:</strong> @book.book.pubDate.ToString("yyyy-MM-dd")</a><br>
-                                    <a><strong>Rating:</strong> @book.book.starRate</a><br>
-                                    @if(book.book.canBorrow)
-                                        {<a><strong>Borrow Price:</strong> @book.book.borrowPrice$</a><br>}
-                                    <a class="text-muted text-decoration-line-through"><strong>Original Price:</strong> @book.book.buyingPrice$</a><br>
-                                    <a><strong>Sale Price:</strong> @(book.book.buyingPrice * book.bookDiscountModel.discountPrecentage)$</a>
-                            </p>
-                        }
-                        else
-                        {
-                            <p class="card-text">
-                                <a><strong>Author:</strong> @book.authorModel.name </a><br> 
-                                <a><strong>Published by:</strong> @string.Join(", ", book.publishers.Select(p => p.name))</a><br>
-                                <a><strong>Genre:</strong> @book.genreModel.name</a><br>
-                                <a><strong>Age limit:</strong> @book.book.ageLimit</a><br>
-                                <a><strong>Publish date:</strong> @book.book.pubDate.ToString("yyyy-MM-dd")</a><br>
-                                <a><strong>Rating:</strong> @book.book.starRate</a><br>
-                                @if(book.book.canBorrow) 
-                                    {<a><strong>Borrow Price:</strong> @book.book.borrowPrice$</a><br>}
-                                <a><strong>Buy Price:</strong> @book.book.buyingPrice$</a><br>
-                            </p>
+                        <p class="card-text">
+                            <a><strong>Author:</strong> @book.authorModel.name </a><br> 
+                            <a><strong>Published by:</strong> @string.Join(", ", book.publishers.Select(p => p.name))</a><br>
+                            <a><strong>Genre:</strong> @book.genreModel.name</a><br>
+                            <a><strong>Age limit:</strong> @book.book.ageLimit</a><br>
+                            <a><strong>Publish date:</strong> @book.book.pubDate.ToString("yyyy-MM-dd")</a><br>
+                            <a><strong>Rating:</strong> @book.book.starRate</a><br>
+                            @if(book.book.onSale)
+                            {
+                                <a class="text-muted text-decoration-line-through"><strong>Original Price:</strong> @book.book.buyingPrice$</a><br>
+                                <a><strong>Sale Price:</strong> @(book.book.buyingPrice * book.bookDiscountModel.discountPrecentage)$</a>
+                            }
+                            else 
+                            {
+                                <a class="text-muted text-decoration-line-through"><strong>Price:</strong> @book.book.buyingPrice$</a><br>
+                            }
 
-                        }
+                        </p>
 
-                        @if(book.book.canBorrow)
-                        {
-                            <div class="price-container card-footer" style="background-color:white">
-                                <div class="row">
-
-                                    <div class="col" style="background-color: rgb(255, 255, 255);" id="Buy-Button">
-                                        <a href="#" class="Buy-button text-black">Buy-Now</a>
-                                    </div>
-                                    
-                                    <div class="dropdown col">
-                                        <a href="#" class="dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">Add to Cart</a>
-                                        
-                                        <li class="dropdown-menu col" style="background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
-                                            <div class="addToCart-menu-content">
-                                                <a class="dropdown-item" 
-                                                    asp-controller="ShoppingCart" 
-                                                    asp-action="AddToShoppingCart"
-                                                    asp-route-bookId="@book.book.id"
-                                                    asp-route-userId="@currentUserId"
-                                                    asp-route-format="pdf" 
-                                                    asp-route-isBorrowed="false">
-                                                    Buy</a>
-                                                <a class="dropdown-item" 
-                                                    asp-controller="ShoppingCart" 
-                                                    asp-action="AddToShoppingCart"
-                                                    asp-route-bookId="@book.book.id"
-                                                    asp-route-userId="@currentUserId"
-                                                    asp-route-format="pdf" 
-                                                    asp-route-isBorrowed="true">
-                                                    Borrow</a>
-                                            </div>
-                                        </li>
-                                    </div>
+                        <div class="price-container card-footer" style="background-color:white; z-index: 9999;">
+                            <div class="row">
 
                                 <div class="col" style=" background-color: rgb(255, 255, 255);" id="Buy-Button">
                                     <a href="#" class="Buy-button text-black">Buy-Now</a>
@@ -179,35 +136,7 @@
                                     </li>
                                 </div>
                             </div>
-                        }   
-                        else
-                        {
-                            <div class="price-container card-footer" style="background-color:white">
-                                <div class="row" style="column-gap: 5px;">
-                                    <div class="col" style="background-color: rgb(255, 255, 255);" id="Buy-Button">
-                                        <a href="#" class="Buy-button text-black">Buy-Now</a>
-                                    </div>
-
-                                    <div class="dropdown col">
-                                        <a href="#" class="dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">Add to Cart</a>
-                                        
-                                        <li class="dropdown-menu col" style="background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
-                                            <div class="addToCart-menu-content">
-                                                <a class="dropdown-item" 
-                                                    asp-controller="ShoppingCart" 
-                                                    asp-action="AddToShoppingCart"
-                                                    asp-route-bookId="@book.book.id"
-                                                    asp-route-format="pdf" 
-                                                    asp-route-isBorrowed="false">
-                                                    Buy</a>
-                                            </div>
-                                        </li>
-                                    </div>
-
-                                </div>
-                            </div>
-
-                        }
+                        </div>
                     </div>
                 </div> 
             }
