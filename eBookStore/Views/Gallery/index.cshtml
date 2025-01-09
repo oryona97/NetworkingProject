@@ -1,6 +1,8 @@
 @model eBookStore.Models.ViewModels.GalleryPageViewModel
 @{
     ViewData["Title"] = "Gallery";
+    var currentUserId = Context.Session.GetInt32("userId") ?? 0;
+
 }
 
 <div class="Gallery-container d-flex">
@@ -108,7 +110,6 @@
                                         {<a><strong>Borrow Price:</strong> @book.book.borrowPrice$</a><br>}
                                     <a class="text-muted text-decoration-line-through"><strong>Original Price:</strong> @book.book.buyingPrice$</a><br>
                                     <a><strong>Sale Price:</strong> @(book.book.buyingPrice * book.bookDiscountModel.discountPrecentage)$</a>
-
                             </p>
                         }
                         else
@@ -145,6 +146,7 @@
                                                     asp-controller="ShoppingCart" 
                                                     asp-action="AddToShoppingCart"
                                                     asp-route-bookId="@book.book.id"
+                                                    asp-route-userId="@currentUserId"
                                                     asp-route-format="pdf" 
                                                     asp-route-isBorrowed="false">
                                                     Buy</a>
@@ -152,6 +154,7 @@
                                                     asp-controller="ShoppingCart" 
                                                     asp-action="AddToShoppingCart"
                                                     asp-route-bookId="@book.book.id"
+                                                    asp-route-userId="@currentUserId"
                                                     asp-route-format="pdf" 
                                                     asp-route-isBorrowed="true">
                                                     Borrow</a>
