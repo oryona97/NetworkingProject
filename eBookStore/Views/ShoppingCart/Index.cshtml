@@ -116,7 +116,7 @@
                             <div class="cart-item" data-book-id="@bookVM.book.id">
                                 <div class="row align-items-center">
                                     <div class="col-md-2">
-                                        <img src="@(bookVM.coverModel?.imgName ?? "/images/default-cover.jpg")" 
+                                        <img src="images/bookCovers/@bookVM.coverModel.imgName" 
                                              class="img-fluid book-image" 
                                              alt="@bookVM.book.title">
                                     </div>
@@ -225,6 +225,7 @@
             const cartItem = document.querySelector(`.cart-item[data-book-id="${bookId}"]`);
             const purchasePrice = cartItem.querySelector('.purchase-price');
             const borrowPrice = cartItem.querySelector('.borrow-price');
+            console.log(purchaseTypes);
 
             if (purchaseType === 'borrow') {
                 purchasePrice.style.display = 'none';
@@ -256,26 +257,31 @@
                     format: format,
                     purchaseType: purchaseType
                 };
-            });
+        });
 
-            const cartData = { items: cartItems };
+        const cartData = { items: cartItems };
 
-            try {
-                const response = await fetch('/checkout/create-checkout-session', {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(cartData)
-                const session = await response.json();
-
-                const result = await stripe.redirectToCheckout({ sessionId: session.sessionId });
-
+        fetch('/checkout/create-checkout-session', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(cartData)
+            })
+            .then(function(response) {
+                return response.json();
+            })
+            .then(function(session) {
+                return stripe.redirectToCheckout({ sessionId: session.sessionId });
+            })
+            .then(function(result) {
                 if (result.error) {
                     alert(result.error.message);
                 }
-            } catch (error) {
+            })
+            .catch(function(error) {
                 console.error('Error:', error);
-                alert('An error occurred during checkout. Please try again.');
-            }
+            });
         });
 
         const removeFromCart = async (bookId) => {
@@ -314,13 +320,6 @@
             }
         }
 
-        const updateCartCount = (count) => {
-            const cartTitle = document.querySelector('h4.mb-4');
-            if (cartTitle) {
-                cartTitle.textContent = `Shopping Cart (${count} items)`;
-            }
-        }
-
         const updateCartTotal = () => {
             const cartItems = document.querySelectorAll('.cart-item');
             let total = 0;
@@ -331,7 +330,7 @@
                 const priceElement = purchaseType === 'borrow' ? 
                     item.querySelector('.borrow-price .price-badge') :
                     item.querySelector('.purchase-price');
-                    
+
                 const price = parseFloat(priceElement.textContent.replace('₪', ''));
                 total += price;
             });

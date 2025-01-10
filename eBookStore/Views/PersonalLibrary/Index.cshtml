@@ -1,4 +1,5 @@
-@model List<eBookStore.Models.ViewModels.BookViewModel>
+@using eBookStore.Models.ViewModels
+@model List<BookViewModel>
 @{
     ViewData["Title"] = "My Library";
     var userId = Context.Session.GetInt32("userId"); 
@@ -49,7 +50,7 @@
     }
 
     <div id="booksContainer">
-        @if (!Model.Any())
+        @if (!Model.Any() && (ViewBag.BorrowedBooks == null || !ViewBag.BorrowedBooks.Any()))
         {
             <div class="text-center empty-library py-5">
                 <i class="bi bi-book display-1 text-muted mb-3"></i>
@@ -62,107 +63,133 @@
         }
         else
         {
-            <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
-                @foreach (var book in Model)
-                {
-                    var isBookBorrowed = ViewBag.BorrowedBooks?.Any((Func<dynamic, bool>)(b => b.book.id == book.book.id)) ?? false;
-                    
-                    <div class="col book-item">
-                        <div class="card h-100 book-card">
-                            <div class="card-img-wrapper">
-                                @if (book.coverModel != null)
-                                {
-                                    <img src="images/bookCovers/@book.coverModel.imgName" class="card-img-top" alt="@book.book.title">
-                                }
-                                else
-                                {
-                                    <img src="/images/default-book-cover.jpg" class="card-img-top" alt="Default Cover">
-                                }
-                                <div class="card-overlay">
-                                    <a asp-action="Details" asp-route-id="@book.book.id" class="btn btn-light btn-sm">View Details</a>
-                                </div>
-                            </div>
-                            <div class="card-body">
-                                <h5 class="card-title text-truncate" title="@book.book.title">@book.book.title</h5>
-                                <div class="book-info">
-                                    <span class="publisher">
-                                        <i class="bi bi-building"></i>
-                                        @string.Join(", ", book.publishers.Select(p => p.name))
-                                    </span>
-                                    <span class="genre">
-                                        <i class="bi bi-tag"></i>
-                                        @(book.genreModel?.name ?? "Unknown Genre")
-                                    </span>
-                                    <span class="date">
-                                        <i class="bi bi-calendar3"></i>
-                                        @book.book.pubDate.ToString("MMM yyyy")
-                                    </span>
-                                    @if (book.book.canBorrow)
+            var borrowedBooks = ViewBag.BorrowedBooks as List<BookViewModel>;
+            var hasBorrowedBooks = borrowedBooks != null && borrowedBooks.Any();
+            if (hasBorrowedBooks)
+            {
+                <h3 class="mt-4 mb-3">Borrowed Books</h3>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4 mb-5">
+                    @foreach (var book in borrowedBooks)
+                    {
+                        <div class="col book-item">
+                            <div class="card h-100 book-card borrowed-book">
+                                <div class="card-img-wrapper">
+                                    @if (book.coverModel != null)
                                     {
-                                        <span class="borrow-status">
-                                            <i class="bi bi-book"></i>
-                                            @if (isBookBorrowed)
+                                        <img src="images/bookCovers/@book.coverModel.imgName" class="card-img-top" alt="@book.book.title">
+                                    }
+                                    else
+                                    {
+                                        <img src="/images/default-book-cover.jpg" class="card-img-top" alt="Default Cover">
+                                    }
+                                    <div class="card-overlay">
+                                        <a asp-action="Details" asp-route-id="@book.book.id" 
+                                           class="btn btn-light btn-sm">View Details</a>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title text-truncate" title="@book.book.title">@book.book.title</h5>
+                                    <div class="borrowed-status mb-2">
+                                        @{
+                                            // Get current time plus 30 days (default borrow period)
+                                            DateTime dueDate = DateTime.UtcNow.AddDays(30);
+                                            var timeLeft = (dueDate - DateTime.UtcNow).TotalDays;
+                                        }
+                                        <span class="badge @(timeLeft > 0 ? "bg-info" : "bg-danger") text-white">
+                                            <i class="bi bi-clock me-1"></i>
+                                            @if (timeLeft > 0)
                                             {
-                                                <span class="badge bg-success">Borrowed</span>
-                                                var borrowedBook = ViewBag.BorrowedBooks.FirstOrDefault((Func<dynamic, bool>)(b => b.book.id == book.book.id));
-                                                if (borrowedBook != null)
-                                                {
-                                                    var dueDate = borrowedBook.DueDate;
-                                                    var daysLeft = (dueDate - DateTime.UtcNow).Days;
-                                                    var dueDateClass = daysLeft <= 5 ? "text-danger" : "text-muted";
-                                                    <small class="d-block @dueDateClass">
-                                                        Due: @dueDate.ToString("MMM dd, yyyy")
-                                                        @if (daysLeft <= 5)
-                                                        {
-                                                            <i class="bi bi-exclamation-circle"></i>
-                                                        }
-                                                    </small>
-                                                }
-                                            }
-                                            else if (book.book.amountOfCopies > 0)
-                                            {
-                                                <span class="badge bg-info">Available</span>
+                                                @: Due in @Math.Ceiling(timeLeft) days
                                             }
                                             else
                                             {
-                                                <span class="badge bg-secondary">Unavailable</span>
+                                                @: Overdue by @Math.Abs(Math.Floor(timeLeft)) days
                                             }
                                         </span>
-                                    }
+                                    </div>
+                                    <div class="book-info">
+                                        <span class="publisher">
+                                            <i class="bi bi-building"></i>
+                                            @string.Join(", ", book.publishers.Select(p => p.name))
+                                        </span>
+                                        <span class="genre">
+                                            <i class="bi bi-tag"></i>
+                                            @(book.genreModel?.name ?? "Unknown Genre")
+                                        </span>
+                                        <span class="date">
+                                            <i class="bi bi-calendar3"></i>
+                                            @book.book.pubDate.ToString("MMM yyyy")
+                                        </span>
+                                    </div>
                                 </div>
-                            </div>
-                            <div class="card-footer bg-transparent">
-                                <div class="d-flex justify-content-between align-items-center">
-                                    <form asp-action="RemoveBook" asp-route-id="@book.book.id" method="post" class="d-inline remove-form">
-                                        <button type="submit" class="btn btn-link text-danger remove-btn" onclick="return confirm('Remove this book from your library?')">
-                                            <i class="bi bi-trash"></i> Remove
+                                <div class="card-footer bg-transparent">
+                                    <form asp-action="ReturnBook" asp-route-id="@book.book.id" 
+                                          method="post" class="d-inline">
+                                        <button type="submit" class="btn btn-link text-primary" 
+                                                onclick="return confirm('Return this book?')">
+                                            <i class="bi bi-arrow-return-left"></i> Return Book
                                         </button>
                                     </form>
-                                    @if (book.book.canBorrow)
-                                    {
-                                        @if (isBookBorrowed)
-                                        {
-                                            <form asp-action="ReturnBook" asp-route-id="@book.book.id" method="post" class="d-inline">
-                                                <button type="submit" class="btn btn-outline-primary btn-sm">
-                                                    <i class="bi bi-arrow-return-left"></i> Return
-                                                </button>
-                                            </form>
-                                        }
-                                        else if (book.book.amountOfCopies > 0)
-                                        {
-                                            <form asp-action="BorrowBook" asp-route-id="@book.book.id" method="post" class="d-inline">
-                                                <button type="submit" class="btn btn-outline-success btn-sm">
-                                                    <i class="bi bi-book"></i> Borrow
-                                                </button>
-                                            </form>
-                                        }
-                                    }
                                 </div>
                             </div>
                         </div>
-                    </div>
-                }
-            </div>
+                    }
+                </div>
+            }
+
+            @if (Model.Any())
+            {
+                <h3 class="mt-4 mb-3">Owned Books</h3>
+                <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
+                    @foreach (var book in Model)
+                    {
+                        <div class="col book-item">
+                            <div class="card h-100 book-card">
+                                <div class="card-img-wrapper">
+                                    @if (book.coverModel != null)
+                                    {
+                                        <img src="images/bookCovers/@book.coverModel.imgName" class="card-img-top" alt="@book.book.title">
+                                    }
+                                    else
+                                    {
+                                        <img src="/images/default-book-cover.jpg" class="card-img-top" alt="Default Cover">
+                                    }
+                                    <div class="card-overlay">
+                                        <a asp-action="Details" asp-route-id="@book.book.id" 
+                                           class="btn btn-light btn-sm">View Details</a>
+                                    </div>
+                                </div>
+                                <div class="card-body">
+                                    <h5 class="card-title text-truncate" title="@book.book.title">@book.book.title</h5>
+                                    <div class="book-info">
+                                        <span class="publisher">
+                                            <i class="bi bi-building"></i>
+                                            @string.Join(", ", book.publishers.Select(p => p.name))
+                                        </span>
+                                        <span class="genre">
+                                            <i class="bi bi-tag"></i>
+                                            @(book.genreModel?.name ?? "Unknown Genre")
+                                        </span>
+                                        <span class="date">
+                                            <i class="bi bi-calendar3"></i>
+                                            @book.book.pubDate.ToString("MMM yyyy")
+                                        </span>
+                                    </div>
+                                </div>
+                                <div class="card-footer bg-transparent">
+                                    <form asp-action="RemoveBook" asp-route-id="@book.book.id" 
+                                          method="post" class="d-inline remove-form">
+                                        <button type="submit" class="btn btn-link text-danger remove-btn" 
+                                                onclick="return confirm('Remove this book from your library?')">
+                                            <i class="bi bi-trash"></i> Remove
+                                        </button>
+                                    </form>
+                                </div>
+                            </div>
+                        </div>
+                    }
+                </div>
+            }
         }
     </div>
 </div>
@@ -177,12 +204,12 @@
                     return false;
                 }
             });
+            
             let searchTimer;
 
             searchInput.on('input', function() {
                 clearTimeout(searchTimer);
                 const query = $(this).val();
-
                 searchTimer = setTimeout(function() {
                     filterBooks(query);
                 }, 300);
@@ -204,7 +231,15 @@
                     }
                 });
 
-                if ($('.book-item:visible').length === 0) {
+                // Check visibility for each section
+                const borrowedVisible = $('.borrowed-book').parent('.book-item:visible').length > 0;
+                const ownedVisible = $('.book-card:not(.borrowed-book)').parent('.book-item:visible').length > 0;
+
+                // Show/hide section headers based on visibility
+                $('h3:contains("Borrowed Books")').toggle(borrowedVisible);
+                $('h3:contains("Owned Books")').toggle(ownedVisible);
+
+                if (!borrowedVisible && !ownedVisible) {
                     if (!$('.no-results').length) {
                         $('#booksContainer').append(`
                             <div class="text-center empty-library py-5 no-results">

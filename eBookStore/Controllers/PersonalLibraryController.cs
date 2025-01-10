@@ -25,7 +25,7 @@ public class PersonalLibraryController : Controller
     [Route("library")]
     [Route("PersonalLibrary")]
     // GET: PersonalLibrary
-    public IActionResult Index()
+    public async Task<IActionResult> Index()
     {
         try
         {
@@ -39,6 +39,9 @@ public class PersonalLibraryController : Controller
             TempData["Error"] = null;
 
             var userBooks = _libraryRepo.GetUserBooks(userId.Value);
+
+            var borrowedBooks = (await _libraryRepo.GetBorrowedBooksAsync(userId.Value)).ToList();
+            ViewBag.BorrowedBooks = borrowedBooks;
 
             if (TempData["Success"] == null && userBooks.Count == 0)
             {
@@ -57,7 +60,7 @@ public class PersonalLibraryController : Controller
 
     // POST: PersonalLibrary/AddBook/5
     [HttpPost]
-    public IActionResult AddBook(int id)
+    public async Task<IActionResult> AddBook(int id)
     {
         try
         {
@@ -69,7 +72,7 @@ public class PersonalLibraryController : Controller
                 return RedirectToAction("Login", "Auth");
             }
 
-            _libraryRepo.AddBookToLibrary(id, userId.Value);
+            await _libraryRepo.AddBookToLibrary(id, userId.Value);
             TempData["Success"] = "Great choice! The book has been added to your personal library.";
             return RedirectToAction(nameof(Index));
         }

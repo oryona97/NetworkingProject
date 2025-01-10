@@ -134,14 +134,24 @@ public class CheckoutController : Controller
         }
 
         int? id = null;
+        decimal total = 0;
         try
         {
             foreach (var item in cart.Items)
             {
                 try
                 {
-                    await libRepo.AddBookToLibrary(currentUserId.Value, item.id);
-                    repoLogger.LogInformation($"Successfully added book {item.id} to personal library for user {currentUserId.Value}");
+                    if (item.PurchaseType.ToLower() == "borrow")
+                    {
+                        await libRepo.BorrowBookAsync(currentUserId.Value, item.id);
+                    }
+                    else
+                    {
+                        await libRepo.AddBookToLibrary(currentUserId.Value, item.id);
+                    }
+
+                    _shoppingCartRepo.RemoveOneFromShoppingCart(currentUserId.Value, item.id);
+                    repoLogger.LogInformation($"Successfully processed book {item.id} for user {currentUserId.Value}");
 
                     var receiptModel = new RecieptModel
                     {
@@ -158,7 +168,7 @@ public class CheckoutController : Controller
                         throw new Exception($"Failed to create receipt for book {item.id}");
                     }
 
-                    _shoppingCartRepo.RemoveOneFromShoppingCart(currentUserId.Value, item.id);
+                    total += item.Amount / 100m;
                 }
                 catch (Exception ex)
                 {
@@ -167,10 +177,28 @@ public class CheckoutController : Controller
                 }
             }
 
+            string orderId = $"ORD-{DateTime.UtcNow:yyyyMMddHHmmss}-{id}";
+
+            string customerName = user.firstName ?? user.email.Split('@')[0];
+
+            var emailGenerator = CreateEmailGenerator();
+            string emailContent = emailGenerator.GenerateOrderConfirmationEmail(
+                customerName,
+                cart.Items,
+                orderId,
+                cart.Items.First().Currency.ToUpper()
+            );
+
+            _userRepo.SendEmail(
+                user.email,
+                $"{_storeName} - Order Confirmation #{orderId}",
+                emailContent
+            );
+
             HttpContext.Session.Remove("cart");
 
-            ViewBag.OrderId = id;
-            return RedirectToAction("landingPage", "Home");
+            ViewBag.OrderId = orderId;
+            return View();
         }
         catch (Exception ex)
         {
@@ -199,5 +227,5 @@ public class CartItem
     public string ProductDescription { get; set; } = String.Empty;
     public int Amount { get; set; } = 0;
     public string Currency { get; set; } = String.Empty;
-    public string purchaseType { get; set; } = String.Empty;
+    public string PurchaseType { get; set; } = "buy";
 }
