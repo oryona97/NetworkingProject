@@ -88,7 +88,8 @@ public class ShoppingCartController : Controller
             var books = libRepo.GetUserBooks(currentUser.Value);
             foreach (var book in books)
             {
-                if (book.book.id == model.BookId){
+                if (book.book.id == model.BookId)
+                {
                     return Json(new { success = false, message = "Book is already in your library." });
                 }
             }
@@ -198,4 +199,3 @@ public class ShoppingCartController : Controller
     }
 
 }
-
