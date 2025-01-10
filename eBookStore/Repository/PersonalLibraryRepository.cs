@@ -367,8 +367,8 @@ public class PersonalLibraryRepository
                 command.Parameters.AddWithValue("@UserId", userId);
                 command.Parameters.AddWithValue("@BookId", bookId);
 
-                var existingCount = (int)await command.ExecuteScalarAsync();
-                if (existingCount > 0)
+                var existingCount = await command.ExecuteScalarAsync();
+                if ((int)existingCount! > 0)
                 {
                     throw new InvalidOperationException("User has already borrowed this book");
                 }

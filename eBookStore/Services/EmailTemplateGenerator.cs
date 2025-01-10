@@ -1,6 +1,5 @@
 using System.Text;
 using System.Web;
-using System.Net;
 
 public class EmailTemplateGenerator
 {
