@@ -1,14 +1,14 @@
 using eBookStore.Models;
 using Microsoft.Data.SqlClient;
-namespace eBookStore.Repositories;
+namespace eBookStore.Repository;
 
 public class ReceiptRepository
 {
     private readonly string? _connectionString;
 
-    public ReceiptRepository(IConfiguration configuration)
+    public ReceiptRepository(string? connectionString)
     {
-        _connectionString = configuration.GetConnectionString("DefaultConnection");
+        _connectionString = connectionString;
     }
 
     private RecieptModel MapToModel(SqlDataReader reader)
@@ -153,7 +153,7 @@ public class ReceiptRepository
         {
             await connection.OpenAsync();
             using (var command = new SqlCommand(
-                "SELECT COALESCE(SUM(total), 0.00) FROM Reciept WHERE userId = @userId", 
+                "SELECT COALESCE(SUM(total), 0.00) FROM Reciept WHERE userId = @userId",
                 connection))
             {
                 command.Parameters.AddWithValue("@userId", userId);

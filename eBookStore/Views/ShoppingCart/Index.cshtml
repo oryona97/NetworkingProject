@@ -13,10 +13,12 @@
         padding: 1.5rem;
         margin-bottom: 1rem;
         border: 1px solid #eee;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.05);
     }
 
     .cart-item:hover {
         border-color: #dee2e6;
+        box-shadow: 0 4px 8px rgba(0,0,0,0.1);
     }
 
     .remove-btn {
@@ -29,24 +31,61 @@
 
     .remove-btn:hover {
         color: #bb2d3b;
+        transform: scale(1.05);
     }
 
     .book-image {
-        border-radius: 4px;
+        border-radius: 8px;
+        box-shadow: 0 2px 4px rgba(0,0,0,0.1);
     }
 
     .summary-card {
         border: 1px solid #eee;
-        border-radius: 8px;
+        border-radius: 12px;
+        box-shadow: 0 4px 6px rgba(0,0,0,0.05);
+        position: sticky;
+        top: 20px;
     }
 
     .checkout-btn, .continue-btn {
-        transition: background-color 0.2s ease;
+        transition: all 0.3s ease;
+    }
+
+    .checkout-btn:hover {
+        transform: translateY(-2px);
     }
 
     .empty-cart {
         text-align: center;
         padding: 4rem 2rem;
+    }
+
+    .purchase-type-switch {
+        background: #f8f9fa;
+        border-radius: 8px;
+        padding: 0.5rem;
+        margin-bottom: 1rem;
+    }
+
+    .format-select {
+        background-color: #f8f9fa;
+        border-radius: 6px;
+    }
+
+    .price-badge {
+        font-size: 1.1rem;
+        padding: 0.4rem 0.8rem;
+        border-radius: 6px;
+        background: #f8f9fa;
+    }
+
+    .savings-badge {
+        font-size: 0.9rem;
+        padding: 0.2rem 0.6rem;
+        border-radius: 4px;
+        background: #28a745;
+        color: white;
+        margin-left: 0.5rem;
     }
 </style>
 
@@ -54,7 +93,7 @@
     @if (!Model?.Any() ?? true)
     {
         <div class="empty-cart">
-            <i class="bi bi-cart text-muted" style="font-size: 2.5rem;"></i>
+            <i class="bi bi-cart text-muted" style="font-size: 3rem;"></i>
             <h4 class="mt-4 mb-3">Your cart is empty</h4>
             <p class="text-muted">Looking for something to read?</p>
             <a href="@Url.Action("Index", "Gallery")" class="btn btn-primary continue-btn">
@@ -74,7 +113,7 @@
                     {
                         @if (bookVM?.book != null)
                         {
-                            <div class="cart-item">
+                            <div class="cart-item" data-book-id="@bookVM.book.id">
                                 <div class="row align-items-center">
                                     <div class="col-md-2">
                                         <img src="@(bookVM.coverModel?.imgName ?? "/images/default-cover.jpg")" 
@@ -87,8 +126,32 @@
                                         {
                                             <p class="text-muted mb-2">by @bookVM.authorModel.name</p>
                                         }
-                                        <div class="form-group mb-0">
-                                            <select class="form-select form-select-sm" 
+                                        
+                                        <div class="purchase-type-switch mb-3">
+                                            <div class="form-check form-check-inline">
+                                                <input class="form-check-input" type="radio" 
+                                                       name="purchaseType_@bookVM.book.id" 
+                                                       id="buy_@bookVM.book.id" 
+                                                       value="buy"
+                                                       checked
+                                                       onchange="updatePurchaseType(@bookVM.book.id)">
+                                                <label class="form-check-label" for="buy_@bookVM.book.id">Buy</label>
+                                            </div>
+                                            @if (bookVM.book.canBorrow && bookVM.book.amountOfCopies > 0)
+                                            {
+                                                <div class="form-check form-check-inline">
+                                                    <input class="form-check-input" type="radio" 
+                                                           name="purchaseType_@bookVM.book.id" 
+                                                           id="borrow_@bookVM.book.id" 
+                                                           value="borrow"
+                                                           onchange="updatePurchaseType(@bookVM.book.id)">
+                                                    <label class="form-check-label" for="borrow_@bookVM.book.id">Borrow (30 days)</label>
+                                                </div>
+                                            }
+                                        </div>
+
+                                        <div class="form-group mb-3">
+                                            <select class="form-select form-select-sm format-select" 
                                                     style="width: auto;"
                                                     data-book-id="@bookVM.book.id"
                                                     onchange="updateFormat(this, @bookVM.book.id)">
@@ -97,14 +160,21 @@
                                                 <option value="mobi">MOBI</option>
                                             </select>
                                         </div>
-                                        <span class="text-primary">$@bookVM.book.buyingPrice.ToString("0.00")</span>
+                                        
+                                        <div class="price-container">
+                                            <span class="price-badge text-primary purchase-price">₪@bookVM.book.buyingPrice.ToString("0.00")</span>
+                                            <span class="borrow-price" style="display: none;">
+                                                <span class="price-badge text-success">₪@(((decimal)bookVM.book.buyingPrice * 0.2M).ToString("0.00"))</span>
+                                                <span class="savings-badge">Save 80%</span>
+                                            </span>
+                                        </div>
                                     </div>
                                     <div class="col-md-3 text-end">
                                         <button type="button" 
                                                 class="remove-btn" 
                                                 data-book-id="@bookVM.book.id" 
                                                 onclick="removeFromCart(@bookVM.book.id)">
-                                            Remove
+                                            <i class="bi bi-trash"></i> Remove
                                         </button>
                                     </div>
                                 </div>
@@ -112,29 +182,23 @@
                         }
                     }
                 }
-                else
-                {
-                    <div class="alert alert-info">
-                        Your shopping cart is empty.
-                    </div>
-                }
             </div>
 
             <!-- Order Summary -->
             <div class="col-lg-4">
                 <div class="summary-card p-4">
-                    <h4 class="mb-4">Summary</h4>
+                    <h4 class="mb-4">Order Summary</h4>
                     <div class="d-flex justify-content-between mb-3">
-                        <span class="text-muted">Total</span>
-                        <span class="h5 mb-0">$@Model.Where(b => b?.book != null).Sum(b => b.book.buyingPrice).ToString("0.00")</span>
+                        <span class="text-muted">Subtotal</span>
+                        <span class="h5 mb-0">₪@Model.Where(b => b?.book != null).Sum(b => b.book.buyingPrice).ToString("0.00")</span>
                     </div>
                     <hr class="my-4">
                     <button type="button" id="checkout-button" class="btn btn-primary w-100 mb-3 checkout-btn">
-                        Checkout
+                        <i class="bi bi-lock"></i>Checkout
                     </button>
                     <a href="@Url.Action("landingPage", "Home")" 
                        class="btn btn-outline-secondary w-100 continue-btn">
-                        Continue Shopping
+                        <i class="bi bi-arrow-left"></i> Continue Shopping
                     </a>
                 </div>
             </div>
@@ -145,99 +209,116 @@
 @section scripts {
     <script src="https://js.stripe.com/v3/"></script>
     <script>
-        // Initialize Stripe with your publishable key
         var stripe = Stripe('@Configuration["Stripe:PublicKey"]');
         const selectedFormats = {};
+        const purchaseTypes = {};
 
         const updateFormat = (selectElement, bookId) => {
-            const selectedFormat = selectElement.value;
-            selectedFormats[bookId] = selectedFormat;
+            selectedFormats[bookId] = selectElement.value;
+            updateCartTotal();
+        }
+
+        const updatePurchaseType = (bookId) => {
+            const purchaseType = document.querySelector(`input[name="purchaseType_${bookId}"]:checked`).value;
+            purchaseTypes[bookId] = purchaseType;
+
+            const cartItem = document.querySelector(`.cart-item[data-book-id="${bookId}"]`);
+            const purchasePrice = cartItem.querySelector('.purchase-price');
+            const borrowPrice = cartItem.querySelector('.borrow-price');
+
+            if (purchaseType === 'borrow') {
+                purchasePrice.style.display = 'none';
+                borrowPrice.style.display = 'inline-block';
+            } else {
+                purchasePrice.style.display = 'inline-block';
+                borrowPrice.style.display = 'none';
+            }
+
+            updateCartTotal();
         }
 
         document.getElementById('checkout-button').addEventListener('click', async function(e) {
             e.preventDefault();
-            // Prepare the cart data
-            var cartData = {
-                items: [@Html.Raw(string.Join(",", 
-                    Model.Where(b => b?.book != null).Select(b => new
-                    {
-						id = b.book.id,
-                        productName = b.book.title,
-                        productDescription = b.authorModel?.name != null ? $"by {b.authorModel.name}" : "",
-                        amount = (int)(b.book.buyingPrice * 100), 
-                        currency = "usd",
-                        pormat = "pdf"
-                    }).Select(item => System.Text.Json.JsonSerializer.Serialize(item))))]
-            };
+            const cartItems = Array.from(document.querySelectorAll('.cart-item')).map(item => {
+                const bookId = item.dataset.bookId;
+                const purchaseType = purchaseTypes[bookId] || 'buy';
+                const format = selectedFormats[bookId] || 'pdf';
+                const price = purchaseType === 'borrow' ? 
+                    parseFloat(item.querySelector('.borrow-price .price-badge').textContent.replace('₪', '')) :
+                    parseFloat(item.querySelector('.purchase-price').textContent.replace('₪', ''));
 
-            // Create checkout session
-            fetch('/checkout/create-checkout-session', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(cartData)
-            })
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(session) {
-                return stripe.redirectToCheckout({ sessionId: session.sessionId });
-            })
-            .then(function(result) {
+                return {
+                    id: parseInt(bookId),
+                    productName: item.querySelector('h5').textContent,
+                    productDescription: item.querySelector('.text-muted')?.textContent || '',
+                    amount: Math.round(price * 100),
+                    currency: 'usd',
+                    format: format,
+                    purchaseType: purchaseType
+                };
+            });
+
+            const cartData = { items: cartItems };
+
+            try {
+                const response = await fetch('/checkout/create-checkout-session', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(cartData)
+                const session = await response.json();
+
+                const result = await stripe.redirectToCheckout({ sessionId: session.sessionId });
+
                 if (result.error) {
                     alert(result.error.message);
                 }
-            })
-            .catch(function(error) {
+            } catch (error) {
                 console.error('Error:', error);
-            });
+                alert('An error occurred during checkout. Please try again.');
+            }
         });
 
-        const removeFromCart = bookId => {
+        const removeFromCart = async (bookId) => {
             if (!confirm('Are you sure you want to remove this item from your cart?')) {
                 return;
             }
 
-            fetch('/ShoppingCart/RemoveFromShoppingCart', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({
-                    bookId: bookId,
-                    isBorrowed: false
-                })
-            })
-            .then(response => response.json())
-            .then(result => {
+            try {
+                const response = await fetch('/ShoppingCart/RemoveFromShoppingCart', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({
+                        bookId: bookId,
+                        isBorrowed: purchaseTypes[bookId] === 'borrow'
+                    })
+                });
+
+                const result = await response.json();
                 if (result.success) {
-                    // Remove the item from DOM
-                    const cartItem = document.querySelector(`.cart-item button[data-book-id="${bookId}"]`).closest('.cart-item');
+                    const cartItem = document.querySelector(`.cart-item[data-book-id="${bookId}"]`);
                     cartItem.remove();
 
-                    // Update cart count in title
                     const remainingItems = document.querySelectorAll('.cart-item').length;
-                    const cartTitle = document.querySelector('h4.mb-4');
-                    if (cartTitle) {
-                        cartTitle.textContent = `Shopping Cart (${remainingItems} items)`;
-                    }
-
+                    updateCartCount(remainingItems);
                     updateCartTotal();
 
-                    // If cart is empty, reload the page to show empty cart message
                     if (remainingItems === 0) {
                         window.location.reload();
                     }
-
                 } else {
                     alert(result.message || 'Failed to remove item from cart');
                 }
-            })
-            .catch(error => {
+            } catch (error) {
                 console.error('Error:', error);
                 alert('Error removing item from cart');
-            });
+            }
+        }
+
+        const updateCartCount = (count) => {
+            const cartTitle = document.querySelector('h4.mb-4');
+            if (cartTitle) {
+                cartTitle.textContent = `Shopping Cart (${count} items)`;
+            }
         }
 
         const updateCartTotal = () => {
@@ -245,15 +326,26 @@
             let total = 0;
 
             cartItems.forEach(item => {
-                const priceText = item.querySelector('.text-primary').textContent;
-                const price = parseFloat(priceText.replace('$', ''));
+                const bookId = item.dataset.bookId;
+                const purchaseType = purchaseTypes[bookId] || 'buy';
+                const priceElement = purchaseType === 'borrow' ? 
+                    item.querySelector('.borrow-price .price-badge') :
+                    item.querySelector('.purchase-price');
+                    
+                const price = parseFloat(priceElement.textContent.replace('₪', ''));
                 total += price;
             });
 
             const totalElement = document.querySelector('.summary-card .h5');
             if (totalElement) {
-                totalElement.textContent = `$${total.toFixed(2)}`;
+                totalElement.textContent = `₪${total.toFixed(2)}`;
             }
         }
+
+        // Initialize purchase types
+        document.querySelectorAll('.cart-item').forEach(item => {
+            const bookId = item.dataset.bookId;
+            purchaseTypes[bookId] = 'buy';
+        });
     </script>
 }

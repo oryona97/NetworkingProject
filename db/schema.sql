@@ -60,6 +60,7 @@ GO
 CREATE TABLE [PersonalLibrary] (
   [userId] int,
   [bookId] int ,
+  [format] nvarchar(10) DEFAULT ('pdf'),
   PRIMARY KEY (userId,bookId),
   [createdAt] datetime
 )
@@ -88,6 +89,7 @@ CREATE TABLE [BorrowedBooks] (
   [id] int IDENTITY(50,1) PRIMARY KEY,
   [userId] int,
   [bookId] int,
+  [endDate] datetime,
   [createdAt] datetime
 )
 GO
@@ -205,11 +207,12 @@ CREATE TABLE [BookShoppingCart] (
 GO
 
 CREATE TABLE [Reciept] (
-  [id] int IDENTITY(50,1) PRIMARY KEY,
+  [id] int IDENTITY(50,1),
   [userId] int,
   [bookId] int,
   [total] decimal(10,2),
-  [createdAt] datetime
+  [createdAt] datetime,
+  PRIMARY KEY (id, userId, bookId)
 )
 GO
 

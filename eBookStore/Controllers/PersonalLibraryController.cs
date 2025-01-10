@@ -55,36 +55,6 @@ public class PersonalLibraryController : Controller
         }
     }
 
-    // GET: PersonalLibrary/Details/5
-    public IActionResult Details(int id)
-    {
-        try
-        {
-            int? userId = HttpContext.Session.GetInt32("userId");
-            if (!userId.HasValue)
-            {
-                TempData["Error"] = "You need to be logged in to view book details. Please log in to continue.";
-                TempData["ReturnUrl"] = $"/PersonalLibrary/Details/{id}";
-                return RedirectToAction("Login", "Auth");
-            }
-
-            var book = _libraryRepo.GetBookDetails(id, userId.Value);
-            if (book == null)
-            {
-                TempData["Warning"] = "The requested book was not found in your library. It may have been removed or you might not have access to it.";
-                return RedirectToAction(nameof(Index));
-            }
-
-            return View(book);
-        }
-        catch (Exception ex)
-        {
-            _logger.LogError(ex, "Error retrieving book details for ID: {BookId}", id);
-            TempData["Error"] = "We couldn't load the book details at this time. Please try again later.";
-            return RedirectToAction(nameof(Index));
-        }
-    }
-
     // POST: PersonalLibrary/AddBook/5
     [HttpPost]
     public IActionResult AddBook(int id)
@@ -263,6 +233,102 @@ public class PersonalLibraryController : Controller
             _logger.LogError(ex, "Error deleting review ID: {ReviewId} for book ID: {BookId}", reviewId, bookId);
             TempData["Error"] = "We couldn't delete your review at this time. Please try again later.";
             return RedirectToAction("Details", new { id = bookId });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> BorrowBook(int id)
+    {
+        try
+        {
+            int? userId = HttpContext.Session.GetInt32("userId");
+            if (!userId.HasValue)
+            {
+                TempData["Error"] = "You need to be logged in to borrow books. Please log in to continue.";
+                TempData["ReturnUrl"] = $"/PersonalLibrary/Details/{id}";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            await _libraryRepo.BorrowBookAsync(userId.Value, id);
+            TempData["Success"] = "Book has been borrowed successfully. Remember to return it within 30 days!";
+            return RedirectToAction("Details", new { id = id });
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning(ex, "Invalid borrow attempt for book ID: {BookId}", id);
+            TempData["Error"] = ex.Message;
+            return RedirectToAction("Details", new { id = id });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error borrowing book ID: {BookId}", id);
+            TempData["Error"] = "We couldn't process your borrow request at this time. Please try again later.";
+            return RedirectToAction("Details", new { id = id });
+        }
+    }
+
+    [HttpPost]
+    public async Task<IActionResult> ReturnBook(int id)
+    {
+        try
+        {
+            int? userId = HttpContext.Session.GetInt32("userId");
+            if (!userId.HasValue)
+            {
+                TempData["Error"] = "You need to be logged in to return books. Please log in to continue.";
+                TempData["ReturnUrl"] = $"/PersonalLibrary/Details/{id}";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            await _libraryRepo.ReturnBookAsync(userId.Value, id);
+            TempData["Success"] = "Book has been returned successfully. Thank you!";
+            return RedirectToAction("Details", new { id = id });
+        }
+        catch (InvalidOperationException ex)
+        {
+            _logger.LogWarning(ex, "Invalid return attempt for book ID: {BookId}", id);
+            TempData["Error"] = ex.Message;
+            return RedirectToAction("Details", new { id = id });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error returning book ID: {BookId}", id);
+            TempData["Error"] = "We couldn't process your return request at this time. Please try again later.";
+            return RedirectToAction("Details", new { id = id });
+        }
+    }
+
+    public async Task<IActionResult> Details(int id)
+    {
+        try
+        {
+            int? userId = HttpContext.Session.GetInt32("userId");
+            if (!userId.HasValue)
+            {
+                TempData["Error"] = "You need to be logged in to view book details. Please log in to continue.";
+                TempData["ReturnUrl"] = $"/PersonalLibrary/Details/{id}";
+                return RedirectToAction("Login", "Auth");
+            }
+
+            var book = _libraryRepo.GetBookDetails(id, userId.Value);
+            if (book == null)
+            {
+                TempData["Warning"] = "The requested book was not found in your library. It may have been removed or you might not have access to it.";
+                return RedirectToAction(nameof(Index));
+            }
+
+            // Get borrowed books to check status
+            var borrowedBooks = await _libraryRepo.GetBorrowedBooksAsync(userId.Value);
+            ViewBag.IsBorrowed = borrowedBooks.Any(b => b.book.id == id);
+            ViewBag.BorrowedBooks = borrowedBooks;
+
+            return View(book);
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Error retrieving book details for ID: {BookId}", id);
+            TempData["Error"] = "We couldn't load the book details at this time. Please try again later.";
+            return RedirectToAction(nameof(Index));
         }
     }
 }

@@ -12,28 +12,47 @@ public class CheckoutController : Controller
 {
     private readonly IConfiguration _configuration;
     private CartData? _books;
-    private ShoppingCartRepository _shoppingCartRepo;
-    private string? _connectionString;
-    private UserRepository _userRepo;
+    private readonly ShoppingCartRepository _shoppingCartRepo;
+    private readonly string _connectionString;
+    private readonly UserRepository _userRepo;
+    private readonly string _storeName;
+    private readonly string _supportEmail;
+    private readonly ILogger<UserRepository> _userRepoLogger;
 
-    public CheckoutController(IConfiguration configuration)
+    public CheckoutController(IConfiguration configuration, ILoggerFactory loggerFactory)
     {
-        _configuration = configuration;
-        _connectionString = _configuration.GetConnectionString("DefaultConnection");
-        _shoppingCartRepo = new ShoppingCartRepository(_connectionString!);
-        StripeConfiguration.ApiKey = configuration["Stripe:SecretKey"];
+        _configuration = configuration ?? throw new ArgumentNullException(nameof(configuration));
+        _connectionString = _configuration.GetConnectionString("DefaultConnection")
+            ?? throw new InvalidOperationException("Connection string 'DefaultConnection' not found.");
 
-        // Create a logger for UserRepository using ILoggerFactory
-        var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
-        var userRepoLogger = loggerFactory.CreateLogger<UserRepository>();
+        _storeName = _configuration["Store:Name"] ?? "eBookStore";
+        _supportEmail = _configuration["Store:SupportEmail"] ?? "support@ebookstore.com";
 
-        _userRepo = new UserRepository(_connectionString, userRepoLogger);
+        var stripeKey = _configuration["Stripe:SecretKey"]
+            ?? throw new InvalidOperationException("Stripe secret key not found in configuration.");
+        StripeConfiguration.ApiKey = stripeKey;
+
+        _userRepoLogger = loggerFactory.CreateLogger<UserRepository>();
+
+        _shoppingCartRepo = new ShoppingCartRepository(_connectionString);
+        _userRepo = new UserRepository(_connectionString, _userRepoLogger);
+    }
+
+    private EmailTemplateGenerator CreateEmailGenerator()
+    {
+        string storeUrl = $"{Request.Scheme}://{Request.Host}";
+        return new EmailTemplateGenerator(_storeName, storeUrl, _supportEmail);
     }
 
     [HttpPost]
     [Route("create-checkout-session")]
     public async Task<IActionResult> CreateCheckoutSession([FromBody] CartData cartData)
     {
+        if (cartData?.Items == null || !cartData.Items.Any())
+        {
+            return BadRequest("Cart is empty");
+        }
+
         HttpContext.Session.SetString("cart", JsonSerializer.Serialize(cartData));
         try
         {
@@ -45,7 +64,7 @@ public class CheckoutController : Controller
                 {
                     PriceData = new SessionLineItemPriceDataOptions
                     {
-                        UnitAmount = item.Amount, // Amount in cents
+                        UnitAmount = item.Amount,
                         Currency = item.Currency,
                         ProductData = new SessionLineItemPriceDataProductDataOptions
                         {
@@ -83,73 +102,81 @@ public class CheckoutController : Controller
         var currentUserId = HttpContext.Session.GetInt32("userId");
         if (currentUserId == null)
         {
-            return RedirectToAction("Login", "Account");
+            return RedirectToAction("Login", "Auth");
         }
+
         var cartJson = HttpContext.Session.GetString("cart");
+        if (string.IsNullOrEmpty(cartJson))
+        {
+            return RedirectToAction("landingPage", "Home");
+        }
+
         var cart = JsonSerializer.Deserialize<CartData>(cartJson);
-        if (cart.Items == null) return RedirectToAction("landingPage", "Home");
+        if (cart?.Items == null || !cart.Items.Any())
+        {
+            return RedirectToAction("landingPage", "Home");
+        }
 
         var bookRepo = new BookRepository(_connectionString);
-        var receipt = new List<RecieptModel>();
+        var receiptRepo = new ReceiptRepository(_connectionString);
         var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
         var repoLogger = loggerFactory.CreateLogger<PersonalLibraryRepository>();
         var libRepo = new PersonalLibraryRepository(_connectionString, repoLogger);
 
-        // Get user details including email
         var user = bookRepo.getUserModelById(currentUserId.Value);
         if (user == null)
         {
             return BadRequest("User not found");
         }
-
-        // Build email body with purchase details
-        var emailBody = new StringBuilder();
-        emailBody.AppendLine("Thank you for your purchase at eBookStore!");
-        emailBody.AppendLine("\nOrder Details:");
-        emailBody.AppendLine("---------------");
-
-        decimal total = 0;
-        foreach (var item in cart.Items)
+        if (string.IsNullOrEmpty(user.email))
         {
-            // Add to personal library and remove from cart
-            libRepo.AddBookToLibrary(currentUserId.Value, item.id);
-            _shoppingCartRepo.RemoveOneFromShoppingCart(currentUserId.Value, item.id);
-
-            // Add to receipt list
-            receipt.Add(new RecieptModel
-            {
-                bookId = item.id,
-                userId = currentUserId.Value,
-            });
-
-            // Add item details to email
-            emailBody.AppendLine($"\nBook: {item.ProductName}");
-            emailBody.AppendLine($"Description: {item.ProductDescription}");
-            emailBody.AppendLine($"Price: {(item.Amount / 100m).ToString("C")} {item.Currency}");
-
-            total += item.Amount / 100m;
+            return BadRequest("User email not found");
         }
 
-        // Save receipt in the data base
-        emailBody.AppendLine($"\nTotal Amount: {total.ToString("C")}");
-        emailBody.AppendLine("\nYour books are now available in your personal library.");
-        emailBody.AppendLine("\nThank you for shopping with us!");
-
-        // Send email receipt
+        int? id = null;
         try
         {
-            _userRepo.SendEmail(
-                  user.email,
-                "Your eBookStore Purchase Receipt",
-                  emailBody.ToString()
-            );
+            foreach (var item in cart.Items)
+            {
+                try
+                {
+                    await libRepo.AddBookToLibrary(currentUserId.Value, item.id);
+                    repoLogger.LogInformation($"Successfully added book {item.id} to personal library for user {currentUserId.Value}");
+
+                    var receiptModel = new RecieptModel
+                    {
+                        bookId = item.id,
+                        userId = currentUserId.Value,
+                        total = item.Amount / 100f,
+                        createdAt = DateTime.UtcNow
+                    };
+                    id = receiptModel.id;
+
+                    var addedReceipt = await receiptRepo.AddAsync(receiptModel);
+                    if (addedReceipt == null || addedReceipt.id == 0)
+                    {
+                        throw new Exception($"Failed to create receipt for book {item.id}");
+                    }
+
+                    _shoppingCartRepo.RemoveOneFromShoppingCart(currentUserId.Value, item.id);
+                }
+                catch (Exception ex)
+                {
+                    repoLogger.LogError($"Error processing item {item.id}: {ex.Message}");
+                    throw;
+                }
+            }
+
+            HttpContext.Session.Remove("cart");
+
+            ViewBag.OrderId = id;
+            return RedirectToAction("landingPage", "Home");
         }
         catch (Exception ex)
         {
-            Console.WriteLine($"Failed to send receipt email: {ex.Message}");
+            repoLogger.LogError($"Error processing order: {ex.Message}");
+            return StatusCode(500, "An error occurred while processing your order");
         }
-
-        return View();
     }
 
     [HttpGet]
@@ -172,4 +199,5 @@ public class CartItem
     public string ProductDescription { get; set; } = String.Empty;
     public int Amount { get; set; } = 0;
     public string Currency { get; set; } = String.Empty;
+    public string purchaseType { get; set; } = String.Empty;
 }
