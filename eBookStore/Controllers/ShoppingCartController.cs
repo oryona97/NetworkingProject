@@ -64,7 +64,7 @@ public class ShoppingCartController : Controller
     }
 
     [HttpPost]
-    public IActionResult AddToShoppingCart([FromBody] AddToCartModel model)
+    public async Task<IActionResult> AddToShoppingCart([FromBody] AddToCartModel model)
     {
         try
         {
@@ -74,6 +74,28 @@ public class ShoppingCartController : Controller
                 return Json(new { success = false, message = "Please log in to continue" });
             }
 
+            var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
+            var repoLogger = loggerFactory.CreateLogger<PersonalLibraryRepository>();
+            var libRepo = new PersonalLibraryRepository(_connectionString, repoLogger);
+
+            foreach (var book in await libRepo.GetBorrowedBooksAsync(currentUser.Value))
+            {
+                if (model.BookId == book.book.id)
+                {
+                    return Json(new { success = false, message = "Book is already in your cart." });
+                }
+            }
+
+            var books = libRepo.GetUserBooks(currentUser.Value);
+            foreach (var book in books)
+            {
+                if (book.book.id == model.BookId)
+                {
+                    return Json(new { success = false, message = "Book is already in your library." });
+                }
+            }
+
+            var userBooks = libRepo.GetUserBooks(currentUser.Value);
             _shoppingCartRepo.AddToShoppingCart(
                 currentUser.Value,
                 model.BookId,
