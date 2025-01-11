@@ -82,8 +82,8 @@ public class BookRepository
         if (authorId == 0)
         {
             if (bookViewModel.authorModel != null)
-            bookViewModel.authorModel.bookId=bookId;
-                AddAuthorModel(bookViewModel.authorModel);
+                bookViewModel.authorModel.bookId = bookId;
+            AddAuthorModel(bookViewModel.authorModel);
 
         }
         bookViewModel.authorModel = getAuthorModelById(bookId);
@@ -91,7 +91,7 @@ public class BookRepository
         // בצע את אותה בדיקה ל-Publisher
         foreach (var publisher in bookViewModel.publishers)
         {
-            publisher.bookId=bookId;
+            publisher.bookId = bookId;
             int publisherId = gettingPublisherIdByName(publisher.name ?? "");
             if (publisherId == 0)
             {
@@ -101,7 +101,7 @@ public class BookRepository
             }
             bookViewModel.book.publisherId = publisherId;
         }
-        
+
 
 
 
@@ -1104,27 +1104,27 @@ public class BookRepository
 
                     using (SqlDataReader reader = command.ExecuteReader())
                     {
-                        var id=0;
+                        var id = 0;
                         if (reader.Read())
                         {
-                                id = Convert.ToInt32(reader["id"]);
-                            };
+                            id = Convert.ToInt32(reader["id"]);
+                        };
 
-                            return id;
-                        }
+                        return id;
                     }
                 }
             }
-        
-            catch (SqlException ex)
-            {
-                Console.WriteLine($"Database error during fetching Author ${ex}");
-                throw;
-            }
+        }
+
+        catch (SqlException ex)
+        {
+            Console.WriteLine($"Database error during fetching Author ${ex}");
+            throw;
+        }
 
         return null;
     }
-    
+
 
     public BookDiscountModel? getBookDiscountModelById(int bookId)
     {
@@ -1278,7 +1278,7 @@ public class BookRepository
 
     //this func update amount of copies of a book if someome borrows it amountOfCopies--
 
-    public void updateAmountOfCopies(int bookId)
+    public void updateAmountOfCopies(int bookId, int amount)
     {
 
 
@@ -1287,11 +1287,12 @@ public class BookRepository
             using (var connection = new SqlConnection(connectionString))
             {
                 connection.Open();
-                string query = "UPDATE Book SET amountOfCopies = amountOfCopies - 1 WHERE id = @bookId;";
+                string query = "UPDATE Book SET amountOfCopies = @amount WHERE id = @bookId;";
 
                 using (var command = new SqlCommand(query, connection))
                 {
                     command.Parameters.AddWithValue("@bookId", bookId);
+                    command.Parameters.AddWithValue("@amount", amount);
 
                     command.ExecuteNonQuery();
                 }
@@ -1333,7 +1334,6 @@ public class BookRepository
             Console.WriteLine($"Database error during checking amount of copies {ex}");
             throw;
         }
-        this.updateAmountOfCopies(bookId);
         return true;
     }
 

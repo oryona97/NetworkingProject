@@ -362,8 +362,46 @@
             }
         }
 
+        const validateCartForCheckout = async () => {
+            const cartItems = Array.from(document.querySelectorAll('.cart-item'));
+            let isValid = true;
+            let errorMessage = '';
+
+            for (const item of cartItems) {
+                const bookId = item.dataset.bookId;
+                const purchaseType = purchaseTypes[bookId] || 'buy';
+
+                if (purchaseType === 'borrow') {
+                    try {
+                        const response = await fetch(`/ShoppingCart/GetQueuePosition?bookId=${bookId}`);
+                        const result = await response.json();
+
+                        if (result.position > 0) {
+                            isValid = false;
+                            const bookTitle = item.querySelector('h5').textContent;
+                            errorMessage += `${bookTitle} has reached its borrowing limit.\n`;
+                        }
+                    } catch (error) {
+                        console.error('Error checking queue status:', error);
+                        isValid = false;
+                    }
+                }
+            }
+
+            return { isValid, errorMessage };
+        };
+
         document.getElementById('checkout-button').addEventListener('click', async function(e) {
             e.preventDefault();
+
+            // Validate cart before proceeding
+            const { isValid, errorMessage } = await validateCartForCheckout();
+            if (!isValid) {
+                alert('Cannot proceed with checkout:\n' + errorMessage + 
+                      'Please remove these items from your cart or switch to purchase.');
+                return;
+            }
+
             const cartItems = Array.from(document.querySelectorAll('.cart-item')).map(item => {
                 const bookId = item.dataset.bookId;
                 const purchaseType = purchaseTypes[bookId] || 'buy';
@@ -396,7 +434,7 @@
                 });
 
                 const session = await response.json();
-                
+
                 if (session.error) {
                     alert(session.error);
                     return;
@@ -418,7 +456,7 @@
                 const bookId = item.dataset.bookId;
                 purchaseTypes[bookId] = 'buy';
                 selectedFormats[bookId] = 'pdf';
-                
+
                 // Check initial queue status if book is in borrow mode
                 const borrowRadio = document.getElementById(`borrow_${bookId}`);
                 if (borrowRadio && borrowRadio.checked) {
