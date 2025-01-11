@@ -2,10 +2,40 @@ using Stripe;
 using eBookStore.Repository;
 using eBookStore.Models;
 using eBookStore.Services;
+using Microsoft.AspNetCore.Mvc;
 
 var builder = WebApplication.CreateBuilder(args);
 
+builder.WebHost.ConfigureKestrel(serverOptions =>
+{
+    serverOptions.ListenLocalhost(9237); // HTTP port
+    serverOptions.ListenLocalhost(5282, options =>
+    {
+        options.UseHttps(); // HTTPS port
+    });
+});
+
 builder.Services.AddControllersWithViews();
+
+// Add HTTPS configuration
+builder.Services.AddHttpsRedirection(options =>
+{
+    options.RedirectStatusCode = StatusCodes.Status307TemporaryRedirect;
+    options.HttpsPort = 5282;
+});
+
+// Enable HSTS (HTTP Strict Transport Security)
+builder.Services.AddHsts(options =>
+{
+    options.Preload = true;
+    options.IncludeSubDomains = true;
+    options.MaxAge = TimeSpan.FromDays(365);
+});
+
+builder.Services.AddMvc(options =>
+{
+    options.Filters.Add(new RequireHttpsAttribute());
+});
 
 //stripe configuration settings
 builder.Services.Configure<StripeSettings>(builder.Configuration.GetSection("Stripe"));

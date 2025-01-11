@@ -9,6 +9,7 @@ public class PersonalLibraryController : Controller
 {
     private readonly ILogger<PersonalLibraryController> _logger;
     private readonly PersonalLibraryRepository _libraryRepo;
+    private readonly QueueRepository _queueRepo;
     private string? _connectionString;
 
     public PersonalLibraryController(
@@ -20,6 +21,7 @@ public class PersonalLibraryController : Controller
         _connectionString = configuration.GetConnectionString("DefaultConnection");
         var repoLogger = loggerFactory.CreateLogger<PersonalLibraryRepository>();
         _libraryRepo = new PersonalLibraryRepository(_connectionString, repoLogger);
+        _queueRepo = new QueueRepository(_connectionString);
     }
 
     [Route("library")]
@@ -284,6 +286,17 @@ public class PersonalLibraryController : Controller
             }
 
             await _libraryRepo.ReturnBookAsync(userId.Value, id);
+
+            await _queueRepo.DeleteAsync(userId.Value, id);
+
+            var queue = await _queueRepo.GetQueue(id);
+            if (queue.Any())
+            {
+                var nextInLine = queue.OrderBy(q => q.createdAt).First();
+                //TODO: notification logic here
+                _logger.LogInformation("Next user in queue for book {BookId}: {UserId}", id, nextInLine.userId);
+            }
+
             TempData["Success"] = "Book has been returned successfully. Thank you!";
             return RedirectToAction("Details", new { id = id });
         }

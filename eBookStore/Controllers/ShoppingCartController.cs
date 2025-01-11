@@ -79,68 +79,108 @@ public class ShoppingCartController : Controller
             var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             var repoLogger = loggerFactory.CreateLogger<PersonalLibraryRepository>();
             var libRepo = new PersonalLibraryRepository(_connectionString, repoLogger);
+
             var borrowedBooks = await libRepo.GetBorrowedBooksAsync(currentUser.Value);
-
-            if (model.IsBorrowed && borrowedBooks.Count() >= 3)
+            if (borrowedBooks.Any(b => b.book.id == model.BookId))
             {
-                await _queueRepo.AddAsync(new BookRentQueueModel
-                {
-                    bookId = model.BookId,
-                    userId = currentUser.Value
-                });
-
-                return Json(new { success = false, message = "You have already borrowed 3 books, you have enetered to the queue and will be notified when the book is available" });
-            }
-
-            if ((await _queueRepo.GetQueue(model.BookId)).Count() >= 3)
-            {
-                await _queueRepo.AddAsync(new BookRentQueueModel
-                {
-                    bookId = model.BookId,
-                    userId = currentUser.Value
-                });
-
-                return Json(new { success = false, message = "Books can be borrowed only by 3 people at a time, you have now entered to the waiting list and will be notified when available" });
-            }
-
-            foreach (var book in borrowedBooks)
-            {
-                if (model.BookId == book.book.id)
-                {
-                    return Json(new { success = false, message = "Book is already in your cart." });
-                }
-            }
-
-            var books = libRepo.GetUserBooks(currentUser.Value);
-            foreach (var book in books)
-            {
-                if (book.book.id == model.BookId)
-                {
-                    return Json(new { success = false, message = "Book is already in your library." });
-                }
+                return Json(new { success = false, message = "You have already borrowed this book." });
             }
 
             var userBooks = libRepo.GetUserBooks(currentUser.Value);
+            if (userBooks.Any(b => b.book.id == model.BookId))
+            {
+                return Json(new { success = false, message = "You already own this book." });
+            }
+
+            if (model.IsBorrowed)
+            {
+                const int MAX_BORROWED_BOOKS = 3;
+                const int MAX_QUEUE_SIZE = 3;
+
+                if (borrowedBooks.Count() >= MAX_BORROWED_BOOKS)
+                {
+                    var queuePosition = await AddToQueueAndGetPosition(currentUser.Value, model.BookId);
+                    return Json(new
+                    {
+                        success = false,
+                        message = $"You have already borrowed {MAX_BORROWED_BOOKS} books. You are now number {queuePosition} in the queue."
+                    });
+                }
+
+                var currentQueue = await _queueRepo.GetQueue(model.BookId);
+                if (currentQueue.Count >= MAX_QUEUE_SIZE)
+                {
+                    var queuePosition = await AddToQueueAndGetPosition(currentUser.Value, model.BookId);
+                    return Json(new
+                    {
+                        success = false,
+                        message = $"This book has reached its borrowing limit. You are now number {queuePosition} in the queue."
+                    });
+                }
+            }
+
             _shoppingCartRepo.AddToShoppingCart(
                 currentUser.Value,
                 model.BookId,
                 model.Format
             );
 
-            return Json(new
-            {
-                success = true,
-                message = $"Item added to cart successfully"
-            });
+            return Json(new { success = true, message = "Item added to cart successfully" });
         }
         catch (Exception ex)
         {
             _logger.LogError(ex, "Failed to add to shopping cart");
+            return Json(new { success = false, message = "Failed to add item to cart" });
+        }
+    }
+
+    // Helper method to add user to queue and get their position
+    private async Task<int> AddToQueueAndGetPosition(int userId, int bookId)
+    {
+        await _queueRepo.AddAsync(new BookRentQueueModel
+        {
+            bookId = bookId,
+            userId = userId,
+            createdAt = DateTime.UtcNow
+        });
+
+        var position = await _queueRepo.GetQueuePosition(userId, bookId);
+        return position ?? 0;
+    }
+
+    [HttpGet]
+    public async Task<IActionResult> GetQueuePosition(int bookId)
+    {
+        try
+        {
+            int? userId = HttpContext.Session.GetInt32("userId");
+            if (!userId.HasValue)
+            {
+                return Json(new { success = false, message = "Please log in to continue" });
+            }
+
+            var queue = await _queueRepo.GetQueue(bookId);
+
+            // Order by createdAt to get accurate positions
+            var orderedQueue = queue.OrderBy(q => q.createdAt).ToList();
+            var position = orderedQueue.FindIndex(q => q.userId == userId.Value) + 1;
+
+            if (position <= 0)
+            {
+                return Json(new { success = false, message = "You are not in the queue for this book" });
+            }
+
             return Json(new
             {
-                success = false,
-                message = "Failed to add item to cart"
+                success = true,
+                position = position,
+                usersAhead = position - 1
             });
+        }
+        catch (Exception ex)
+        {
+            _logger.LogError(ex, "Failed to get queue position");
+            return Json(new { success = false, message = "Failed to get queue position" });
         }
     }
 

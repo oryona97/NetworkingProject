@@ -87,6 +87,41 @@
         color: white;
         margin-left: 0.5rem;
     }
+
+    .queue-info {
+        font-size: 0.9rem;
+    }
+
+    .queue-info .alert {
+        border-radius: 6px;
+        padding: 0.5rem 1rem;
+    }
+
+    .badge.bg-warning {
+        font-size: 0.75em;
+        padding: 0.25em 0.6em;
+    }
+
+    .queue-position {
+        display: inline-block;
+        padding: 0.25em 0.6em;
+        font-size: 0.75em;
+        border-radius: 0.25rem;
+        background-color: #f8f9fa;
+        margin-left: 0.5rem;
+    }
+
+    .queue-stats {
+        font-size: 0.85rem;
+    }
+
+    .queue-stats .badge {
+        padding: 0.35em 0.65em;
+    }
+
+    .queue-stats .bi {
+        margin-right: 0.25rem;
+    }
 </style>
 
 <div class="container py-5">
@@ -137,7 +172,7 @@
                                                        onchange="updatePurchaseType(@bookVM.book.id)">
                                                 <label class="form-check-label" for="buy_@bookVM.book.id">Buy</label>
                                             </div>
-                                            @if (bookVM.book.canBorrow && bookVM.book.amountOfCopies > 0)
+                                            @if (bookVM.book.canBorrow)
                                             {
                                                 <div class="form-check form-check-inline">
                                                     <input class="form-check-input" type="radio" 
@@ -145,7 +180,9 @@
                                                            id="borrow_@bookVM.book.id" 
                                                            value="borrow"
                                                            onchange="updatePurchaseType(@bookVM.book.id)">
-                                                    <label class="form-check-label" for="borrow_@bookVM.book.id">Borrow (30 days)</label>
+                                                    <label class="form-check-label" for="borrow_@bookVM.book.id">
+                                                        Borrow (30 days)
+                                                    </label>
                                                 </div>
                                             }
                                         </div>
@@ -160,13 +197,29 @@
                                                 <option value="mobi">MOBI</option>
                                             </select>
                                         </div>
-                                        
+
                                         <div class="price-container">
                                             <span class="price-badge text-primary purchase-price">₪@bookVM.book.buyingPrice.ToString("0.00")</span>
                                             <span class="borrow-price" style="display: none;">
                                                 <span class="price-badge text-success">₪@(((decimal)bookVM.book.buyingPrice * 0.2M).ToString("0.00"))</span>
                                                 <span class="savings-badge">Save 80%</span>
                                             </span>
+                                        </div>
+
+                                        <!-- Queue Information -->
+                                        <div class="queue-info" id="queue-info-@bookVM.book.id" style="display: none;">
+                                            <div class="alert alert-info mt-2 mb-0">
+                                                <small>
+                                                    <i class="bi bi-info-circle"></i>
+                                                    <span id="queue-message-@bookVM.book.id"></span>
+                                                    <div class="queue-stats mt-1" id="queue-stats-@bookVM.book.id">
+                                                        <span class="badge bg-secondary">
+                                                            <i class="bi bi-people"></i>
+                                                            <span id="queue-count-@bookVM.book.id">0</span> users waiting
+                                                        </span>
+                                                    </div>
+                                                </small>
+                                            </div>
                                         </div>
                                     </div>
                                     <div class="col-md-3 text-end">
@@ -213,75 +266,53 @@
         const selectedFormats = {};
         const purchaseTypes = {};
 
+        const checkQueueStatus = async (bookId) => {
+            try {
+                const response = await fetch(`/ShoppingCart/GetQueuePosition?bookId=${bookId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const queueInfo = document.getElementById(`queue-info-${bookId}`);
+                    const queueMessage = document.getElementById(`queue-message-${bookId}`);
+
+                    queueInfo.style.display = 'block';
+                    if (result.position > 0) {
+                        queueMessage.textContent = `You are position ${result.position} in the queue. We'll notify you when the book becomes available.`;
+                    } else {
+                        queueMessage.textContent = `You have been added to the queue. We'll notify you when the book becomes available.`;
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking queue status:', error);
+            }
+        };
+
         const updateFormat = (selectElement, bookId) => {
             selectedFormats[bookId] = selectElement.value;
             updateCartTotal();
         }
 
-        const updatePurchaseType = (bookId) => {
+        const updatePurchaseType = async (bookId) => {
             const purchaseType = document.querySelector(`input[name="purchaseType_${bookId}"]:checked`).value;
             purchaseTypes[bookId] = purchaseType;
 
             const cartItem = document.querySelector(`.cart-item[data-book-id="${bookId}"]`);
             const purchasePrice = cartItem.querySelector('.purchase-price');
             const borrowPrice = cartItem.querySelector('.borrow-price');
+            const queueInfo = document.getElementById(`queue-info-${bookId}`);
 
             if (purchaseType === 'borrow') {
                 purchasePrice.style.display = 'none';
                 borrowPrice.style.display = 'inline-block';
+                await checkQueueStatus(bookId);
             } else {
                 purchasePrice.style.display = 'inline-block';
                 borrowPrice.style.display = 'none';
+                queueInfo.style.display = 'none';
             }
 
             updateCartTotal();
-        }
-
-        document.getElementById('checkout-button').addEventListener('click', async function(e) {
-            e.preventDefault();
-            const cartItems = Array.from(document.querySelectorAll('.cart-item')).map(item => {
-                const bookId = item.dataset.bookId;
-                const purchaseType = purchaseTypes[bookId] || 'buy';
-                const format = selectedFormats[bookId] || 'pdf';
-                const price = purchaseType === 'borrow' ? 
-                    parseFloat(item.querySelector('.borrow-price .price-badge').textContent.replace('₪', '')) :
-                    parseFloat(item.querySelector('.purchase-price').textContent.replace('₪', ''));
-
-                return {
-                    id: parseInt(bookId),
-                    productName: item.querySelector('h5').textContent,
-                    productDescription: item.querySelector('.text-muted')?.textContent || '',
-                    amount: Math.round(price * 100),
-                    currency: 'nis',
-                    format: format,
-                    purchaseType: purchaseType
-                };
-        });
-
-        const cartData = { items: cartItems };
-
-        fetch('/checkout/create-checkout-session', {
-                method: 'POST',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify(cartData)
-            })
-            .then(function(response) {
-                return response.json();
-            })
-            .then(function(session) {
-                return stripe.redirectToCheckout({ sessionId: session.sessionId });
-            })
-            .then(function(result) {
-                if (result.error) {
-                    alert(result.error.message);
-                }
-            })
-            .catch(function(error) {
-                console.error('Error:', error);
-            });
-        });
+        };
 
         const removeFromCart = async (bookId) => {
             if (!confirm('Are you sure you want to remove this item from your cart?')) {
@@ -289,6 +320,15 @@
             }
 
             try {
+                // Remove from queue if in borrow mode
+                if (purchaseTypes[bookId] === 'borrow') {
+                    await fetch('/ShoppingCart/LeaveQueue', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({ bookId: bookId })
+                    });
+                }
+
                 const response = await fetch('/ShoppingCart/RemoveFromShoppingCart', {
                     method: 'POST',
                     headers: { 'Content-Type': 'application/json' },
@@ -340,10 +380,92 @@
             }
         }
 
-        // Initialize purchase types
-        document.querySelectorAll('.cart-item').forEach(item => {
-            const bookId = item.dataset.bookId;
-            purchaseTypes[bookId] = 'buy';
+        document.getElementById('checkout-button').addEventListener('click', async function(e) {
+            e.preventDefault();
+            const cartItems = Array.from(document.querySelectorAll('.cart-item')).map(item => {
+                const bookId = item.dataset.bookId;
+                const purchaseType = purchaseTypes[bookId] || 'buy';
+                const format = selectedFormats[bookId] || 'pdf';
+                const price = purchaseType === 'borrow' ? 
+                    parseFloat(item.querySelector('.borrow-price .price-badge').textContent.replace('₪', '')) :
+                    parseFloat(item.querySelector('.purchase-price').textContent.replace('₪', ''));
+
+                return {
+                    id: parseInt(bookId),
+                    productName: item.querySelector('h5').textContent,
+                    productDescription: item.querySelector('.text-muted')?.textContent || '',
+                    amount: Math.round(price * 100),
+                    currency: 'nis',
+                    format: format,
+                    purchaseType: purchaseType,
+                    isQueued: document.getElementById(`queue-info-${bookId}`)?.style.display !== 'none'
+                };
+            });
+
+            const cartData = { items: cartItems };
+
+            try {
+                const response = await fetch('/checkout/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify(cartData)
+                });
+
+                const session = await response.json();
+                
+                if (session.error) {
+                    alert(session.error);
+                    return;
+                }
+
+                const result = await stripe.redirectToCheckout({ sessionId: session.sessionId });
+                if (result.error) {
+                    alert(result.error.message);
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('An error occurred during checkout. Please try again.');
+            }
         });
+
+        // Initialize purchase types and check queue status
+        document.addEventListener('DOMContentLoaded', async () => {
+            document.querySelectorAll('.cart-item').forEach(async item => {
+                const bookId = item.dataset.bookId;
+                purchaseTypes[bookId] = 'buy';
+                selectedFormats[bookId] = 'pdf';
+                
+                // Check initial queue status if book is in borrow mode
+                const borrowRadio = document.getElementById(`borrow_${bookId}`);
+                if (borrowRadio && borrowRadio.checked) {
+                    await checkQueueStatus(bookId);
+                }
+            });
+        });
+        const checkQueueStatus = async (bookId) => {
+            try {
+                const response = await fetch(`/ShoppingCart/GetQueuePosition?bookId=${bookId}`);
+                const result = await response.json();
+
+                if (result.success) {
+                    const queueInfo = document.getElementById(`queue-info-${bookId}`);
+                    const queueMessage = document.getElementById(`queue-message-${bookId}`);
+                    const queueCount = document.getElementById(`queue-count-${bookId}`);
+
+                    queueInfo.style.display = 'block';
+                    if (result.position > 0) {
+                        queueMessage.textContent = `You are position ${result.position} in the queue.`;
+                        queueCount.textContent = result.position - 1; // Users ahead of current user
+                    } else {
+                        queueMessage.textContent = `You have been added to the queue.`;
+                        queueCount.textContent = '0';
+                    }
+                }
+            } catch (error) {
+                console.error('Error checking queue status:', error);
+            }
+        };
     </script>
 }
