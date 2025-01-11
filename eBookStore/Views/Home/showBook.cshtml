@@ -1,13 +1,12 @@
 @model List<eBookStore.Models.ViewModels.BookViewModel>
+@inject IConfiguration Configuration
 @{
     ViewData["Title"] = "SearchedBooks";
     var currentUserId = Context.Session.GetInt32("userId") ?? 0;
-
 }
 
 <div class="row" style="row-gap: 10px; column-gap: 10px;">
     <h1 class="text-center mb-4">Books List</h1>
-
 
     @if (Model != null && Model.Any())
     {
@@ -20,7 +19,6 @@
             data-year="@book.book.pubDate.Year"
             data-onSale="@book.book.onSale">
                 
-                
                 <div class="imageWrapp">
                     <a href="@Url.Action("Index", "Book")/@book?.book?.id">
                         <img src="\images\bookCovers\@book.coverModel.imgName" class="card-img-top" alt="@book.coverModel.imgName">
@@ -32,16 +30,16 @@
                     @if(book.book.onSale)
                     {
                         <p class="card-text">
-                                <a><strong>Author:</strong> @book.authorModel.name </a><br>
-                                <a><strong>Published by:</strong> @string.Join(", ", book.publishers.Select(p => p.name))</a><br>
-                                <a><strong>Genre:</strong> @book.genreModel.name</a><br>
-                                <a><strong>Age limit:</strong> @book.book.ageLimit</a><br>
-                                <a><strong>Publish date:</strong> @book.book.pubDate.ToString("yyyy-MM-dd")</a><br>
-                                <a><strong>Rating:</strong> @book.book.starRate</a><br>
-                                @if(book.book.canBorrow)
-                                    {<a><strong>Borrow Price:</strong> @book.book.borrowPrice$</a><br>}
-                                <a class="text-muted text-decoration-line-through"><strong>Original Price:</strong> @book.book.buyingPrice$</a><br>
-                                <a><strong>Sale Price:</strong> @(book.book.buyingPrice * book.bookDiscountModel.discountPrecentage)$</a>
+                            <a><strong>Author:</strong> @book.authorModel.name </a><br>
+                            <a><strong>Published by:</strong> @string.Join(", ", book.publishers.Select(p => p.name))</a><br>
+                            <a><strong>Genre:</strong> @book.genreModel.name</a><br>
+                            <a><strong>Age limit:</strong> @book.book.ageLimit</a><br>
+                            <a><strong>Publish date:</strong> @book.book.pubDate.ToString("yyyy-MM-dd")</a><br>
+                            <a><strong>Rating:</strong> @book.book.starRate</a><br>
+                            @if(book.book.canBorrow)
+                                {<a><strong>Borrow Price:</strong> @book.book.borrowPrice$</a><br>}
+                            <a class="text-muted text-decoration-line-through"><strong>Original Price:</strong> @book.book.buyingPrice$</a><br>
+                            <a><strong>Sale Price:</strong> @(book.book.buyingPrice * book.bookDiscountModel.discountPrecentage)$</a>
                         </p>
                     }
                     else
@@ -57,82 +55,34 @@
                                 {<a><strong>Borrow Price:</strong> @book.book.borrowPrice$</a><br>}
                             <a><strong>Buy Price:</strong> @book.book.buyingPrice$</a><br>
                         </p>
-
                     }
 
-                    @if(book.book.canBorrow)
-                    {
-                        <div class="price-container card-footer" style="background-color:white">
-                            <div class="row">
-
-                                <div class="col" style="background-color: rgb(255, 255, 255);" id="Buy-Button">
-                                    <a href="#" class="Buy-button text-black">Buy-Now</a>
-                                </div>
-                                
-                                <div class="dropdown col">
-                                    <a href="#" class="dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">Add to Cart</a>
-                                    
-                                    <li class="dropdown-menu col" style="background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
-                                        <div class="addToCart-menu-content">
-                                            <a class="dropdown-item" 
-                                                asp-controller="ShoppingCart" 
-                                                asp-action="AddToShoppingCart"
-                                                asp-route-bookId="@book.book.id"
-                                                asp-route-userId="@currentUserId"
-                                                asp-route-format="pdf" 
-                                                asp-route-isBorrowed="false">
-                                                Buy</a>
-                                            <a class="dropdown-item" 
-                                                asp-controller="ShoppingCart" 
-                                                asp-action="AddToShoppingCart"
-                                                asp-route-bookId="@book.book.id"
-                                                asp-route-userId="@currentUserId"
-                                                asp-route-format="pdf" 
-                                                asp-route-isBorrowed="true">
-                                                Borrow</a>
-                                        </div>
-                                    </li>
-                                </div>
-
-
+                    <div class="price-container card-footer" style="background-color:white">
+                        <div class="row">
+                            <div class="col" style="background-color: rgb(255, 255, 255);" id="Buy-Button">
+                                <a href="#" class="Buy-button text-black" data-price="@book.book.buyingPrice" data-book-id="@book.book.id">Buy-Now</a>
+                            </div>
+                            
+                            <div class="dropdown col">
+                                <a href="#" class="dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">Add to Cart</a>
+                                <li class="dropdown-menu col" style="z-index: 9999; background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
+                                    <div class="addToCart-menu-content">
+                                        <a class="dropdown-item" data-action="buy" style="color: aliceblue;" data-book-id="@book.book.id">Buy</a>
+                                        @if(book.book.canBorrow)
+                                        {
+                                            <a class="dropdown-item" data-action="borrow" style="color: aliceblue;" data-book-id="@book.book.id">Borrow</a>
+                                        }
+                                    </div>
+                                </li>
                             </div>
                         </div>
-                    }   
-                    else
-                    {
-                        <div class="price-container card-footer" style="background-color:white">
-                            <div class="row" style="column-gap: 5px;">
-                                <div class="col" style="background-color: rgb(255, 255, 255);" id="Buy-Button">
-                                    <a href="#" class="Buy-button text-black">Buy-Now</a>
-                                </div>
-
-                                <div class="dropdown col">
-                                    <a href="#" class="dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">Add to Cart</a>
-                                    
-                                    <li class="dropdown-menu col" style="background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
-                                        <div class="addToCart-menu-content">
-                                            <a class="dropdown-item" 
-                                                asp-controller="ShoppingCart" 
-                                                asp-action="AddToShoppingCart"
-                                                asp-route-bookId="@book.book.id"
-                                                asp-route-format="pdf" 
-                                                asp-route-isBorrowed="false">
-                                                Buy</a>
-                                        </div>
-                                    </li>
-                                </div>
-
-                            </div>
-                        </div>
-
-                    }
+                    </div>
                 </div>
             </div> 
         }
     }
     else
     {
-        
         <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" />
 
         <div class="alert alert-info text-center mt-5 animate__animated animate__bounceIn" role="alert"
@@ -143,12 +93,117 @@
             <p class="animate__animated animate__fadeIn animate__delay-1s" style="font-size: 18px; color: #495057;">
                 No results found. Try searching for something else!
             </p>
-        <div class="text-center mt-3">
-            <a asp-action="SearchForm" asp-controller="Home" class="btn btn-outline-info animate__animated animate__pulse animate__infinite">
-                Back to Search
-            </a>
-        </div>
+            <div class="text-center mt-3">
+                <a asp-action="SearchForm" asp-controller="Home" class="btn btn-outline-info animate__animated animate__pulse animate__infinite">
+                    Back to Search
+                </a>
+            </div>
         </div>
     }
-
 </div>
+
+@section Scripts {
+    <script src="https://js.stripe.com/v3/"></script>
+    <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Handle Buy-Now buttons
+            document.querySelectorAll('.Buy-button').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    e.preventDefault();
+
+                    const currentUserId = @currentUserId;
+                    if (currentUserId === 0) {
+                        alert('Please log in to make a purchase.');
+                        window.location.href = '/Auth/Login';
+                        return;
+                    }
+
+                    const bookId = e.target.getAttribute('data-book-id');
+                    const bookPrice = parseFloat(e.target.getAttribute('data-price'));
+                    const bookTitle = e.target.closest('.card-body').querySelector('.card-title').textContent;
+
+                    const cartData = {
+                        items: [{
+                            id: parseInt(bookId),
+                            productName: bookTitle,
+                            productDescription: "Great Book",
+                            amount: Math.round(bookPrice * 100),
+                            currency: "ils",
+                            purchaseType: "buy"
+                        }]
+                    };
+
+                    try {
+                        const response = await fetch('/checkout/create-checkout-session', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(cartData)
+                        });
+
+                        if (response.ok) {
+                            const session = await response.json();
+                            const stripe = Stripe('@Configuration["Stripe:PublicKey"]');
+                            const result = await stripe.redirectToCheckout({ sessionId: session.sessionId });
+
+                            if (result.error) {
+                                alert(result.error.message);
+                            }
+                        } else {
+                            const errorData = await response.json();
+                            alert(errorData.error || 'Failed to create checkout session');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error processing purchase');
+                    }
+                });
+            });
+
+            // Handle Add to Cart buttons
+            document.querySelectorAll('.dropdown-item[data-action]').forEach(item => {
+                item.addEventListener('click', async (e) => {
+                    e.preventDefault();
+
+                    const currentUserId = @currentUserId;
+                    if (currentUserId === 0) {
+                        alert('Please log in to make a purchase.');
+                        window.location.href = '/Auth/Login';
+                        return;
+                    }
+
+                    const action = e.target.dataset.action;
+                    const bookId = e.target.dataset.bookId;
+
+                    try {
+                        const response = await fetch('/ShoppingCart/AddToShoppingCart', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                bookId: parseInt(bookId),
+                                userId: currentUserId,
+                                format: "pdf",
+                                isBorrowed: action === 'borrow'
+                            })
+                        });
+
+                        if (response.ok) {
+                            alert('Book added to cart successfully!');
+                            location.reload();
+                        } else if (response.status === 401) {
+                            window.location.href = '/Auth/Login';
+                        } else {
+                            alert('Failed to add item to cart');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error adding item to cart');
+                    }
+                });
+            });
+        });
+    </script>
+}
