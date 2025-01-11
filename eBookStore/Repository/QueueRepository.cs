@@ -5,7 +5,7 @@ namespace eBookStore.Repository;
 
 public class QueueRepository
 {
-    private string? _connectionString;
+    private readonly string? _connectionString;
 
     public QueueRepository(string? connectionString)
     {
@@ -19,68 +19,55 @@ public class QueueRepository
         {
             await connection.OpenAsync();
             using (var command = new SqlCommand(
-                @"
-                SELECT * FROM BookRentQueue brq
-                WHERE brq.bookId = @bookId", connection))
+                @"SELECT id, bookId, userId, createdAt 
+                  FROM BookRentQueue 
+                  WHERE bookId = @bookId 
+                  ORDER BY createdAt", connection))
             {
-                using (var reader = command.ExecuteReader())
+                command.Parameters.AddWithValue("@bookId", bookId);
+                using (var reader = await command.ExecuteReaderAsync())
                 {
-                    while (reader.Read())
+                    while (await reader.ReadAsync())
                     {
                         queue.Add(new BookRentQueueModel
                         {
                             id = reader.GetInt32(reader.GetOrdinal("id")),
                             bookId = reader.GetInt32(reader.GetOrdinal("bookId")),
                             userId = reader.GetInt32(reader.GetOrdinal("userId")),
+                            createdAt = reader.GetDateTime(reader.GetOrdinal("createdAt"))
                         });
                     }
                 }
             }
         }
-
         return queue;
     }
 
-    public async Task<BookRentQueueModel> AddAsync(BookRentQueueModel last)
+    public async Task<BookRentQueueModel?> AddAsync(BookRentQueueModel entry)
     {
         using (var connection = new SqlConnection(_connectionString))
         {
             await connection.OpenAsync();
             using (var command = new SqlCommand(
                 @"INSERT INTO BookRentQueue (userId, bookId, createdAt) 
-                    OUTPUT INSERTED.id
-                    VALUES (@userId, @bookId, @createdAt)", connection))
+                  VALUES (@userId, @bookId, @createdAt);
+                  SELECT SCOPE_IDENTITY();", connection))
             {
-                command.Parameters.AddWithValue("@userId", last.userId);
-                command.Parameters.AddWithValue("@bookId", last.bookId);
-                command.Parameters.AddWithValue("@createdAt", last.createdAt);
+                command.Parameters.AddWithValue("@userId", entry.userId);
+                command.Parameters.AddWithValue("@bookId", entry.bookId);
+                command.Parameters.AddWithValue("@createdAt", DateTime.UtcNow);
 
-                var result = await command.ExecuteScalarAsync();
-                if (result != null)
+                try
                 {
-                    last.id = Convert.ToInt32(result);
-                    return last;
+                    var id = Convert.ToInt32(await command.ExecuteScalarAsync());
+                    entry.id = id;
+                    entry.createdAt = DateTime.UtcNow;
+                    return entry;
                 }
-                return last;
-            }
-        }
-    }
-
-    public async Task<bool> UpdateAsync(BookRentQueueModel queue)
-    {
-        using (var connection = new SqlConnection(_connectionString))
-        {
-            await connection.OpenAsync();
-            using (var command = new SqlCommand(
-                @"UPDATE BookRentQueue 
-                    SET userId = @userId, bookId = @bookId
-                    WHERE id = @id", connection))
-            {
-                command.Parameters.AddWithValue("@id", queue.id);
-                command.Parameters.AddWithValue("@userId", queue.userId);
-                command.Parameters.AddWithValue("@bookId", queue.bookId);
-
-                return await command.ExecuteNonQueryAsync() > 0;
+                catch (SqlException ex) when (ex.Number == 2627) // Violation of PRIMARY KEY constraint
+                {
+                    return null;
+                }
             }
         }
     }
@@ -91,11 +78,37 @@ public class QueueRepository
         {
             await connection.OpenAsync();
             using (var command = new SqlCommand(
-                "DELETE FROM BookRentQueue WHERE userId = @userId AND bookId = @bookId", connection))
+                @"DELETE FROM BookRentQueue 
+                  WHERE userId = @userId AND bookId = @bookId", connection))
             {
-                command.Parameters.AddWithValue("@bookId", bookId);
                 command.Parameters.AddWithValue("@userId", userId);
+                command.Parameters.AddWithValue("@bookId", bookId);
                 return await command.ExecuteNonQueryAsync() > 0;
+            }
+        }
+    }
+
+    public async Task<int?> GetQueuePosition(int userId, int bookId)
+    {
+        using (var connection = new SqlConnection(_connectionString))
+        {
+            await connection.OpenAsync();
+            using (var command = new SqlCommand(
+                @"WITH QueuePositions AS (
+                    SELECT 
+                        userId,
+                        ROW_NUMBER() OVER (ORDER BY createdAt) as Position
+                    FROM BookRentQueue
+                    WHERE bookId = @bookId
+                )
+                SELECT Position 
+                FROM QueuePositions 
+                WHERE userId = @userId", connection))
+            {
+                command.Parameters.AddWithValue("@userId", userId);
+                command.Parameters.AddWithValue("@bookId", bookId);
+                var result = await command.ExecuteScalarAsync();
+                return result != DBNull.Value ? Convert.ToInt32(result) : null;
             }
         }
     }

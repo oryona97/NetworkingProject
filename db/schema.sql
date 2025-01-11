@@ -156,13 +156,13 @@ CREATE TABLE [GeneralFeedback] (
 GO
 
 CREATE TABLE [BookRentQueue] (
-  [id] int IDENTITY(50,1),
-  [bookId] int,
-  [userId] int,
-  [createdAt] datetime,
-  PRIMARY KEY (bookId, userId)
+    [id] int IDENTITY(1,1) NOT NULL,
+    [bookId] int NOT NULL,
+    [userId] int NOT NULL,
+    [createdAt] datetime NOT NULL DEFAULT GETUTCDATE(),
+    CONSTRAINT PK_BookRentQueue PRIMARY KEY (bookId, userId),
+    CONSTRAINT UQ_BookRentQueue_Id UNIQUE (id)
 )
-GO
 
 CREATE TABLE [Auther] (
   [id] int IDENTITY(50,1) PRIMARY KEY,
