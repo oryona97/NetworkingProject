@@ -194,15 +194,6 @@ public class ShoppingCartController : Controller
         public bool IsBorrowed { get; set; }
     }
 
-}
-
-    public class AddToCartModel
-    {
-        public int BookId { get; set; }
-        public string Format { get; set; } = "pdf";
-        public bool IsBorrowed { get; set; }
-    }
-
     public class RemoveFromCartModel
     {
         public int BookId { get; set; }
