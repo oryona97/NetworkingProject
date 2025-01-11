@@ -13,6 +13,7 @@ public class ShoppingCartController : Controller
     private string? _connectionString;
     private ShoppingCartRepository _shoppingCartRepo;
     private BookRepository _booksRepo;
+    private QueueRepository _queueRepo;
 
     public ShoppingCartController(IConfiguration configuration, ILogger<ShoppingCartController> logger)
     {
@@ -21,6 +22,7 @@ public class ShoppingCartController : Controller
         _logger = logger;
         _shoppingCartRepo = new ShoppingCartRepository(_connectionString);
         _booksRepo = new BookRepository(_connectionString);
+        _queueRepo = new QueueRepository(_connectionString);
     }
 
     [Route("cart")]
@@ -77,8 +79,31 @@ public class ShoppingCartController : Controller
             var loggerFactory = LoggerFactory.Create(builder => builder.AddConsole());
             var repoLogger = loggerFactory.CreateLogger<PersonalLibraryRepository>();
             var libRepo = new PersonalLibraryRepository(_connectionString, repoLogger);
+            var borrowedBooks = await libRepo.GetBorrowedBooksAsync(currentUser.Value);
 
-            foreach (var book in await libRepo.GetBorrowedBooksAsync(currentUser.Value))
+            if (model.IsBorrowed && borrowedBooks.Count() >= 3)
+            {
+                await _queueRepo.AddAsync(new BookRentQueueModel
+                {
+                    bookId = model.BookId,
+                    userId = currentUser.Value
+                });
+
+                return Json(new { success = false, message = "You have already borrowed 3 books, you have enetered to the queue and will be notified when the book is available" });
+            }
+
+            if ((await _queueRepo.GetQueue(model.BookId)).Count() >= 3)
+            {
+                await _queueRepo.AddAsync(new BookRentQueueModel
+                {
+                    bookId = model.BookId,
+                    userId = currentUser.Value
+                });
+
+                return Json(new { success = false, message = "Books can be borrowed only by 3 people at a time, you have now entered to the waiting list and will be notified when available" });
+            }
+
+            foreach (var book in borrowedBooks)
             {
                 if (model.BookId == book.book.id)
                 {
