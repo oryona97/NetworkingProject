@@ -1,90 +1,58 @@
-
 @model eBookStore.Models.ViewModels.BookViewModel
+@inject IConfiguration Configuration
 @{
     ViewData["Title"] = "Book Page";
     var currentUserId = Context.Session.GetInt32("userId") ?? 0;
 }
 
-
 <div class="grid h-100 mt-5">
     <div class="row">
         @if (Model.book != null)
-            {
+        {
+            <div class="info-container w-50 p-1">
+                <h2 class="Title-container">@Model.book.title</h2>
 
-            
-                <div class="info-container w-50 p-1">
-                    <h2 class="Title-container">@Model.book.title</h2>
+                <a><strong>Author:</strong> @Model.authorModel.name </a><br>
+                <a><strong>Published by:</strong> @string.Join(", ", Model.publishers.Select(p => p.name))</a><br>
+                <a><strong>Genre:</strong> @Model.genreModel.name</a><br>
+                <a><strong>Age limit:</strong> @Model.book.ageLimit</a><br>
+                <a><strong>Publish date:</strong> @Model.book.pubDate.ToString("yyyy-MM-dd")</a><br>
+                <a><strong>Rating:</strong> @Model.book.starRate</a><br>
+                
+                <div class="price-container card-footer" style="background-color:white;">
+                    <div class="row">
+                        <div class="col" style="background-color: rgb(255, 255, 255);" id="Buy-Button">
+                            <a href="#" class="Buy-button text-black" data-price="@Model.book.buyingPrice" data-book-id="@Model.book.id">Buy-Now</a>
+                        </div>
 
-                    <a><strong>Author:</strong> @Model.authorModel.name </a><br>
-                    <a><strong>Published by:</strong> @string.Join(", ", Model.publishers.Select(p => p.name))</a><br>
-                    <a><strong>Genre:</strong> @Model.genreModel.name</a><br>
-                    <a><strong>Age limit:</strong> @Model.book.ageLimit</a><br>
-                    <a><strong>Publish date:</strong> @Model.book.pubDate.ToString("yyyy-MM-dd")</a><br>
-                    <a><strong>Rating:</strong> @Model.book.starRate</a><br>
-                    
-                    <div class="buyBorrowButtons">
-                        @if(Model.book.onSale)
-                        {
-                            <a class="text-decoration-line-through">Old price: @Model.book.buyingPrice$</a><br>
-                            <a
-                            asp-controller="ShoppingCart" 
-                            asp-action="AddToShoppingCart"
-                            asp-route-bookId="@Model.book.id"
-                            asp-route-userId="@currentUserId"
-                            asp-route-format="pdf" 
-                            asp-route-isBorrowed="false"
-                            ><strong>Sale Price:</strong> @(Model.book.buyingPrice * Model.bookDiscountModel.discountPrecentage)$</a>
-                        }
-                        else
-                        {
-                            <a
-                            asp-controller="ShoppingCart" 
-                            asp-action="AddToShoppingCart"
-                            asp-route-bookId="@Model.book.id"
-                            asp-route-userId="@currentUserId"
-                            asp-route-format="pdf" 
-                            asp-route-isBorrowed="false">
-                                <button>Buy: @Model.book.buyingPrice$</button>
-                            </a>
-                        }
-                        
-                        @if(Model.book.canBorrow)
-                        {
-                            <a
-                            asp-controller="ShoppingCart" 
-                            asp-action="AddToShoppingCart"
-                            asp-route-bookId="@Model.book.id"
-                            asp-route-format="pdf" 
-                            asp-route-isBorrowed="true">
-                                <button>Borrow: @Model.book.borrowPrice$</button>
-                            </a>
-                        }
-
-                        
-
+                        <div class="dropdown col">
+                            <a href="#" class="dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">Add to Cart</a>
+                            <li class="dropdown-menu col" style="z-index: 9999; background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
+                                <div class="addToCart-menu-content">
+                                    <a class="dropdown-item" data-action="buy" style="color: aliceblue;" data-book-id="@Model.book.id">Buy</a>
+                                    @if(Model.book.canBorrow)
+                                    {
+                                        <a class="dropdown-item" data-action="borrow" style="color: aliceblue;" data-book-id="@Model.book.id">Borrow</a>
+                                    }
+                                </div>
+                            </li>
+                        </div>
                     </div>
-                    
-
-
-
                 </div>
+            </div>
+        }
+        else
+        {
+            <p>No Book details available</p>
+        }
 
-            }
-            else{
-                <p>No Book details aviable</p>
-            }
-
-            @if(@Model.coverModel != null)
-            {
-                <div class="cover-container w-50 p-1 d-flex" style="justify-content: end;">
-
-                    <img src="\images\bookCovers\@Model.coverModel.imgName" class="bookCoverImg img-thumbnail" style="max-width: 280px;" alt="Cover_Photo">
-
-                </div>
-
-            }
+        @if(@Model.coverModel != null)
+        {
+            <div class="cover-container w-50 p-1 d-flex" style="justify-content: end;">
+                <img src="\images\bookCovers\@Model.coverModel.imgName" class="bookCoverImg img-thumbnail" style="max-width: 280px;" alt="Cover_Photo">
+            </div>
+        }
     </div>
-    
 
     <div class="Feedback-Container row">
         <hr>
@@ -109,7 +77,6 @@
                                         <i class="bi bi-clock me-1"></i>
                                         @feedback.createdAt.ToString("MMM dd, yyyy")
                                     </small>
-                                    @* Show delete button only if the review is by the current user *@
                                     @if (isReviewOwner)
                                     {
                                         <form asp-action="DeleteReview" 
@@ -139,17 +106,108 @@
                 <p class="text-muted mt-2">No reviews yet.</p>
             </div>
         }
-
-
-
-
     </div>
-
-
-
-
 </div>
+
+@section Scripts {
+<script src="https://js.stripe.com/v3/"></script>
 <script>
+    document.addEventListener('DOMContentLoaded', () => {
+        document.querySelector('.Buy-button').addEventListener('click', async (e) => {
+            e.preventDefault();
+
+            const currentUserId = @currentUserId;
+            if (currentUserId === 0) {
+                alert('Please log in to make a purchase.');
+                window.location.href = '/Auth/Login';
+                return;
+            }
+
+            // Get book details from the button's data attributes
+            const bookTitle = document.querySelector('.Title-container').textContent;
+            const bookId = e.target.getAttribute('data-book-id');
+            const bookPrice = parseFloat(e.target.getAttribute('data-price'));
+
+            const cartData = {
+                items: [{
+                    id: parseInt(bookId),
+                    productName: bookTitle,
+                    productDescription: "Great Book",
+                    amount: Math.round(bookPrice * 100), // Convert to cents
+                    currency: "ils",
+                    purchaseType: "buy"
+                }]
+            };
+
+            try {
+                const response = await fetch('/checkout/create-checkout-session', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify(cartData)
+                });
+
+                if (response.ok) {
+                    const session = await response.json();
+                    const stripe = Stripe('@Configuration["Stripe:PublicKey"]');
+                    const result = await stripe.redirectToCheckout({ sessionId: session.sessionId });
+
+                    if (result.error) {
+                        alert(result.error.message);
+                    }
+                } else {
+                    const errorData = await response.json();
+                    alert(errorData.error || 'Failed to create checkout session');
+                }
+            } catch (error) {
+                console.error('Error:', error);
+                alert('Error processing purchase');
+            }
+        });
+
+        document.querySelectorAll('.dropdown-item[data-action]').forEach(item => {
+            item.addEventListener('click', async (e) => {
+                e.preventDefault();
+
+                const currentUserId = @currentUserId;
+                if (currentUserId === 0) {
+                    alert('Please log in to make a purchase.');
+                    window.location.href = '/Auth/Login';
+                    return;
+                }
+
+                const action = e.target.dataset.action;
+                const bookId = e.target.dataset.bookId;
+
+                try {
+                    const response = await fetch('/ShoppingCart/AddToShoppingCart', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify({
+                            bookId: parseInt(bookId),
+                            userId: currentUserId,
+                            format: "pdf",
+                            isBorrowed: action === 'borrow'
+                        })
+                    });
+
+                    if (response.ok) {
+                        alert('Book added to cart successfully!');
+                        location.reload();
+                    } else if (response.status === 401) {
+                        window.location.href = '/Auth/Login';
+                    } else {
+                        alert('Failed to add item to cart');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error adding item to cart');
+                }
+            });
+        });
+    });
 </script>
-
-
+}

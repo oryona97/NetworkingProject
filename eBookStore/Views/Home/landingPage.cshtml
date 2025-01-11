@@ -1,255 +1,146 @@
 @model eBookStore.Models.ViewModels.LandingPageViewModel
+@inject IConfiguration Configuration
 @{
     ViewData["Title"] = "Home";
     var currentUserId = Context.Session.GetInt32("userId") ?? 0;
-    
 }
 
 <div class="home-container">
-    
     <div class="home-card h-100">
-        
-
         <div class="Header-SearchBar row ms-1">
-            
             <div class="home-header col-7 mt-4">
                 <h2 class="header-one">Welcome to eBookStore</h2>
                 <p class="sub-header ms-2">Your one-stop shop for the best eBooks!<br>
                     The store contain @Model.allBooks.Count books.
                 </p>
-                
             </div>
-
         </div>
 
-
-
-        <div class="home-content ">
-
+        <div class="home-content">
             <div class="WelcomeImg container">
                 <img class="img-fluid w-100" src="\images\homePage-pic2.jpg" alt="WelcomeImg">
             </div>
 
-            
-            
-
-            <div class="specialSales row d-flex ms-3 " style="padding-top: 10%;">
-                <div class="sub-header row ">
+            <div class="specialSales row d-flex ms-3" style="padding-top: 10%;">
+                <div class="sub-header row">
                     <h2 class="mb-5">Our Recommendations</h2>
                 </div>
 
                 <div class="BooksContainer row">
-                    <!-- This contains 2 books on sale  -->
+                    <!-- First Book -->
                     <div class="Book-container col" style="justify-items: center;">
                         <div class="card" style="width: 21rem;">
-                                <a href="@Url.Action("Index", "Book")/1">
-                                    <img src="\images\bookCovers\@Model.allBooks[0].coverModel.imgName" class="card-img-top" alt="@Model.allBooks[0].coverModel.imgName">
-                                </a>
+                            <a href="@Url.Action("Index", "Book")/1">
+                                <img src="\images\bookCovers\@Model.allBooks[0].coverModel.imgName" class="card-img-top" alt="@Model.allBooks[0].coverModel.imgName">
+                            </a>
 
-                                <div class="card-body d-grid">
-                                    <h5 class="card-title">@Model.allBooks[0].book.title</h5>
-                                    <p class="card-text">
-                                        <a><strong>Author:</strong> @Model.allBooks[0].authorModel.name</a><br> 
-                                        <a>
-                                            <strong>Published by:</strong> @string.Join(", ", @Model.allBooks[0].publishers.Select(p => p.name))
-                                        </a><br>
-                                        <a><strong>Genre:</strong> @Model.allBooks[0].genreModel.name</a><br>
-                                        <a><strong>Age limit:</strong> @Model.allBooks[0].book.ageLimit</a><br>
-                                        <a><strong>Publish date:</strong> @Model.allBooks[0].book.pubDate.ToString("yyyy-MM-dd")</a><br>
-                                        <a><strong>Rating:</strong> @Model.allBooks[0].book.starRate</a><br>
-                                        @if(Model.allBooks[0].book.canBorrow)
-                                            {<a><strong>Borrow Price:</strong> @Model.allBooks[0].book.borrowPrice$</a><br>}
-
-                                        @if(Model.allBooks[3].book.onSale)
-                                        {
-                                            <a class="text-muted text-decoration-line-through"><strong>Price:</strong>@Model.allBooks[0].book.buyingPrice</a><br>
-                                            <a><strong>Sale Price:</strong> @(Model.allBooks[0].book.buyingPrice * Model.allBooks[0].bookDiscountModel.discountPrecentage)$</a>
-
-                                        }
-                                        else{
-                                            <a><strong>Price:</strong> @Model.allBooks[0].book.buyingPrice$</a>
-                                        }   
-
-                                    </p>
-
+                            <div class="card-body d-grid">
+                                <h5 class="card-title">@Model.allBooks[0].book.title</h5>
+                                <p class="card-text">
+                                    <a><strong>Author:</strong> @Model.allBooks[0].authorModel.name</a><br>
+                                    <a><strong>Published by:</strong> @string.Join(", ", @Model.allBooks[0].publishers.Select(p => p.name))</a><br>
+                                    <a><strong>Genre:</strong> @Model.allBooks[0].genreModel.name</a><br>
+                                    <a><strong>Age limit:</strong> @Model.allBooks[0].book.ageLimit</a><br>
+                                    <a><strong>Publish date:</strong> @Model.allBooks[0].book.pubDate.ToString("yyyy-MM-dd")</a><br>
+                                    <a><strong>Rating:</strong> @Model.allBooks[0].book.starRate</a><br>
                                     @if(Model.allBooks[0].book.canBorrow)
                                     {
-                                        <div class="price-container card-footer" style="background-color:white">
-                                            <div class="row">
-
-                                                <div class="col" style="background-color: rgb(255, 255, 255);" id="Buy-Button">
-                                                    <a href="#" class="Buy-button text-black">Buy-Now</a>
-                                                </div>
-                                                
-                                                <div class="dropdown col">
-                                                    <a href="#" class="dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">Add to Cart</a>
-                                                    
-                                                    <li class="dropdown-menu col" style="background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
-                                                        <div class="addToCart-menu-content">
-                                                            <a class="dropdown-item" 
-                                                                asp-controller="ShoppingCart" 
-                                                                asp-action="AddToShoppingCart"
-                                                                asp-route-bookId="@Model.allBooks[0].book.id"
-                                                                asp-route-format="pdf" 
-                                                                asp-route-isBorrowed="false">
-                                                                Buy</a>
-                                                            <a class="dropdown-item" 
-                                                                asp-controller="ShoppingCart" 
-                                                                asp-action="AddToShoppingCart"
-                                                                asp-route-bookId="@Model.allBooks[0].book.id"
-                                                                asp-route-format="pdf" 
-                                                                asp-route-isBorrowed="true">
-                                                                Borrow</a>
-                                                        </div>
-                                                    </li>
-                                                </div>
-
-
-                                            </div>
-                                        </div>
-                                    }   
+                                        <a><strong>Borrow Price:</strong> @Model.allBooks[0].book.borrowPrice$</a><br>
+                                    }
+                                    @if(Model.allBooks[3].book.onSale)
+                                    {
+                                        <a class="text-muted text-decoration-line-through"><strong>Price:</strong>@Model.allBooks[0].book.buyingPrice$</a><br>
+                                        <a><strong>Sale Price:</strong> @(Model.allBooks[0].book.buyingPrice * Model.allBooks[0].bookDiscountModel.discountPrecentage)$</a>
+                                    }
                                     else
                                     {
-                                        <div class="price-container card-footer" style="background-color:white">
-                                            <div class="row" style="column-gap: 5px;">
-                                                <div class="col" style="background-color: rgb(255, 255, 255);" id="Buy-Button">
-                                                    <a href="#" class="Buy-button text-black">Buy-Now</a>
-                                                </div>
-
-                                                <div class="dropdown col">
-                                                    <a href="#" class="dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">Add to Cart</a>
-                                                    
-                                                    <li class="dropdown-menu col" style="background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
-                                                        <div class="addToCart-menu-content">
-                                                            <a class="dropdown-item" 
-                                                                asp-controller="ShoppingCart" 
-                                                                asp-action="AddToShoppingCart"
-                                                                asp-route-bookId="@Model.allBooks[0].book.id"
-                                                                asp-route-format="pdf" 
-                                                                asp-route-isBorrowed="false">
-                                                                Buy</a>
-                                                        </div>
-                                                    </li>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <a><strong>Price:</strong> @Model.allBooks[0].book.buyingPrice$</a>
                                     }
-                                </div>
-                        </div> 
+                                </p>
 
+                                <div class="price-container card-footer" style="background-color:white">
+                                    <div class="row">
+                                        <div class="col" style="background-color: rgb(255, 255, 255);" id="Buy-Button">
+                                            <a href="#" class="Buy-button text-black" data-price="@Model.allBooks[0].book.buyingPrice" data-book-id="@Model.allBooks[0].book.id">Buy-Now</a>
+                                        </div>
+
+                                        <div class="dropdown col">
+                                            <a href="#" class="dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">Add to Cart</a>
+                                            <li class="dropdown-menu col" style="z-index: 9999; background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
+                                                <div class="addToCart-menu-content">
+                                                    <a class="dropdown-item" data-action="buy" style="color: aliceblue;" data-book-id="@Model.allBooks[0].book.id">Buy</a>
+                                                    @if(Model.allBooks[0].book.canBorrow)
+                                                    {
+                                                        <a class="dropdown-item" data-action="borrow" style="color: aliceblue;" data-book-id="@Model.allBooks[0].book.id">Borrow</a>
+                                                    }
+                                                </div>
+                                            </li>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
 
+                    <!-- Second Book -->
                     <div class="Book-container col" style="justify-items: center;">
                         <div class="card" style="width: 21rem;">
-                                <a href="@Url.Action("Index", "Book")/4">
-                                    <img src="\images\bookCovers\@Model.allBooks[3].coverModel.imgName" class="card-img-top" alt="@Model.allBooks[3].coverModel.imgName">
-                                </a>
+                            <a href="@Url.Action("Index", "Book")/4">
+                                <img src="\images\bookCovers\@Model.allBooks[3].coverModel.imgName" class="card-img-top" alt="@Model.allBooks[3].coverModel.imgName">
+                            </a>
 
-                                <div class="card-body d-grid">
-                                    <h5 class="card-title">@Model.allBooks[3].book.title</h5>
-                                    <p class="card-text">
-                                        <a><strong>Author:</strong> @Model.allBooks[3].authorModel.name</a><br> 
-                                        <a>
-                                            <strong>Published by:</strong> @string.Join(", ", @Model.allBooks[3].publishers.Select(p => p.name))
-                                        </a><br>
-                                        <a><strong>Genre:</strong> @Model.allBooks[3].genreModel.name</a><br>
-                                        <a><strong>Age limit:</strong> @Model.allBooks[3].book.ageLimit</a><br>
-                                        <a><strong>Publish date:</strong> @Model.allBooks[3].book.pubDate.ToString("yyyy-MM-dd")</a><br>
-                                        <a><strong>Rating:</strong> @Model.allBooks[3].book.starRate</a><br>
-                                        @if(Model.allBooks[3].book.canBorrow)
-                                        {<a><strong>Borrow Price:</strong> @Model.allBooks[3].book.borrowPrice$</a><br>}
-                                        @if(Model.allBooks[3].book.onSale)
-                                        {
-                                            <a class="text-muted text-decoration-line-through"><strong>Price:</strong>@Model.allBooks[3].book.buyingPrice</a><br>
-                                            <a><strong>Sale Price:</strong> @(Model.allBooks[3].book.buyingPrice * Model.allBooks[3].bookDiscountModel.discountPrecentage)$</a>
-
-                                        }
-                                        else{
-                                            <a><strong>Price:</strong> @Model.allBooks[3].book.buyingPrice$</a>
-                                        }
-
-                                    </p>
-
+                            <div class="card-body d-grid">
+                                <h5 class="card-title">@Model.allBooks[3].book.title</h5>
+                                <p class="card-text">
+                                    <a><strong>Author:</strong> @Model.allBooks[3].authorModel.name</a><br>
+                                    <a><strong>Published by:</strong> @string.Join(", ", @Model.allBooks[3].publishers.Select(p => p.name))</a><br>
+                                    <a><strong>Genre:</strong> @Model.allBooks[3].genreModel.name</a><br>
+                                    <a><strong>Age limit:</strong> @Model.allBooks[3].book.ageLimit</a><br>
+                                    <a><strong>Publish date:</strong> @Model.allBooks[3].book.pubDate.ToString("yyyy-MM-dd")</a><br>
+                                    <a><strong>Rating:</strong> @Model.allBooks[3].book.starRate</a><br>
                                     @if(Model.allBooks[3].book.canBorrow)
                                     {
-                                        <div class="price-container card-footer" style="background-color:white">
-                                            <div class="row">
-
-                                                <div class="col" style="background-color: rgb(255, 255, 255);" id="Buy-Button">
-                                                    <a href="#" class="Buy-button text-black">Buy-Now</a>
-                                                </div>
-                                                
-                                                <div class="dropdown col">
-                                                    <a href="#" class="dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">Add to Cart</a>
-                                                    
-                                                    <li class="dropdown-menu col" style="background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
-                                                        <div class="addToCart-menu-content">
-                                                            <a class="dropdown-item" 
-                                                                asp-controller="ShoppingCart" 
-                                                                asp-action="AddToShoppingCart"
-                                                                asp-route-bookId="@Model.allBooks[3].book.id"
-                                                                asp-route-format="pdf" 
-                                                                asp-route-isBorrowed="false">
-                                                                Buy</a>
-                                                            <a class="dropdown-item" 
-                                                                asp-controller="ShoppingCart" 
-                                                                asp-action="AddToShoppingCart"
-                                                                asp-route-bookId="@Model.allBooks[3].book.id"
-                                                                asp-route-format="pdf" 
-                                                                asp-route-isBorrowed="true">
-                                                                Borrow</a>
-                                                        </div>
-                                                    </li>
-                                                </div>
-
-
-                                            </div>
-                                        </div>
-                                    }   
+                                        <a><strong>Borrow Price:</strong> @Model.allBooks[3].book.borrowPrice$</a><br>
+                                    }
+                                    @if(Model.allBooks[3].book.onSale)
+                                    {
+                                        <a class="text-muted text-decoration-line-through"><strong>Price:</strong>@Model.allBooks[3].book.buyingPrice$</a><br>
+                                        <a><strong>Sale Price:</strong> @(Model.allBooks[3].book.buyingPrice * Model.allBooks[3].bookDiscountModel.discountPrecentage)$</a>
+                                    }
                                     else
                                     {
-                                        <div class="price-container card-footer" style="background-color:white">
-                                            <div class="row" style="column-gap: 5px;">
-                                                <div class="col" style="background-color: rgb(255, 255, 255);" id="Buy-Button">
-                                                    <a href="#" class="Buy-button text-black">Buy-Now</a>
-                                                </div>
-
-                                                <div class="dropdown col">
-                                                    <a href="#" class="dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">Add to Cart</a>
-                                                    
-                                                    <li class="dropdown-menu col" style="background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
-                                                        <div class="addToCart-menu-content">
-                                                            <a class="dropdown-item" 
-                                                                asp-controller="ShoppingCart" 
-                                                                asp-action="AddToShoppingCart"
-                                                                asp-route-bookId="@Model.allBooks[3].book.id"
-                                                                asp-route-format="pdf" 
-                                                                asp-route-isBorrowed="false">
-                                                                Buy</a>
-                                                        </div>
-                                                    </li>
-                                                </div>
-                                            </div>
-                                        </div>
+                                        <a><strong>Price:</strong> @Model.allBooks[3].book.buyingPrice$</a>
                                     }
+                                </p>
+
+                                <div class="price-container card-footer" style="background-color:white">
+                                    <div class="row">
+                                        <div class="col" style="background-color: rgb(255, 255, 255);" id="Buy-Button">
+                                            <a href="#" class="Buy-button text-black" data-price="@Model.allBooks[3].book.buyingPrice" data-book-id="@Model.allBooks[3].book.id">Buy-Now</a>
+                                        </div>
+
+                                        <div class="dropdown col">
+                                            <a href="#" class="dropdown-toggle text-black" data-bs-toggle="dropdown" aria-expanded="false">Add to Cart</a>
+                                            <li class="dropdown-menu col" style="z-index: 9999; background-color: rgb(79, 79, 79);" id="Add-to-cart-Button">
+                                                <div class="addToCart-menu-content">
+                                                    <a class="dropdown-item" data-action="buy" style="color: aliceblue;" data-book-id="@Model.allBooks[3].book.id">Buy</a>
+                                                    @if(Model.allBooks[3].book.canBorrow)
+                                                    {
+                                                        <a class="dropdown-item" data-action="borrow" style="color: aliceblue;" data-book-id="@Model.allBooks[3].book.id">Borrow</a>
+                                                    }
+                                                </div>
+                                            </li>
+                                        </div>
+                                    </div>
                                 </div>
-                        </div> 
-
+                            </div>
+                        </div>
                     </div>
-
-
                 </div>
-
-
-                
-
             </div>
 
-
             <div class="Header-one row mt-5 ms-2" style="align-items:flex-end;">
-
                 <h2>Explore Our Gallery:</h2>
-
             </div>
 
             <div id="BooksCarousel" class="carousel slide mt-4 position-relative" data-bs-ride="carousel" data-bs-interval="false">
@@ -266,17 +157,12 @@
                     <span class="carousel-control-next-icon" aria-hidden="true"></span>
                     <span class="visually-hidden">Next</span>
                 </button>
-
             </div>
 
-
             <div class="Categorys row ms-1" style="height: 120px;">
-
             </div>
 
             <div class="SiteReviews">
-                
-
                 @if (Model.allFeedbacks != null && Model.allFeedbacks.Any())
                 {
                     <div class="reviews-container" style="max-height: 400px; overflow-y: auto;">
@@ -297,7 +183,6 @@
                                                 <i class="bi bi-clock me-1"></i>
                                                 @feedback.createdAt.ToString("MMM dd, yyyy")
                                             </small>
-
                                         </div>
                                     </div>
                                     <p class="card-text mb-0">@feedback.comment</p>
@@ -347,24 +232,116 @@
                         </div>
                     </div>
                 }
-
-
-
             </div>
-
-            
-
-
         </div>
     </div>
 </div>
 
-@section Scripts 
-{
-
+@section Scripts {
+    <script src="https://js.stripe.com/v3/"></script>
     <script>
+        document.addEventListener('DOMContentLoaded', () => {
+            // Handle Buy-Now buttons
+            document.querySelectorAll('.Buy-button').forEach(button => {
+                button.addEventListener('click', async (e) => {
+                    e.preventDefault();
 
-        //HashMap of all book cover Path
+                    const currentUserId = @currentUserId;
+                    if (currentUserId === 0) {
+                        alert('Please log in to make a purchase.');
+                        window.location.href = '/Auth/Login';
+                        return;
+                    }
+
+                    const bookId = e.target.getAttribute('data-book-id');
+                    const bookPrice = parseFloat(e.target.getAttribute('data-price'));
+                    const bookTitle = e.target.closest('.card-body').querySelector('.card-title').textContent;
+
+                    const cartData = {
+                        items: [{
+                            id: parseInt(bookId),
+                            productName: bookTitle,
+                            productDescription: "Great Book",
+                            amount: Math.round(bookPrice * 100),
+                            currency: "ils",
+                            purchaseType: "buy"
+                        }]
+                    };
+
+                    try {
+                        const response = await fetch('/checkout/create-checkout-session', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(cartData)
+                        });
+
+                        if (response.ok) {
+                            const session = await response.json();
+                            const stripe = Stripe('@Configuration["Stripe:PublicKey"]');
+                            const result = await stripe.redirectToCheckout({ sessionId: session.sessionId });
+
+                            if (result.error) {
+                                alert(result.error.message);
+                            }
+                        } else {
+                            const errorData = await response.json();
+                            alert(errorData.error || 'Failed to create checkout session');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error processing purchase');
+                    }
+                });
+            });
+
+            // Handle Add to Cart buttons
+            document.querySelectorAll('.dropdown-item[data-action]').forEach(item => {
+                item.addEventListener('click', async (e) => {
+                    e.preventDefault();
+
+                    const currentUserId = @currentUserId;
+                    if (currentUserId === 0) {
+                        alert('Please log in to make a purchase.');
+                        window.location.href = '/Auth/Login';
+                        return;
+                    }
+
+                    const action = e.target.dataset.action;
+                    const bookId = e.target.dataset.bookId;
+
+                    try {
+                        const response = await fetch('/ShoppingCart/AddToShoppingCart', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify({
+                                bookId: parseInt(bookId),
+                                userId: currentUserId,
+                                format: "pdf",
+                                isBorrowed: action === 'borrow'
+                            })
+                        });
+
+                        if (response.ok) {
+                            alert('Book added to cart successfully!');
+                            location.reload();
+                        } else if (response.status === 401) {
+                            window.location.href = '/Auth/Login';
+                        } else {
+                            alert('Failed to add item to cart');
+                        }
+                    } catch (error) {
+                        console.error('Error:', error);
+                        alert('Error adding item to cart');
+                    }
+                });
+            });
+        });
+
+        // Existing carousel code - unchanged
         var books = @Json.Serialize(Model.allBooks);
 
         var bookCoversPath = {}
@@ -373,96 +350,58 @@
             bookCoversPath[book.book.id]=book.coverModel.imgName;
         }
 
-        // Select the roller track container
         const carouselInner = document.querySelector('.carousel-inner');
-
 
         function populateCarousel2(bookCoversPath, imagesPerItem = 4) 
         {
-            let chunk = []; // Temporary array to hold a chunk of images
-            let index = 0; // Counter for the current index
+            let chunk = [];
+            let index = 0;
 
             for (let bookID in bookCoversPath) 
             {
                 if (bookCoversPath.hasOwnProperty(bookID)) 
                 {
-                    // Store both bookID and chunkUrl in the chunk array
                     chunk.push({ bookID: bookID, imgName: bookCoversPath[bookID] });
 
-                    // Check if the chunk is full or if it's the last item
                     if (chunk.length === imagesPerItem || index === Object.keys(bookCoversPath).length - 1) 
                     {
-                        // Create a carousel item
                         const carouselItem = document.createElement('div');
                         carouselItem.className = `carousel-item ${carouselInner.children.length === 0 ? ' active' : ''}`;
 
-                        // Create a container for the row of images
                         const row = document.createElement('div');
                         row.className = 'row';
 
-                        // Add each image in the chunk to the row
                         chunk.forEach(({ bookID, imgName }) => 
                         {
                             const col = document.createElement('div');
-                            col.className = 'col-2'; // Adjust based on how many images per row
+                            col.className = 'col-2';
                             col.style = 'padding-inline: 10px;';
 
                             const imgA = document.createElement('a');
-                            imgA.href = `/Book/Index/${bookID}`; // Dynamically set the href for each book
+                            imgA.href = `/Book/Index/${bookID}`;
 
                             const img = document.createElement('img');
-                            img.src = `\\images\\bookCovers\\${imgName || 'default_book_cover.jpg'}`; // Dynamically set the image URL or fallback
+                            img.src = `\\images\\bookCovers\\${imgName || 'default_book_cover.jpg'}`;
                             img.alt = imgName;
                             img.style = "border-radius: 30px;";
-                            img.className = 'img-fluid'; // Ensure responsiveness
+                            img.className = 'img-fluid';
 
                             imgA.appendChild(img);
                             col.appendChild(imgA);
                             row.appendChild(col);
                         });
 
-                        // Append the row to the carousel item
                         carouselItem.appendChild(row);
-
-                        // Append the carousel item to the carousel inner container
                         carouselInner.appendChild(carouselItem);
 
-                        // Clear the chunk
                         chunk = [];
                     }
 
-                    // Increment the index
                     index++;
                 }
             }
         }
 
-
         populateCarousel2(bookCoversPath,6);
-
     </script>
-
-
-
-    <script>
-
-        /*
-        const categorysContainer = document.querySelector('.Categorys');
-
-        var bookCaregorys = @Json.Serialize(Model.listOfCategorys);
-
-        for(var category in bookCaregorys)
-        {
-            const item = document.createElement('button');
-            item.className = "category-buttom col-1";
-            item.textContent = bookCaregorys[category];
-
-            categorysContainer.appendChild(item);
-        }
-        */
-
-
-
-    </script>
-    
-}
+}                               '
