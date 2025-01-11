@@ -78,7 +78,7 @@
         
 
         <!--Books Gallery-->
-        <div class="Books-Container row" style="position: relative; row-gap: 60px; column-gap: 10px;">
+        <div class="Books-Container row ms-4" style="row-gap: 20px; column-gap: 20px;">
 
             @foreach(var book in Model.allBooks)
             {
@@ -105,6 +105,8 @@
                             <a><strong>Age limit:</strong> @book.book.ageLimit</a><br>
                             <a><strong>Publish date:</strong> @book.book.pubDate.ToString("yyyy-MM-dd")</a><br>
                             <a><strong>Rating:</strong> @book.book.starRate</a><br>
+                            @if(book.book.canBorrow)
+                                {<a><strong>Borrow Price:</strong> @book.book.borrowPrice$</a><br>}
                             @if(book.book.onSale)
                             {
                                 <a class="text-muted text-decoration-line-through"><strong>Original Price:</strong> @book.book.buyingPrice$</a><br>
@@ -112,13 +114,13 @@
                             }
                             else 
                             {
-                                <a class="text-muted text-decoration-line-through"><strong>Price:</strong> @book.book.buyingPrice$</a><br>
+                                <a><strong>Price:</strong> @book.book.buyingPrice$</a><br>
                             }
 
                         </p>
 
                         <div class="price-container card-footer" style="background-color:white;">
-                            <div class="row">
+                           <div class="row">
 
                                 <div class="col" style=" background-color: rgb(255, 255, 255);" id="Buy-Button">
                                     <a href="#" class="Buy-button text-black">Buy-Now</a>

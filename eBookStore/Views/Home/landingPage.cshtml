@@ -14,7 +14,10 @@
             
             <div class="home-header col-7 mt-4">
                 <h2 class="header-one">Welcome to eBookStore</h2>
-                <p class="sub-header ms-2">Your one-stop shop for the best eBooks!</p>
+                <p class="sub-header ms-2">Your one-stop shop for the best eBooks!<br>
+                    The store contain @Model.allBooks.Count books.
+                </p>
+                
             </div>
 
         </div>
@@ -30,11 +33,9 @@
             
             
 
-            <div class="specialSales row d-flex ms-3" style="padding-top: 10%;">
+            <div class="specialSales row d-flex ms-3 " style="padding-top: 10%;">
                 <div class="sub-header row ">
-                    <h2 class="header-one row">Special Sales:</h4>
-
-                    <p>Explore a wide range of books and manage your library without breaking the bank.</p>
+                    <h2 class="mb-5">Our Recommendations</h2>
                 </div>
 
                 <div class="BooksContainer row">
@@ -42,28 +43,36 @@
                     <div class="Book-container col" style="justify-items: center;">
                         <div class="card" style="width: 21rem;">
                                 <a href="@Url.Action("Index", "Book")/1">
-                                    <img src="\images\bookCovers\@Model.SpecialSales[0].coverModel.imgName" class="card-img-top" alt="@Model.SpecialSales[0].coverModel.imgName">
+                                    <img src="\images\bookCovers\@Model.allBooks[0].coverModel.imgName" class="card-img-top" alt="@Model.allBooks[0].coverModel.imgName">
                                 </a>
 
                                 <div class="card-body d-grid">
-                                    <h5 class="card-title">@Model.SpecialSales[0].book.title</h5>
+                                    <h5 class="card-title">@Model.allBooks[0].book.title</h5>
                                     <p class="card-text">
-                                        <a><strong>Author:</strong> @Model.SpecialSales[0].authorModel.name</a><br> 
+                                        <a><strong>Author:</strong> @Model.allBooks[0].authorModel.name</a><br> 
                                         <a>
-                                            <strong>Published by:</strong> @string.Join(", ", @Model.SpecialSales[0].publishers.Select(p => p.name))
+                                            <strong>Published by:</strong> @string.Join(", ", @Model.allBooks[0].publishers.Select(p => p.name))
                                         </a><br>
-                                        <a><strong>Genre:</strong> @Model.SpecialSales[0].genreModel.name</a><br>
-                                        <a><strong>Age limit:</strong> @Model.SpecialSales[0].book.ageLimit</a><br>
-                                        <a><strong>Publish date:</strong> @Model.SpecialSales[0].book.pubDate</a><br>
-                                        <a><strong>Rating:</strong> @Model.SpecialSales[0].book.starRate</a><br>
-                                        @if(Model.SpecialSales[0].book.canBorrow)
-                                            {<a><strong>Borrow Price:</strong> @Model.SpecialSales[0].book.borrowPrice$</a><br>}
-                                        <a class="text-muted text-decoration-line-through"><strong>Original Price:</strong> need fix$</a><br>
-                                        <a><strong>OnSale:</strong> @Model.SpecialSales[0].book.buyingPrice$</a>
+                                        <a><strong>Genre:</strong> @Model.allBooks[0].genreModel.name</a><br>
+                                        <a><strong>Age limit:</strong> @Model.allBooks[0].book.ageLimit</a><br>
+                                        <a><strong>Publish date:</strong> @Model.allBooks[0].book.pubDate.ToString("yyyy-MM-dd")</a><br>
+                                        <a><strong>Rating:</strong> @Model.allBooks[0].book.starRate</a><br>
+                                        @if(Model.allBooks[0].book.canBorrow)
+                                            {<a><strong>Borrow Price:</strong> @Model.allBooks[0].book.borrowPrice$</a><br>}
+
+                                        @if(Model.allBooks[3].book.onSale)
+                                        {
+                                            <a class="text-muted text-decoration-line-through"><strong>Price:</strong>@Model.allBooks[0].book.buyingPrice</a><br>
+                                            <a><strong>Sale Price:</strong> @(Model.allBooks[0].book.buyingPrice * Model.allBooks[0].bookDiscountModel.discountPrecentage)$</a>
+
+                                        }
+                                        else{
+                                            <a><strong>Price:</strong> @Model.allBooks[0].book.buyingPrice$</a>
+                                        }   
 
                                     </p>
 
-                                    @if(Model.SpecialSales[0].book.canBorrow)
+                                    @if(Model.allBooks[0].book.canBorrow)
                                     {
                                         <div class="price-container card-footer" style="background-color:white">
                                             <div class="row">
@@ -80,14 +89,14 @@
                                                             <a class="dropdown-item" 
                                                                 asp-controller="ShoppingCart" 
                                                                 asp-action="AddToShoppingCart"
-                                                                asp-route-bookId="@Model.SpecialSales[0].book.id"
+                                                                asp-route-bookId="@Model.allBooks[0].book.id"
                                                                 asp-route-format="pdf" 
                                                                 asp-route-isBorrowed="false">
                                                                 Buy</a>
                                                             <a class="dropdown-item" 
                                                                 asp-controller="ShoppingCart" 
                                                                 asp-action="AddToShoppingCart"
-                                                                asp-route-bookId="@Model.SpecialSales[0].book.id"
+                                                                asp-route-bookId="@Model.allBooks[0].book.id"
                                                                 asp-route-format="pdf" 
                                                                 asp-route-isBorrowed="true">
                                                                 Borrow</a>
@@ -115,7 +124,7 @@
                                                             <a class="dropdown-item" 
                                                                 asp-controller="ShoppingCart" 
                                                                 asp-action="AddToShoppingCart"
-                                                                asp-route-bookId="@Model.SpecialSales[0].book.id"
+                                                                asp-route-bookId="@Model.allBooks[0].book.id"
                                                                 asp-route-format="pdf" 
                                                                 asp-route-isBorrowed="false">
                                                                 Buy</a>
@@ -133,28 +142,35 @@
                     <div class="Book-container col" style="justify-items: center;">
                         <div class="card" style="width: 21rem;">
                                 <a href="@Url.Action("Index", "Book")/4">
-                                    <img src="\images\bookCovers\@Model.SpecialSales[3].coverModel.imgName" class="card-img-top" alt="@Model.SpecialSales[3].coverModel.imgName">
+                                    <img src="\images\bookCovers\@Model.allBooks[3].coverModel.imgName" class="card-img-top" alt="@Model.allBooks[3].coverModel.imgName">
                                 </a>
 
                                 <div class="card-body d-grid">
-                                    <h5 class="card-title">@Model.SpecialSales[3].book.title</h5>
+                                    <h5 class="card-title">@Model.allBooks[3].book.title</h5>
                                     <p class="card-text">
-                                        <a><strong>Author:</strong> @Model.SpecialSales[3].authorModel.name</a><br> 
+                                        <a><strong>Author:</strong> @Model.allBooks[3].authorModel.name</a><br> 
                                         <a>
-                                            <strong>Published by:</strong> @string.Join(", ", @Model.SpecialSales[3].publishers.Select(p => p.name))
+                                            <strong>Published by:</strong> @string.Join(", ", @Model.allBooks[3].publishers.Select(p => p.name))
                                         </a><br>
-                                        <a><strong>Genre:</strong> @Model.SpecialSales[3].genreModel.name</a><br>
-                                        <a><strong>Age limit:</strong> @Model.SpecialSales[3].book.ageLimit</a><br>
-                                        <a><strong>Publish date:</strong> @Model.SpecialSales[3].book.pubDate</a><br>
-                                        <a><strong>Rating:</strong> @Model.SpecialSales[3].book.starRate</a><br>
-                                        @if(Model.SpecialSales[3].book.canBorrow)
-                                        {<a><strong>Borrow Price:</strong> @Model.SpecialSales[3].book.borrowPrice$</a><br>}
-                                        <a class="text-muted text-decoration-line-through"><strong>Original Price:</strong>need fix$</a><br>
-                                        <a><strong>OnSale:</strong> @Model.SpecialSales[3].book.buyingPrice$</a>
+                                        <a><strong>Genre:</strong> @Model.allBooks[3].genreModel.name</a><br>
+                                        <a><strong>Age limit:</strong> @Model.allBooks[3].book.ageLimit</a><br>
+                                        <a><strong>Publish date:</strong> @Model.allBooks[3].book.pubDate.ToString("yyyy-MM-dd")</a><br>
+                                        <a><strong>Rating:</strong> @Model.allBooks[3].book.starRate</a><br>
+                                        @if(Model.allBooks[3].book.canBorrow)
+                                        {<a><strong>Borrow Price:</strong> @Model.allBooks[3].book.borrowPrice$</a><br>}
+                                        @if(Model.allBooks[3].book.onSale)
+                                        {
+                                            <a class="text-muted text-decoration-line-through"><strong>Price:</strong>@Model.allBooks[3].book.buyingPrice</a><br>
+                                            <a><strong>Sale Price:</strong> @(Model.allBooks[3].book.buyingPrice * Model.allBooks[3].bookDiscountModel.discountPrecentage)$</a>
+
+                                        }
+                                        else{
+                                            <a><strong>Price:</strong> @Model.allBooks[3].book.buyingPrice$</a>
+                                        }
 
                                     </p>
 
-                                    @if(Model.SpecialSales[3].book.canBorrow)
+                                    @if(Model.allBooks[3].book.canBorrow)
                                     {
                                         <div class="price-container card-footer" style="background-color:white">
                                             <div class="row">
@@ -171,14 +187,14 @@
                                                             <a class="dropdown-item" 
                                                                 asp-controller="ShoppingCart" 
                                                                 asp-action="AddToShoppingCart"
-                                                                asp-route-bookId="@Model.SpecialSales[3].book.id"
+                                                                asp-route-bookId="@Model.allBooks[3].book.id"
                                                                 asp-route-format="pdf" 
                                                                 asp-route-isBorrowed="false">
                                                                 Buy</a>
                                                             <a class="dropdown-item" 
                                                                 asp-controller="ShoppingCart" 
                                                                 asp-action="AddToShoppingCart"
-                                                                asp-route-bookId="@Model.SpecialSales[3].book.id"
+                                                                asp-route-bookId="@Model.allBooks[3].book.id"
                                                                 asp-route-format="pdf" 
                                                                 asp-route-isBorrowed="true">
                                                                 Borrow</a>
@@ -206,7 +222,7 @@
                                                             <a class="dropdown-item" 
                                                                 asp-controller="ShoppingCart" 
                                                                 asp-action="AddToShoppingCart"
-                                                                asp-route-bookId="@Model.SpecialSales[3].book.id"
+                                                                asp-route-bookId="@Model.allBooks[3].book.id"
                                                                 asp-route-format="pdf" 
                                                                 asp-route-isBorrowed="false">
                                                                 Buy</a>
