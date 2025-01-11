@@ -105,6 +105,8 @@
                             <a><strong>Age limit:</strong> @book.book.ageLimit</a><br>
                             <a><strong>Publish date:</strong> @book.book.pubDate.ToString("yyyy-MM-dd")</a><br>
                             <a><strong>Rating:</strong> @book.book.starRate</a><br>
+                            @if(book.book.canBorrow)
+                                {<a><strong>Borrow Price:</strong> @book.book.borrowPrice$</a><br>}
                             @if(book.book.onSale)
                             {
                                 <a class="text-muted text-decoration-line-through"><strong>Original Price:</strong> @book.book.buyingPrice$</a><br>
@@ -112,7 +114,7 @@
                             }
                             else 
                             {
-                                <a class="text-muted text-decoration-line-through"><strong>Price:</strong> @book.book.buyingPrice$</a><br>
+                                <a><strong>Price:</strong> @book.book.buyingPrice$</a><br>
                             }
 
                         </p>
