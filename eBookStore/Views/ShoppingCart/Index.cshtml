@@ -225,7 +225,6 @@
             const cartItem = document.querySelector(`.cart-item[data-book-id="${bookId}"]`);
             const purchasePrice = cartItem.querySelector('.purchase-price');
             const borrowPrice = cartItem.querySelector('.borrow-price');
-            console.log(purchaseTypes);
 
             if (purchaseType === 'borrow') {
                 purchasePrice.style.display = 'none';
@@ -253,7 +252,7 @@
                     productName: item.querySelector('h5').textContent,
                     productDescription: item.querySelector('.text-muted')?.textContent || '',
                     amount: Math.round(price * 100),
-                    currency: 'usd',
+                    currency: 'nis',
                     format: format,
                     purchaseType: purchaseType
                 };
