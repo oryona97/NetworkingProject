@@ -110,18 +110,6 @@
         background-color: #f8f9fa;
         margin-left: 0.5rem;
     }
-
-    .queue-stats {
-        font-size: 0.85rem;
-    }
-
-    .queue-stats .badge {
-        padding: 0.35em 0.65em;
-    }
-
-    .queue-stats .bi {
-        margin-right: 0.25rem;
-    }
 </style>
 
 <div class="container py-5">
@@ -212,12 +200,6 @@
                                                 <small>
                                                     <i class="bi bi-info-circle"></i>
                                                     <span id="queue-message-@bookVM.book.id"></span>
-                                                    <div class="queue-stats mt-1" id="queue-stats-@bookVM.book.id">
-                                                        <span class="badge bg-secondary">
-                                                            <i class="bi bi-people"></i>
-                                                            <span id="queue-count-@bookVM.book.id">0</span> users waiting
-                                                        </span>
-                                                    </div>
                                                 </small>
                                             </div>
                                         </div>
@@ -395,7 +377,7 @@
                     productName: item.querySelector('h5').textContent,
                     productDescription: item.querySelector('.text-muted')?.textContent || '',
                     amount: Math.round(price * 100),
-                    currency: 'nis',
+                    currency: 'ils',
                     format: format,
                     purchaseType: purchaseType,
                     isQueued: document.getElementById(`queue-info-${bookId}`)?.style.display !== 'none'
@@ -444,28 +426,5 @@
                 }
             });
         });
-        const checkQueueStatus = async (bookId) => {
-            try {
-                const response = await fetch(`/ShoppingCart/GetQueuePosition?bookId=${bookId}`);
-                const result = await response.json();
-
-                if (result.success) {
-                    const queueInfo = document.getElementById(`queue-info-${bookId}`);
-                    const queueMessage = document.getElementById(`queue-message-${bookId}`);
-                    const queueCount = document.getElementById(`queue-count-${bookId}`);
-
-                    queueInfo.style.display = 'block';
-                    if (result.position > 0) {
-                        queueMessage.textContent = `You are position ${result.position} in the queue.`;
-                        queueCount.textContent = result.position - 1; // Users ahead of current user
-                    } else {
-                        queueMessage.textContent = `You have been added to the queue.`;
-                        queueCount.textContent = '0';
-                    }
-                }
-            } catch (error) {
-                console.error('Error checking queue status:', error);
-            }
-        };
     </script>
 }
