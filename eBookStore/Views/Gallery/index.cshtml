@@ -1,4 +1,5 @@
 @model eBookStore.Models.ViewModels.GalleryPageViewModel
+@inject IConfiguration Configuration
 @{
     ViewData["Title"] = "Gallery";
     var currentUserId = Context.Session.GetInt32("userId") ?? 0;
@@ -147,7 +148,7 @@
 
 
 @section Scripts {
-
+<script src="https://js.stripe.com/v3/"></script>
 <script>
 
     const BookCards = document.querySelector('.Book-Cards');
@@ -155,11 +156,6 @@
     var galleryModel = @Json.Serialize(Model);
 
     var categoryList = galleryModel.listOfCategorys;
-    console.log(categoryList);
-
-
-
-
     document.addEventListener('DOMContentLoaded', () => {
         const categoryLinks = document.querySelectorAll('.categorysList .nav-link');
         const books = document.querySelectorAll('.book-item');
@@ -206,6 +202,62 @@
                 } else {
                     // Show all books when the checkbox is unchecked
                     book.style.display = 'block';
+                }
+            });
+        });
+
+        document.querySelectorAll('.Buy-button').forEach(button => {
+            button.addEventListener('click', async (e) => {
+                e.preventDefault();
+
+                const currentUserId = @currentUserId;
+                if (currentUserId === 0) {
+                    alert('Please log in to make a purchase.');
+                    window.location.href = '/Auth/Login';
+                    return;
+                }
+
+                // Get book details from the parent card
+                const bookCard = e.target.closest('.card');
+                const bookTitle = bookCard.querySelector('.card-title').textContent;
+                const bookPrice = parseFloat(bookCard.getAttribute('data-price'));
+                const bookId = bookCard.querySelector('.addToCart-menu-content a').getAttribute('data-book-id');
+
+                const cartData = {
+                    items: [{
+                        id: parseInt(bookId),
+                        productName: bookTitle,
+                        productDescription: "Great Book",
+                        amount: Math.round(bookPrice * 100), // Convert to cents
+                        currency: "ils",
+                        purchaseType: "buy"
+                    }]
+                };
+
+                try {
+                    const response = await fetch('/checkout/create-checkout-session', {
+                        method: 'POST',
+                        headers: {
+                            'Content-Type': 'application/json',
+                        },
+                        body: JSON.stringify(cartData)
+                    });
+
+                    if (response.ok) {
+                        const session = await response.json();
+                        const stripe = Stripe('@Configuration["Stripe:PublicKey"]');
+                        const result = await stripe.redirectToCheckout({ sessionId: session.sessionId });
+
+                        if (result.error) {
+                            alert(result.error.message);
+                        }
+                    } else {
+                        const errorData = await response.json();
+                        alert(errorData.error || 'Failed to create checkout session');
+                    }
+                } catch (error) {
+                    console.error('Error:', error);
+                    alert('Error processing purchase');
                 }
             });
         });
