@@ -45,17 +45,20 @@ public class AuthController : Controller
                 {
                     connection.Open();
                     string queries = @"INSERT INTO [User] 
-                    (Username, Password, Email, FirstName, LastName, PhoneNumber)  
-                    VALUES (@Username, @Password, @Email, @FirstName, @LastName, @PhoneNumber);";
+                    (Username, Password, Email, Type ,FirstName, LastName, PhoneNumber,createdAt)  
+                    VALUES (@Username, @Password, @Email, @Type , @FirstName, @LastName, @PhoneNumber, @createdAt);";
 
                     using (SqlCommand command = new SqlCommand(queries, connection))
                     {
                         command.Parameters.AddWithValue("@Username", model.Username);
-                        command.Parameters.AddWithValue("@Password", model.Password);
+                        command.Parameters.AddWithValue("@Password", _userRepo.HashPassword(model.Password));
                         command.Parameters.AddWithValue("@Email", model.Email);
                         command.Parameters.AddWithValue("@FirstName", model.FirstName);
                         command.Parameters.AddWithValue("@LastName", model.LastName);
                         command.Parameters.AddWithValue("@PhoneNumber", model.PhoneNumber);
+                        command.Parameters.AddWithValue("@createdAt", DateTime.Now);
+                        command.Parameters.AddWithValue("@Type", "user");
+                        
 
                         int rowAffect = command.ExecuteNonQuery();
 
@@ -68,6 +71,7 @@ public class AuthController : Controller
                                 Email = model.Email,
                                 FirstName = model.FirstName,
                                 LastName = model.LastName,
+                                Type = model.Type,
                                 PhoneNumber = model.PhoneNumber
                             };
 
@@ -115,10 +119,11 @@ public class AuthController : Controller
                             {
                                 string storedPassword = reader["Password"]?.ToString() ?? string.Empty;
 
-                                if (model.Password == storedPassword)
+
+                                if (_userRepo.HashPassword(model.Password) == storedPassword)
                                 {
                                     HttpContext.Session.SetInt32("userId", Convert.ToInt32(reader["id"]));
-                                    HttpContext.Session.SetString("userType", reader["type"].ToString()!);
+                                    HttpContext.Session.SetString("userType", reader["type"]?.ToString() ?? string.Empty);
                                     _logger.LogInformation("Setting userId in session: {UserId}", Convert.ToInt32(reader["id"]));
 
                                     var returnUrl = TempData["ReturnUrl"]?.ToString();
@@ -127,7 +132,7 @@ public class AuthController : Controller
                                         return RedirectToAction("landingPage","Home");
                                     }
 
-                                    return RedirectToAction("Index", "PersonalLibrary");
+                                    return RedirectToAction("landingPage","Home");
                                 }
                             }
                         }
@@ -142,7 +147,7 @@ public class AuthController : Controller
                 ModelState.AddModelError("", "An error occurred during login. Please try again.");
             }
         }
-        return View("Index", model);
+        return View("Login", model);
     }
 
     [ResponseCache(Duration = 0, Location = ResponseCacheLocation.None, NoStore = true)]

@@ -358,7 +358,7 @@ namespace eBookStore.Repository
 	}
 
 	// Function to hash the password using SHA256
-	private string HashPassword(string password)
+	public string HashPassword(string password)
 	{
 		using var sha256 = SHA256.Create();
 		var hashedBytes = sha256.ComputeHash(Encoding.UTF8.GetBytes(password));

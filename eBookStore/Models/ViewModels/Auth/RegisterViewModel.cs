@@ -26,6 +26,8 @@ namespace eBookStore.Models.ViewModels
     [Display(Name = "Email")]
     public string Email { get; set; } = string.Empty;
 
+    public string Type {get; set;} = string.Empty;
+
     [Required(ErrorMessage = "Phone number is required")]
     [Phone(ErrorMessage = "Invalid phone number")]
     [RegularExpression(@"^\d{10}$", ErrorMessage = "Phone number must be 10 digits")]
