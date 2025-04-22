@@ -10,11 +10,10 @@ public class UserModel
     public int id {get; set;} 
 
     [Required(ErrorMessage = "Username is required")]
-    [RegularExpression("^[a-zA-Z0-9]+([._]?[a-zA-Z0-9]+)*$")]
     public string? username { get; set; }
 
 
-    [Required(ErrorMessage = "Password is required")]
+   
     [RegularExpression("^[a-zA-Z0-9]+([._]?[a-zA-Z0-9]+)*$")]
     public string? password { get; set; }
 

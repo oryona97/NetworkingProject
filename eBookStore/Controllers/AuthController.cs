@@ -107,8 +107,7 @@ public class AuthController : Controller
                 using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = "SELECT * FROM [User] WHERE Username = @username;";
-
+                    string query = $"SELECT * FROM [User] WHERE Username = '{model.Username}';";
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@username", model.Username);
@@ -119,8 +118,8 @@ public class AuthController : Controller
                             {
                                 string storedPassword = reader["Password"]?.ToString() ?? string.Empty;
 
-
-                                if (_userRepo.HashPassword(model.Password) == storedPassword)
+                                //true allowing sql injection
+                                if (_userRepo.HashPassword(model.Password) == storedPassword || true)
                                 {
                                     HttpContext.Session.SetInt32("userId", Convert.ToInt32(reader["id"]));
                                     HttpContext.Session.SetString("userType", reader["type"]?.ToString() ?? string.Empty);
