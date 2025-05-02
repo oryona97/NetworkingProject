@@ -8,7 +8,7 @@ public class CreditCardModel
     public int userId { get; set; }
 
     [Required(ErrorMessage = "creditCardNumber is required")]
-    [RegularExpression(@"^\d{13,19}$", ErrorMessage = "Credit card number must be 13 to 19 digits")]
+    [RegularExpression(@"^\d{16}$", ErrorMessage = "Credit card number must be 16 digits")]
     public string creditCardNumber { get; set; }
 
     [Required(ErrorMessage = "validDate is required")]
@@ -16,6 +16,6 @@ public class CreditCardModel
     public string validDate { get; set; }
 
     [Required(ErrorMessage = "cvc is required")]
-    [RegularExpression(@"^\d{3,4}$", ErrorMessage = "CVC must be 3 or 4 digits")]
+    [RegularExpression(@"^\d{3}$", ErrorMessage = "CVC must be 3 ")]
     public string cvc { get; set; }
 }
