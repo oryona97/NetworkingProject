@@ -39,6 +39,7 @@ IF OBJECT_ID('dbo.[User]', 'U') IS NOT NULL DROP TABLE dbo.[User];
 IF OBJECT_ID('dbo.Book', 'U') IS NOT NULL DROP TABLE dbo.Book;
 IF OBJECT_ID('dbo.Publisher', 'U') IS NOT NULL DROP TABLE dbo.Publisher;
 IF OBJECT_ID('dbo.Genre', 'U') IS NOT NULL DROP TABLE dbo.Genre;
+IF OBJECT_ID('dbo.CreditCard', 'U') IS NOT NULL DROP TABLE dbo.CreditCard;
 GO
 
 -- Recreate tables with original schema
@@ -52,6 +53,14 @@ CREATE TABLE [User] (
   [type] nvarchar(20) CHECK(type IN('user','admin')),
   [phoneNumber] nvarchar(20),
   [createdAt] datetime
+)
+
+GO
+CREATE TABLE [CreditCard](
+  [userId] int NOT NULL,
+  [creditCardNumber] nvarchar(50),
+  [validDate] nvarchar(50),
+  [cvc] nvarchar(50),
 )
 
 
@@ -284,6 +293,9 @@ ALTER TABLE [Reciept] ADD FOREIGN KEY ([userId]) REFERENCES [User] ([id]) ON DEL
 GO
 ALTER TABLE [Reciept] ADD FOREIGN KEY ([bookId]) REFERENCES [Book] ([id]) ON DELETE CASCADE;
 GO
+ALTER TABLE [CreditCard] ADD FOREIGN KEY ([userId]) REFERENCES [User]([id]) ON DELETE CASCADE;
+GO
+
 
 --Triggers--
 CREATE TRIGGER trg_DeleteExpiredBorrowedBooks
@@ -399,14 +411,23 @@ VALUES
 (2, 'janesmith', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'Jane', 'Smith', 'jane.smith@example.com', 'user', '9876543210', GETDATE()),
 (3, 'mikebrown', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'Mike', 'Brown', 'mike.brown@example.com', 'user', '5551234567', GETDATE()),
 (4, 'sarahlee', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'Sarah', 'Lee', 'sarah.lee@example.com', 'user', '7778889999', GETDATE()),
-(5, 'test5', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE());
-(6, 'test6', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE());
-(7, 'test7', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE());
-(8, 'test8', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE());
-(9, 'test9', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE());
+(5, 'test5', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE()),
+(6, 'test6', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE()),
+(7, 'test7', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE()),
+(8, 'test8', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE()),
+(9, 'test9', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE()),
 (10, 'test10', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE());
 
 SET IDENTITY_INSERT [User] OFF;
+
+INSERT INTO [CreditCard] ([userId], [creditCardNumber], [validDate], [cvc])
+VALUES 
+(1, '4111111111111111', '12/26', '123'),
+(2, '5500000000000004', '01/27', '456'),
+(3, '340000000000009', '06/25', '789'),
+(4, '30000000000004', '10/26', '012'),
+(5, '6011000000000004', '03/27', '345');
+GO
 
 -- Genres
 SET IDENTITY_INSERT [Genre] ON;
