@@ -395,11 +395,16 @@ SET IDENTITY_INSERT [User] ON;
 -- Users
 INSERT INTO [User] ([id], [userName], [password], [firstName], [lastName], [email], [type], [phoneNumber], [createdAt])
 VALUES 
-(1, 'johndoe', 'hashed_password_1', 'John', 'Doe', 'john.doe@example.com', 'user', '1234567890', GETDATE()),
-(2, 'janesmith', 'hashed_password_2', 'Jane', 'Smith', 'jane.smith@example.com', 'user', '9876543210', GETDATE()),
-(3, 'mikebrown', 'hashed_password_3', 'Mike', 'Brown', 'mike.brown@example.com', 'admin', '5551234567', GETDATE()),
-(4, 'sarahlee', 'hashed_password_4', 'Sarah', 'Lee', 'sarah.lee@example.com', 'user', '7778889999', GETDATE()),
-(5, 'davidwang', 'hashed_password_5', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE());
+(1, 'johndoe', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'John', 'Doe', 'john.doe@example.com', 'admin', '1234567890', GETDATE()),
+(2, 'janesmith', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'Jane', 'Smith', 'jane.smith@example.com', 'user', '9876543210', GETDATE()),
+(3, 'mikebrown', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'Mike', 'Brown', 'mike.brown@example.com', 'user', '5551234567', GETDATE()),
+(4, 'sarahlee', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'Sarah', 'Lee', 'sarah.lee@example.com', 'user', '7778889999', GETDATE()),
+(5, 'test5', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE());
+(6, 'test6', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE());
+(7, 'test7', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE());
+(8, 'test8', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE());
+(9, 'test9', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE());
+(10, 'test10', '9f735e0df9a1ddc702bf0a1a7b83033f9f7153a00c29de82cedadc9957289b05', 'David', 'Wang', 'david.wang@example.com', 'user', '3334445555', GETDATE());
 
 SET IDENTITY_INSERT [User] OFF;
 
