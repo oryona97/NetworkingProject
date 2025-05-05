@@ -631,8 +631,59 @@ namespace eBookStore.Repository
 				throw;
 			}
 		}
+
+
+		public CreditCardModel getUserCreditCard(int userId)
+		{
+			try
+			{
+				using (var connection = new SqlConnection(_connectionString))
+				{
+					connection.Open();
+
+					const string query = @"
+						SELECT creditCardNumber, validDate, cvc
+						FROM CreditCard
+						WHERE userId = @userId";
+
+					using (var command = new SqlCommand(query, connection))
+					{
+						command.Parameters.AddWithValue("@userId", userId);
+
+						using (var reader = command.ExecuteReader())
+						{
+							if (reader.Read())
+							{
+								return new CreditCardModel
+								{
+									userId = userId,
+									creditCardNumber = reader["creditCardNumber"].ToString(),
+									validDate = reader["validDate"].ToString(),
+									cvc = reader["cvc"].ToString()
+								};
+							}
+							else
+							{
+								return null; 
+							}
+						}
+					}
+				}
+			}
+			catch (Exception ex)
+			{
+				_logger.LogError(ex, "Error getting user's credit card info for userId: {UserId}", userId);
+				throw;
+			}
+		}
+
+
+
+
+
+
 	}
-	
+
 	
 
 	

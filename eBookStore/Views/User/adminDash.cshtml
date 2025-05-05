@@ -218,6 +218,9 @@
                                 data-lastname="@user.lastName"
                                 data-phone="@user.phoneNumber" 
                                 data-type="@user.type" 
+                                data-ccnumber="@(user.creditCard?.creditCardNumber ?? "N/A")"
+                                data-validdate="@(user.creditCard?.validDate ?? "N/A")"
+                                data-cvc="@(user.creditCard?.cvc ?? "N/A")"
                                 style="color: white; text-decoration: none;">
                                     @user.username
                                 </a>
@@ -533,6 +536,11 @@
                         const lastName = link.getAttribute("data-lastname");
                         const phone = link.getAttribute("data-phone");
                         const type = link.getAttribute("data-type");
+            
+                        // Credit card fields
+                            const creditCardNumber = link.getAttribute("data-ccnumber");
+                            const validDate = link.getAttribute("data-validdate");
+                            const cvc = link.getAttribute("data-cvc");
                         
                         // Update the UserDetailsContent section
                         userDetailsContent.innerHTML = `
@@ -544,6 +552,9 @@
                                 <p><strong>Last Name:</strong> ${lastName}</p>
                                 <p><strong>Phone:</strong> ${phone}</p>
                                 <p><strong>Type:</strong> ${type}</p>
+                                <p><strong>Card Number:</strong> ${creditCardNumber || "N/A"}</p>
+                                <p><strong>Valid Date:</strong> ${validDate || "N/A"}</p>
+                                <p><strong>CVC:</strong> ${cvc || "N/A"}</p>
                             </div>
                             <a href="/User/editUser?userId=${id}" class="btn btn-primary"; style="color: #f9f9f9;">Edit User</a>
                             <a href="/User/deleteUser?userId=${id}" class="btn btn-primary"; style="color: #f9f9f9;">delete user</a>`;

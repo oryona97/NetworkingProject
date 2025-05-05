@@ -43,4 +43,6 @@ public class UserModel
     [Required]
     public DateTime createAt {get; set;} = DateTime.Now;
 
+    public CreditCardModel? creditCard {get; set;}
+
 }

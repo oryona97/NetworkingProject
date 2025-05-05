@@ -23,6 +23,8 @@ public class UserController : Controller
         _logger = logger;
         _loggerUserRepo = new Logger<UserRepository>(new LoggerFactory());
         _bookRepo = new BookRepository(connectionString);
+        _UserRepository = new UserRepository(connectionString, _loggerUserRepo);
+
     }
 
     public IActionResult changeBuingPriceAndUpdateBookAndHistoryBuingPrice(int bookId, float newPrice)
@@ -152,6 +154,16 @@ public class UserController : Controller
         data.publishersList = _bookRepo.getAllPublishers();
         data.genreList = _bookRepo.getAllGenres();
         data.allUsers = _bookRepo.GetAllUserModels();
+
+        //Attach credit cards to each user
+        foreach (var user in data.allUsers)
+        {
+            user.creditCard = _UserRepository.getUserCreditCard(user.id);
+        }
+
+
+
+
         if (data.userModel?.type == "admin")
         {
             return View(data);

@@ -10,4 +10,5 @@ public class AdminDashViewModel
     public List<PublisherModel> publishersList { get; set; }
 
     public List<string> genreList { get; set; }
+
 }
