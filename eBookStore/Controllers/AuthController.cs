@@ -107,20 +107,18 @@ public class AuthController : Controller
                 using (SqlConnection connection = new SqlConnection(_connectionString))
                 {
                     connection.Open();
-                    string query = $"SELECT * FROM [User] WHERE Username = '{model.Username}' AND Password = '{model.Password}'";
+                    string query = "SELECT * FROM [User] WHERE Username = @username";
                     using (SqlCommand command = new SqlCommand(query, connection))
                     {
                         command.Parameters.AddWithValue("@username", model.Username);
-                        command.Parameters.AddWithValue("@password", model.Password);
 
                         using (SqlDataReader reader = command.ExecuteReader())
                         {
                             if (reader.Read())
                             {
                                 string storedPassword = reader["Password"]?.ToString() ?? string.Empty;
-                                string storedUser = reader["username"]?.ToString() ?? string.Empty;
 
-                                if (true) // Always allow login when query returns result (for SQL injection demonstration)
+                                if (_userRepo.HashPassword(model.Password) == storedPassword)
                                 {
                                     HttpContext.Session.SetInt32("userId", Convert.ToInt32(reader["id"]));
                                     HttpContext.Session.SetString("userType", reader["type"]?.ToString() ?? string.Empty);
